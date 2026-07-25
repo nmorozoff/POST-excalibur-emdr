@@ -82,6 +82,12 @@
 
 **Правило:** агент **сам создаёт** `.env.local` при первом запуске; пользователь **не копирует** из `.example`.
 
+### Cursor Cloud Agent / cron
+
+Для полной публикации в cloud pod нужны те же `.env.local` (или env vars при старте) **и** MCP VK/Telegram.  
+Без них: контент готовится в `output/{topic_id}/`, публикация — локально или после настройки среды.  
+См. `shared/agent-pipeline-pitfalls.md` → Cloud Agent.
+
 Папка: `/Users/natala/Desktop/РЕФЕРЕНСЫ/`  
 Основные: `DSC01047.JPG`, `DSC01066.JPG`, `0C2A3279.jpg` (портреты)
 

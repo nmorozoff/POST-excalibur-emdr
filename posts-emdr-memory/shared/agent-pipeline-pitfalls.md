@@ -80,3 +80,19 @@
 
 После run: `python scripts/incident_queue.py --project-root .`  
 Код `2` → **Task(`posts-emdr-fixic`)** до следующей темы.
+
+## Cloud Agent / автоматизация
+
+**Перед cron-run проверить:** в среде агента должны быть:
+
+| Что | Файл / сервис |
+|-----|----------------|
+| Макс | `posts-emdr-memory/max.env.local` |
+| Runware | `posts-emdr-memory/runware.env.local` + референс-портрет |
+| Telegram | `telegram.env.local` или MCP |
+| VK | MCP `vk_create_post_with_photo` |
+| Facebook | `zernio.env.local` |
+| b17 / TenChat | `b17.env.local`, `tenchat.env.local` |
+
+Без секретов агент **готовит контент** в `output/{topic_id}/`, но публикация блокируется (`INC-*-cloud-missing-secrets-mcp`).
+

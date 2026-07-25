@@ -286,7 +286,7 @@ checks_run:
 ---
 
 ## INC-20260725-1755-cloud-missing-secrets-mcp
-status: open
+status: needs-human
 run_date: 2026-07-25
 role: director
 topic: sb-03-body-before-mind
@@ -317,5 +317,17 @@ category: env
 - none recorded
 
 ### Fixic resolution
-- pending
+needs-human
+fixed_at: 2026-07-25
+fix_summary:
+- Документирован blocker Cloud Agent в `shared/agent-pipeline-pitfalls.md` и `00-brief.md`.
+- Публикация требует настройки секретов/MCP владельцем automation.
+needed_decision_or_secret:
+- Добавить `*.env.local` в Cloud Environment snapshot или secrets.
+- Подключить MCP VK + Telegram к automation.
+files_changed:
+- `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
+- `posts-emdr-memory/00-brief.md`
+checks_run:
+- `python3 scripts/incident_queue.py --project-root .` (после fix: needs-human, не open)
 
