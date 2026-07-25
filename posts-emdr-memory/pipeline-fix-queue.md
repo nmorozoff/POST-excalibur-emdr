@@ -282,3 +282,40 @@ files_changed:
 - `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
 checks_run:
 - `python -m py_compile scripts/undetectable_browser.py scripts/incident_queue.py`
+
+---
+
+## INC-20260725-1755-cloud-missing-secrets-mcp
+status: open
+run_date: 2026-07-25
+role: director
+topic: sb-03-body-before-mind
+severity: blocker
+category: env
+
+### What went wrong
+- Cloud Agent run: нет `posts-emdr-memory/*.env.local` (max, runware, telegram, zernio, b17, tenchat).
+- Нет MCP серверов VK / Telegram / user-mcp-kv в cloud environment.
+- `send-max-draft.py --publish` падает: `Missing max.env.local`.
+- Референс-портрет `0C2A3279.jpg` недоступен; обложка сгенерирована fallback (GenerateImage), не Runware i2i.
+
+### How the agent recovered this run
+- Полный пакет контента sb-03 создан: max-post, cover-prompt, cover.png, TG/VK/FB/b17/TenChat рерайты.
+- Публикация отложена до появления секретов или локального run.
+
+### Durable fix needed before next run
+- Настроить Cursor Cloud Environment: секреты в `posts-emdr-memory/*.env.local` или env vars при старте pod.
+- Подключить MCP: VK (`vk_create_post_with_photo`), Telegram, user-mcp-kv.
+- Смонтировать референс-портрет для Runware или хранить в репо (отдельная папка assets, не gitignore).
+
+### Suggested files to inspect/change
+- `posts-emdr-memory/BOT-SETUP.md`
+- `posts-emdr-memory/00-brief.md`
+- Cloud environment secrets / MCP configuration
+
+### Secrets
+- none recorded
+
+### Fixic resolution
+- pending
+
