@@ -80,3 +80,10 @@
 
 После run: `python scripts/incident_queue.py --project-root .`  
 Код `2` → **Task(`posts-emdr-fixic`)** до следующей темы.
+
+## Cloud Agent
+
+Секреты → [Cursor Cloud Secrets](https://cursor.com/dashboard/cloud-agents), не в git.  
+`python3 scripts/materialize_cloud_env.py` → `publish-topic.py`.  
+VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.  
+Полная инструкция: `posts-emdr-memory/CLOUD-SETUP.md`.

@@ -24,25 +24,37 @@ import tempfile
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-FTP_ENV = Path("/Users/natala/Documents/Проекты СURSOR/sessya-morozova/.ftp-deploy.env")
 SITE_COVER_BASE = "https://morozovanatalia.ru/social-covers"
 
 
 def load_ftp_env() -> dict[str, str]:
-    if not FTP_ENV.exists():
-        raise SystemExit(f"FTP env not found: {FTP_ENV}")
-    data: dict[str, str] = {}
-    for line in FTP_ENV.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        k, v = line.split("=", 1)
-        v = v.strip().strip('"').strip("'")
-        data[k.strip()] = v
-    for key in ("FTP_SERVER", "FTP_USERNAME", "FTP_PASSWORD"):
-        if not data.get(key):
-            raise SystemExit(f"Missing {key} in {FTP_ENV}")
-    return data
+    import sys
+
+    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+    from posts_emdr_env import MEMORY, load_env as _load
+
+    if (MEMORY / "ftp.env.local").exists() or __import__("os").environ.get("FTP_SERVER"):
+        return _load(
+            "ftp.env.local",
+            required=["FTP_SERVER", "FTP_USERNAME", "FTP_PASSWORD"],
+        )
+    legacy = Path("/Users/natala/Documents/Проекты СURSOR/sessya-morozova/.ftp-deploy.env")
+    if legacy.is_file():
+        data: dict[str, str] = {}
+        for line in legacy.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            data[k.strip()] = v.strip().strip('"').strip("'")
+        for key in ("FTP_SERVER", "FTP_USERNAME", "FTP_PASSWORD"):
+            if not data.get(key):
+                raise SystemExit(f"Missing {key} in legacy {legacy}")
+        return data
+    return _load(
+        "ftp.env.local",
+        required=["FTP_SERVER", "FTP_USERNAME", "FTP_PASSWORD"],
+    )
 
 
 def extract_post(md_path: Path) -> str:

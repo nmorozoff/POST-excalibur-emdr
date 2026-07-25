@@ -30,20 +30,17 @@ API_BASE = "https://platform-api2.max.ru"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ENV_FILE = PROJECT_ROOT / "posts-emdr-memory" / "max.env.local"
 
-DRAFT_HEADER_TMPL = "📋 **Черновик {topic}**\n\n"
-
 
 def load_env() -> dict[str, str]:
-    if not ENV_FILE.exists():
-        raise SystemExit(f"Missing {ENV_FILE}")
-    data: dict[str, str] = {}
-    for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        k, v = line.split("=", 1)
-        data[k.strip()] = v.strip()
-    return data
+    import sys
+
+    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+    from posts_emdr_env import load_env as _load
+
+    return _load("max.env.local", required=["MAX_BOT_TOKEN"])
+
+
+DRAFT_HEADER_TMPL = "📋 **Черновик {topic}**\n\n"
 
 
 def api_request(

@@ -32,31 +32,22 @@ MODEL_ID = "openai:gpt-image@2"
 
 
 def load_env_defaults() -> dict[str, str]:
-    env_local = Path("posts-emdr-memory/runware.env.local")
-    data: dict[str, str] = {}
-    if env_local.exists():
-        for line in env_local.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            k, v = line.split("=", 1)
-            data[k.strip()] = v.strip()
-    return data
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from posts_emdr_env import load_env
+
+    return load_env("runware.env.local")
 
 
 def load_api_key() -> str:
-    key = os.environ.get("RUNWARE_API_KEY", "").strip()
-    if key:
-        return key
-    env_local = Path("posts-emdr-memory/runware.env.local")
-    if env_local.exists():
-        for line in env_local.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if line.startswith("RUNWARE_API_KEY=") and not line.endswith("="):
-                return line.split("=", 1)[1].strip().strip('"').strip("'")
-    raise SystemExit(
-        "RUNWARE_API_KEY not set. Copy posts-emdr-memory/runware.env.example → runware.env.local"
-    )
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from posts_emdr_env import load_env
+
+    data = load_env("runware.env.local", required=["RUNWARE_API_KEY"])
+    return data["RUNWARE_API_KEY"]
 
 
 def file_to_data_uri(path: Path) -> str:
@@ -146,14 +137,22 @@ def main() -> None:
     args = parser.parse_args()
 
     prompt = args.prompt_file.read_text(encoding="utf-8").strip()
-    if args.reference and not args.reference.exists():
-        raise SystemExit(f"Reference not found: {args.reference}")
+    reference = args.reference
+    if reference is None:
+        import sys
+
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from posts_emdr_env import reference_image_path
+
+        reference = reference_image_path()
+    if reference and not reference.exists():
+        raise SystemExit(f"Reference not found: {reference}")
 
     api_key = load_api_key()
     result = run_inference(
         api_key=api_key,
         prompt=prompt,
-        reference=args.reference,
+        reference=reference,
         width=args.width,
         height=args.height,
         quality=args.quality,

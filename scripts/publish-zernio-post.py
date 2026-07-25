@@ -24,20 +24,15 @@ API_URL = "https://zernio.com/api/v1/posts"
 
 
 def load_env() -> dict[str, str]:
-    if not ENV_FILE.exists():
-        raise SystemExit(f"Missing {ENV_FILE} — copy from zernio.env.example")
-    data: dict[str, str] = {}
-    for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        k, v = line.split("=", 1)
-        data[k.strip()] = v.strip()
-    required = ["ZERNIO_API_KEY", "ZERNIO_FACEBOOK_ACCOUNT_ID"]
-    missing = [k for k in required if not data.get(k)]
-    if missing:
-        raise SystemExit(f"Missing in {ENV_FILE}: {', '.join(missing)}")
-    return data
+    import sys
+
+    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+    from posts_emdr_env import load_env as _load
+
+    return _load(
+        "zernio.env.local",
+        required=["ZERNIO_API_KEY", "ZERNIO_FACEBOOK_ACCOUNT_ID"],
+    )
 
 
 def extract_post(md_path: Path) -> str:

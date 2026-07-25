@@ -41,6 +41,23 @@ Handoff runtime: `.cursor/posts-emdr-handoff.md`
 4. Режим: `max-only` | `full` | `publish: no`
 5. Перед новой темой: `python scripts/incident_queue.py --project-root .` — код `2` → сначала **Task(`posts-emdr-fixic`)**
 
+## Cloud Agent (изолированная среда)
+
+**Секреты не в git** — только [Cursor Cloud Secrets](https://cursor.com/dashboard/cloud-agents). См. `posts-emdr-memory/CLOUD-SETUP.md`.
+
+Перед публикацией в cloud:
+
+```bash
+python3 scripts/materialize_cloud_env.py --check
+python3 scripts/publish-topic.py --topic {id}
+```
+
+- VK: `scripts/vk_publish.py` (без MCP)
+- Обложка: Runware + `assets/reference/portrait.jpg` в репо
+- b17/TenChat: только если Undetectable доступен в pod; иначе `deferred`
+
+Install hook: `.cursor/environment.json` → `materialize_cloud_env.py`
+
 ## Пайплайн (одна тема)
 
 ### Шаг 0 — Тема
@@ -132,6 +149,8 @@ Gate: форма заполнена, `tenchat-publish-prep.json`. Опциона
 - Обновить реестры платформ (`max`, `telegram`, `vk-profile`, `vk-group`, `facebook`)
 - Fragment шага: `incident_report:` (`shared/subagent-end-of-task-contract.md`)
 - Handoff: `=== POSTS EMDR DONE ===`
+
+**Cloud one-liner (после контента):** `python3 scripts/publish-topic.py --topic {id}`
 
 ### Шаг 9 — Fixic (post-run)
 

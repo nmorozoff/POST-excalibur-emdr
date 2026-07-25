@@ -282,3 +282,47 @@ files_changed:
 - `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
 checks_run:
 - `python -m py_compile scripts/undetectable_browser.py scripts/incident_queue.py`
+
+---
+
+## INC-20260725-2155-cloud-missing-secrets-mcp
+status: fixed
+run_date: 2026-07-25
+role: director
+topic: sb-03-body-before-mind
+severity: blocker
+category: env
+
+### What went wrong
+- Cloud pod: нет `.env.local`, нет MCP VK/Telegram; публикация невозможна.
+
+### How the agent recovered this run
+- Контент sb-03 создан; publish отложен.
+
+### Durable fix needed before next run
+- Env из Cursor Secrets + VK API без MCP + publish-topic.py + reference в репо.
+
+### Suggested files to inspect/change
+- `scripts/posts_emdr_env.py`
+- `scripts/publish-topic.py`
+- `scripts/vk_publish.py`
+- `posts-emdr-memory/CLOUD-SETUP.md`
+- `.cursor/environment.json`
+
+### Secrets
+- none recorded
+
+### Fixic resolution
+fixed_at: 2026-07-25
+fix_summary:
+- materialize_cloud_env, cloud_preflight, publish-topic, vk_publish (no MCP).
+- CLOUD-SETUP.md + cloud-secrets-checklist.txt + assets/reference/portrait.jpg.
+needed_decision_or_secret:
+- Владелец добавляет Runtime Secrets в cursor.com/dashboard/cloud-agents (см. checklist).
+files_changed:
+- scripts/posts_emdr_env.py, materialize_cloud_env.py, cloud_preflight.py, publish-topic.py, vk_publish.py
+- .cursor/environment.json
+- posts-emdr-memory/CLOUD-SETUP.md
+checks_run:
+- py_compile all new scripts
+

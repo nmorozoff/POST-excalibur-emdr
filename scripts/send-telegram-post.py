@@ -27,16 +27,12 @@ MESSAGE_LIMIT = 4096
 
 
 def load_env() -> dict[str, str]:
-    if not ENV_FILE.exists():
-        raise SystemExit(f"Missing {ENV_FILE}")
-    data: dict[str, str] = {}
-    for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        k, v = line.split("=", 1)
-        data[k.strip()] = v.strip()
-    return data
+    import sys
+
+    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+    from posts_emdr_env import load_env as _load
+
+    return _load("telegram.env.local", required=["TELEGRAM_BOT_TOKEN"])
 
 
 def api_call_form(token: str, method: str, data: dict | None = None, files: dict | None = None) -> dict:

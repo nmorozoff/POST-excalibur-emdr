@@ -20,6 +20,14 @@
 python scripts/incident_queue.py --project-root .
 ```
 
+## Cloud Agent
+
+См. `posts-emdr-memory/CLOUD-SETUP.md` — секреты в Cursor Dashboard, публикация:
+
+```bash
+python3 scripts/publish-topic.py --topic {topic_id}
+```
+
 ## Очередь short-blog
 
 `posts-emdr-memory/topics/short-blog-queue.md`

@@ -14,9 +14,12 @@
 
 1. Кружок + пост в **Макс** (канал)
 2. Рерайт → **Telegram** (пост или статья)
-3. Рерайт → **ВК профиль** + **ВК группа** (публикация через MCP KV)
-4. Рерайт → **LinkedIn** (скрипт)
-5. Рерайт → **Facebook** (скрипт)
+3. Рерайт → **ВК профиль** + **ВК группа** (`scripts/vk_publish.py`, без MCP)
+4. ~~LinkedIn~~ отменён
+5. Рерайт → **Facebook** (Zernio)
+6. **b17** + **TenChat** (Undetectable, локально или в cloud если доступен)
+
+**Cloud Agent:** секреты в [Cursor Dashboard](https://cursor.com/dashboard/cloud-agents) → `CLOUD-SETUP.md` → `publish-topic.py`
 
 Обложка одна — генерируется на этапе Макс, дальше переиспользуется на всех платформах.
 
