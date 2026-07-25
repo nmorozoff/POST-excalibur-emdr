@@ -1,0 +1,53 @@
+# Реестр постов Telegram
+
+Обновлять **после публикации** в каждый канал.  
+Для перелинковки в новых постах: читать этот файл + `profile/crosslink-rules.md`.
+
+**Правило:** в `telegram-post.md` ссылки с `utm_source=tg1` (скрипт подставит tg2/tg3 при publish).
+
+---
+
+## Опубликованные
+
+| sb-02-anxiety-as-responsibility | 2026-07-25 | Как тревога маскируется под «просто ответственность» — гиперконтроль | @natalia_morozova_psy | 2020 | https://t.me/natalia_morozova_psy/2020 | https://morozovanatalia.ru/anxiety | тревога,гиперконтроль,ответственность,EMDR,стресс,психология |
+| sb-02-anxiety-as-responsibility | 2026-07-25 | Как тревога маскируется под «просто ответственность» — гиперконтроль | @nmorozova_emdr | 108 | https://t.me/nmorozova_emdr/108 | https://morozovanatalia.ru/anxiety | тревога,гиперконтроль,ответственность,EMDR,стресс,психология |
+| sb-02-anxiety-as-responsibility | 2026-07-25 | Как тревога маскируется под «просто ответственность» — гиперконтроль | @morozova_emdr | 606 | https://t.me/morozova_emdr/606 | https://morozovanatalia.ru/anxiety | тревога,гиперконтроль,ответственность,EMDR,стресс,психология |
+| topic_id | дата | заголовок | канал | message_id | ссылка | site_url | теги |
+|----------|------|-----------|-------|------------|--------|----------|------|
+| sb-01-background-anxiety | 2026-07-24 | Тревога, которая живёт фоном — и мы привыкаем считать это нормой | @morozova_emdr | 605 | https://t.me/morozova_emdr/605 | https://morozovanatalia.ru/anxiety | тревога,фоновая тревога,нервная система,EMDR,стресс,психология |
+| sb-01-background-anxiety | 2026-07-24 | Тревога, которая живёт фоном — и мы привыкаем считать это нормой | @nmorozova_emdr | 107 | https://t.me/nmorozova_emdr/107 | https://morozovanatalia.ru/anxiety | тревога,фоновая тревога,нервная система,EMDR,стресс,психология |
+| sb-01-background-anxiety | 2026-07-24 | Тревога, которая живёт фоном — и мы привыкаем считать это нормой | @natalia_morozova_psy | 2019 | https://t.me/natalia_morozova_psy/2019 | https://morozovanatalia.ru/anxiety | тревога,фоновая тревога,нервная система,EMDR,стресс,психология |
+| 04-wb-fire-story | 2026-07-23 | Я тоже теряла бизнес за один день — и знаю это состояние изнутри | @morozova_emdr | 604 | https://t.me/morozova_emdr/604 | https://morozovanatalia.ru/business-psychology | wildberries,селлер,личная история,предприниматель,бизнес-психология,EMDR,стресс,кризис |
+| 04-wb-fire-story | 2026-07-23 | Я тоже теряла бизнес за один день — и знаю это состояние изнутри | @nmorozova_emdr | 106 | https://t.me/nmorozova_emdr/106 | https://morozovanatalia.ru/business-psychology | wildberries,селлер,личная история,предприниматель,бизнес-психология,EMDR,стресс,кризис |
+| 04-wb-fire-story | 2026-07-23 | Я тоже теряла бизнес за один день — и знаю это состояние изнутри | @natalia_morozova_psy | 2018 | https://t.me/natalia_morozova_psy/2018 | https://morozovanatalia.ru/business-psychology | wildberries,селлер,личная история,предприниматель,бизнес-психология,EMDR,стресс,кризис |
+| 03-wb-fire-shock | 2026-07-23 | Склады Wildberries сгорели за одну ночь - и вот что происходит с психикой предпринимателя в такой момент | @morozova_emdr | 601 | https://t.me/morozova_emdr/601 | https://morozovanatalia.ru/business-psychology | wildberries,селлер,шок,предприниматель,бизнес-психология,EMDR,стресс,SOS |
+| 03-wb-fire-shock | 2026-07-23 | Склады Wildberries сгорели за одну ночь - и вот что происходит с психикой предпринимателя в такой момент | @nmorozova_emdr | 103 | https://t.me/nmorozova_emdr/103 | https://morozovanatalia.ru/business-psychology | wildberries,селлер,шок,предприниматель,бизнес-психология,EMDR,стресс,SOS |
+| 03-wb-fire-shock | 2026-07-23 | Склады Wildberries сгорели за одну ночь - и вот что происходит с психикой предпринимателя в такой момент | @natalia_morozova_psy | 2015 | https://t.me/natalia_morozova_psy/2015 | https://morozovanatalia.ru/business-psychology | wildberries,селлер,шок,предприниматель,бизнес-психология,EMDR,стресс,SOS |
+| 01-panic-night | 2026-07-19 | Паническая атака: почему она будит среди ночи и что делать | @morozova_emdr | 598 | https://t.me/morozova_emdr/598 | https://morozovanatalia.ru/panic-attacks | паническая атака, ночь, тревога, EMDR |
+| 01-panic-night | 2026-07-19 | Паническая атака: почему она будит среди ночи и что делать | @nmorozova_emdr | 100 | https://t.me/nmorozova_emdr/100 | https://morozovanatalia.ru/panic-attacks | паническая атака, ночь, тревога, EMDR |
+| 01-panic-night | 2026-07-19 | Паническая атака: почему она будит среди ночи и что делать | @natalia_morozova_psy | 2012 | https://t.me/natalia_morozova_psy/2012 | https://morozovanatalia.ru/panic-attacks | паническая атака, ночь, тревога, EMDR |
+| 02-airplane-panic | 2026-07-22 | Паническая атака в самолёте: как пережить перелёт | @morozova_emdr | 599 | https://t.me/morozova_emdr/599 | https://morozovanatalia.ru/phobias | паническая атака, авиафобия, фобия, самолёт, EMDR |
+| 02-airplane-panic | 2026-07-22 | Паническая атака в самолёте: как пережить перелёт | @nmorozova_emdr | 101 | https://t.me/nmorozova_emdr/101 | https://morozovanatalia.ru/phobias | паническая атака, авиафобия, фобия, самолёт, EMDR |
+| 02-airplane-panic | 2026-07-22 | Паническая атака в самолёте: как пережить перелёт | @natalia_morozova_psy | 2013 | https://t.me/natalia_morozova_psy/2013 | https://morozovanatalia.ru/phobias | паническая атака, авиафобия, фобия, самолёт, EMDR |
+
+---
+
+## Индекс по тегам (основной канал @morozova_emdr)
+
+| Тег | topic_id | ссылка |
+|-----|----------|--------|
+| паническая атака | 01-panic-night, 02-airplane-panic | см. таблицу выше |
+| тревога | 01-panic-night, 02-airplane-panic | см. таблицу выше |
+| EMDR | 01-panic-night, 02-airplane-panic | см. таблицу выше |
+| авиафобия | 02-airplane-panic | https://t.me/morozova_emdr/599 |
+| фобия | 02-airplane-panic | https://t.me/morozova_emdr/599 |
+
+---
+
+## Шаблон перелинковки в тексте
+
+```html
+О [теме] мы уже говорили <a href="https://t.me/morozova_emdr/598">здесь</a>.
+```
+
+Источник URL: строка канала **@morozova_emdr** из таблицы выше.

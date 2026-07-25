@@ -1,0 +1,23 @@
+YouTube thumbnail style editorial cover. Dark background (#0d0d0d or near-black), cinematic and clean.
+
+Photo-realistic portrait of the woman from the reference photo placed on the RIGHT side of the frame, upper body visible. Preserve her exact face, features, age, hair, and likeness from the reference — do NOT alter, retouch, rejuvenate, or change her face in any way. Natural, calm, empathetic, slightly vulnerable professional expression — no wide smile, no dramatic pose. Soft warm side lighting, slight vignette.
+
+Background behind the portrait: blurred dark home office or quiet workspace at dusk, warm lamp bokeh, closed laptop, subtle papers on desk, mood of personal business loss and reflection — NOT warehouse, NOT fire, NOT disaster news, no logos, no airplanes.
+
+Clothing: do NOT copy the outfit from the reference photo. Choose a new calm, stylish item: soft sweater, turtleneck, cardigan, or structured blazer. Colors: ivory, beige, warm grey, sand, cream, muted blue, dusty rose, graphite. Solid colors only — no bright prints, no logos.
+
+LEFT side typography — CRITICAL layout rules:
+- Headline block starts near the TOP of the frame (top margin only 5–8% of canvas height). Do NOT leave large empty dark area above the text.
+- Headline occupies ~65–75% of the LEFT half height. Large, bold, stacked tightly with minimal line gaps.
+- Text size: very large mobile headline scale — each line should feel like a poster title, not a subtitle.
+- Bold white Cyrillic text, clean modern sans-serif. Text content:
+Line 1: Я тоже теряла бизнес
+Line 2: за один день
+Line 3: знаю это изнутри
+- The phrase «за один день» must have a bright yellow (#F5C400) rectangle behind it.
+
+Bottom-left corner only (below headline block), small white signature — exactly two lines, no URLs:
+Морозова Наталья
+Психолог, EMDR терапевт
+
+Format: 5:4 horizontal landscape, 1280×1024px. Ultra realistic, cinematic color grading. No watermarks, no logos, no URLs, no extra text.

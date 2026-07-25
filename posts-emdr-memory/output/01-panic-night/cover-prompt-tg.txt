@@ -1,0 +1,18 @@
+Editorial podcast cover for Telegram mobile feed. Dark background (#0d0d0d or near-black), cinematic and clean.
+
+Photo-realistic portrait of the woman from the reference photo placed on the RIGHT side of the frame, upper body visible. Preserve her exact face, features, age, hair, and likeness from the reference — do NOT alter, retouch, rejuvenate, or change her face in any way. Natural, calm, professional expression — no wide smile, no dramatic pose. Soft studio lighting, slight vignette. The background behind her can include a blurred warm therapy office scene (cozy armchair, bookshelf, soft lamp, plants) that fades into the dark background.
+
+Clothing: do NOT copy the outfit from the reference photo. Choose a calm, stylish item: soft sweater or turtleneck in ivory, beige, warm grey, sand, cream, muted blue, dusty rose, graphite, or soft white. Solid colors only — no bright prints, no logos.
+
+LEFT side: bold white Cyrillic text, large, readable on mobile full width. Text content:
+Line 1: Паническая атака:
+Line 2: почему она будит среди ночи
+Line 3: и что делать
+The phrase «среди ночи» must have a bright yellow (#F5C400) rectangle behind it. Clean modern sans-serif.
+
+Bottom-left corner, small white text, three lines:
+morozovanatalia.ru?utm_source=tg
+Морозова Наталья
+Психолог, EMDR терапевт
+
+Format: 4:5 vertical portrait, 1024×1280px. Ultra realistic, cinematic color grading, warm tones on the subject, dark cool tones on the background. No watermarks, no logos, no extra text.

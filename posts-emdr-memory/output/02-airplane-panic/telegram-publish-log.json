@@ -1,0 +1,21 @@
+{
+  "status": "sent",
+  "mode": "publish",
+  "delivery": "link_preview_single_message",
+  "html_chars": 3068,
+  "channels": [
+    {
+      "chat_id": "@morozova_emdr",
+      "message_id": 599
+    },
+    {
+      "chat_id": "@nmorozova_emdr",
+      "message_id": 101
+    },
+    {
+      "chat_id": "@natalia_morozova_psy",
+      "message_id": 2013
+    }
+  ],
+  "cover_source": "catbox"
+}

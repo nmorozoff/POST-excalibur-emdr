@@ -1,0 +1,21 @@
+{
+  "topic": "01-panic-night",
+  "results": [
+    {
+      "platform": "linkedin",
+      "chars": 2683,
+      "photo_message_id": 26,
+      "text_message_ids": [
+        27
+      ]
+    },
+    {
+      "platform": "facebook",
+      "chars": 2341,
+      "photo_message_id": 29,
+      "text_message_ids": [
+        30
+      ]
+    }
+  ]
+}

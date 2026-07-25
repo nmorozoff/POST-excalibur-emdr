@@ -1,0 +1,36 @@
+# Реестр постов Макс — для нативной перелинковки
+
+Обновлять **после каждой публикации** в канале Макс.
+
+---
+
+## Опубликованные
+
+| sb-02-anxiety-as-responsibility | 2026-07-25 | Как тревога маскируется под «просто ответственность» — гиперконтроль | https://max.ru/se13417616_biz/AZ-YmFZ8fEc | https://morozovanatalia.ru/anxiety | тревога,гиперконтроль,ответственность,EMDR,стресс,психология |
+| topic_id | дата | заголовок | max_url | site_url | теги |
+|----------|------|-----------|---------|----------|------|
+| sb-01-background-anxiety | 2026-07-24 | Тревога, которая живёт фоном — и мы привыкаем считать это нормой | https://max.ru/se13417616_biz/AZ-USku8aIM | https://morozovanatalia.ru/anxiety | тревога,фоновая тревога,нервная система,EMDR,стресс,психология |
+| 04-wb-fire-story | 2026-07-23 | Я тоже теряла бизнес за один день — и знаю это состояние изнутри | https://max.ru/se13417616_biz/AZ-PNX3ZPzQ | https://morozovanatalia.ru/business-psychology | wildberries,селлер,личная история,предприниматель,бизнес-психология,EMDR,стресс,кризис |
+| 03-wb-fire-shock | 2026-07-23 | Склады Wildberries сгорели за одну ночь - и вот что происходит с психикой предпринимателя в такой момент | https://max.ru/se13417616_biz/AZ-OX0VoGGI | https://morozovanatalia.ru/business-psychology | wildberries,селлер,шок,предприниматель,бизнес-психология,EMDR,стресс,SOS |
+| 01-panic-night | 2026-07-19 | Паническая атака: почему она будит среди ночи и что делать | https://max.ru/se13417616_biz/AZ964O_HSL8 | https://morozovanatalia.ru/panic-attacks | паническая атака, ночь, тревога, бессонница, EMDR, ПТСР, заземление, дыхание |
+| 02-airplane-panic | 2026-07-22 | Паническая атака в самолёте: как пережить перелёт | https://max.ru/se13417616_biz/AZ-JBSWnfwo | https://morozovanatalia.ru/phobias | паническая атака, авиафобия, фобия, самолёт, перелёт, EMDR, тревога, заземление |
+
+---
+
+## Индекс по тегам
+
+| Тег | topic_id | max_url |
+|-----|----------|---------|
+| паническая атака | 01-panic-night, 02-airplane-panic | см. таблицу выше |
+| ПТСР | — | — |
+| фобия | 02-airplane-panic | https://max.ru/se13417616_biz/AZ-JBSWnfwo |
+| авиафобия | 02-airplane-panic | https://max.ru/se13417616_biz/AZ-JBSWnfwo |
+| тревога | 01-panic-night, 02-airplane-panic | см. таблицу выше |
+| EMDR | 01-panic-night, 02-airplane-panic | см. таблицу выше |
+
+---
+
+## Контакты (не менять)
+
+- ЛС Макс: https://max.ru/se13417616_biz/AZ9H9rFePFc
+- EMDR лендинг: https://morozovanatalia.ru/emdr-therapy

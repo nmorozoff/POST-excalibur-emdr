@@ -1,0 +1,23 @@
+{
+  "status": "sent",
+  "mode": "publish",
+  "delivery": "photo_then_text",
+  "html_chars": 3363,
+  "channels": [
+    {
+      "chat_id": "@morozova_emdr",
+      "photo_message_id": 602,
+      "text_message_id": 603
+    },
+    {
+      "chat_id": "@nmorozova_emdr",
+      "photo_message_id": 104,
+      "text_message_id": 105
+    },
+    {
+      "chat_id": "@natalia_morozova_psy",
+      "photo_message_id": 2016,
+      "text_message_id": 2017
+    }
+  ]
+}

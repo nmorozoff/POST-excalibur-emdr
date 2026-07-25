@@ -1,0 +1,33 @@
+{
+  "status": "published_with_cover",
+  "profile": {
+    "post_id": 641,
+    "photo": "photo218367867_457247706",
+    "url": "https://vk.com/wall218367867_641",
+    "utm_source": "vk",
+    "file": "vk-profile-post.md",
+    "note": "не перепубликовывать"
+  },
+  "group": {
+    "post_id": 144,
+    "photo": "photo218367867_457247708",
+    "url": "https://vk.com/wall-224685309_144",
+    "group_id": "224685309",
+    "utm_source": "vk_group",
+    "file": "vk-group-post.md",
+    "chars": 3000,
+    "published_at": "2026-07-20"
+  },
+  "cover_cleanup": {
+    "deleted_remote_files": ["01-panic-night.jpg", "01-panic-night-v2.jpg"],
+    "deleted_at": "2026-07-20"
+  },
+  "manual_cleanup": {
+    "action": "удалить вручную ошибочные посты",
+    "items": [
+      {"location": "profile", "post_id": 639, "reason": "текст без обложки"},
+      {"location": "profile", "post_id": 640, "reason": "текст без обложки"},
+      {"location": "profile", "post_id": 642, "reason": "должен был быть в группе, ушёл в профиль"}
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+# Пост Telegram — контракт
+
+Источник: `max-post.md` → **рерайт** (не копипаст).
+
+## Правила
+
+| Поле | Правило |
+|------|---------|
+| Формат | HTML (`<b>`, `<a href="">`) |
+| Тон | Близко к Максу, можно +10–15% глубины |
+| Рерайт | **Обязателен** — не копипаст `max-post.md` (`profile/crosslink-rules.md`) |
+| Перелинковка | `profile/telegram-posts-registry.md` — ссылки только на посты **Telegram** |
+| Ссылки | В тексте: «на моем сайте <a>ТУТ</a>» с UTM. Сайт: **`?utm_source=tg1`** (основной канал; см. `profile/utm-sources.md`) |
+| CTA | `Записаться на бесплатную пробную сессию можно на моем сайте <a>ТУТ</a> или написать мне в ЛС <a>ТУТ</a>` — сайт с utm, ЛС → t.me/natalyamorozovaa |
+| Обложка | **`cover.png` из шага Макс** — не генерировать заново |
+| Кнопки | **Не использовать** |
+| Лимит текста | 4096 символов |
+
+## Отправка
+
+**Обязательно:** один пост в канале — обложка (link preview) + текст в одном сообщении.
+
+| Режим | Один пост? | Для каналов |
+|-------|------------|-------------|
+| `link_preview` **(default)** | да | ✅ **только этот** |
+| `photo_then_text` | нет (фото + текст) | ❌ **запрещено** |
+
+```bash
+# Превью и публикация — без лишних флагов, default = link_preview
+python scripts/send-telegram-post.py --topic 01-panic-night
+python scripts/send-telegram-post.py --topic 01-panic-night --publish
+```
+
+Проверка после publish: `telegram-publish-log.json` → `"delivery": "link_preview_single_message"`, поле `message_id` (не `photo_message_id` + `text_message_id`).

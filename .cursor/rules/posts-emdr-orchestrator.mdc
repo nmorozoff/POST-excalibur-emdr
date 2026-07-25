@@ -1,0 +1,177 @@
+---
+description: Посты EMDR — оркестратор мультиплатформенного контента на базе Excalibur (без Ядрышка)
+alwaysApply: true
+---
+
+# Посты EMDR — Директор
+
+Язык с пользователем — **русский**.
+
+## Суть
+
+Локальный профиль **Excalibur Social**: тема из файла → контент для **Макс → Telegram → ВК×2 → Facebook (Zernio) → b17 → TenChat**.  
+**LinkedIn отменён** (блокировка аккаунта). **Кружок Макс** — вне scope MSP short-blog.
+**НЕ** запускать Ядрышко/Core, SEO-scout, WordPress publish (если пользователь явно не попросил блог).
+
+## Память
+
+`posts-emdr-memory/` — единый банк артефактов.
+
+| Путь | Назначение |
+|------|------------|
+| `00-brief.md` | Brief проекта |
+| `01-handoff.md` | Склейка этапов |
+| `topics/short-blog-queue.md` | Очередь MSP short-blog (приоритет) |
+| `topics/blog-topics.md` | Очередь длинных тем |
+| `profile/*` | ToV, автор, обложки, платформы, **реестры перелинковки** |
+| `shared/*` | incident contract, pitfalls, fragment template |
+| `pipeline-fix-queue.md` | Incident memory для Fixic |
+| `output/{topic_id}/` | Черновики и обложки |
+| `fragments/` | Отчёты шагов (`incident_report:` обязателен) |
+
+Handoff runtime: `.cursor/posts-emdr-handoff.md`
+
+## Intake (новая тема)
+
+Перед работой проверить:
+
+1. Верхняя тема в `topics/short-blog-queue.md` (или `blog-topics.md`) — `pending`
+2. Прочитать `shared/agent-pipeline-pitfalls.md`, `profile/tone-of-voice.md`, `profile/author-profile.md`
+3. URL страницы — `profile/site-url-map.md`
+4. Режим: `max-only` | `full` | `publish: no`
+5. Перед новой темой: `python scripts/incident_queue.py --project-root .` — код `2` → сначала **Task(`posts-emdr-fixic`)**
+
+## Пайплайн (одна тема)
+
+### Шаг 0 — Тема
+
+- Взять **первую** `pending` из `topics/short-blog-queue.md` (fallback: `blog-topics.md`)
+- Пометить `in_progress`
+- Выбрать `post_type` по `profile/post-types.md` (или из колонки таблицы)
+- Записать в handoff: topic_id, заголовок, post_type, site_url
+
+### Шаг 1 — Макс (пост + обложка)
+
+**Кружок не генерируем** (вне scope MSP short-blog).  
+**Единственный шаг генерации обложки.** `cover.png` потом идёт во все соцсети без повторного Runware.
+
+Выход:
+- `output/{id}/max-post.md`
+- `output/{id}/cover-prompt.txt` + `output/{id}/cover.png` (Runware 5:4, 1280×1024, **low** — согласовано, без отдельного запроса)
+- `python scripts/send-max-draft.py --topic {id} --publish`
+
+Gate: есть пост, **cover.png**.
+
+### Шаг 2 — Telegram
+
+Task `posts-emdr-telegram-writer` → **рерайт** (не копипаст Макс).  
+Перед написанием: `profile/telegram-posts-registry.md` + `profile/crosslink-rules.md` — перелинковка **только на посты Telegram**.
+
+При `publish: yes` → **только** одно сообщение в канале (обложка + текст):
+
+```bash
+python scripts/send-telegram-post.py --topic {id} --publish
+```
+
+Скрипт по умолчанию: `--delivery link_preview` (один пост, превью обложки над текстом).  
+**Запрещено** для публикации в каналы: `--delivery photo_then_text` (два сообщения — фото отдельно, текст отдельно).  
+Gate после publish: в `telegram-publish-log.json` должно быть `"delivery": "link_preview_single_message"`, один `message_id` на канал.
+
+### Шаг 3 — ВК профиль
+
+Task `posts-emdr-vk-writer` (режим **profile**) → рерайт `vk-profile-post.md`. Контракт: `profile/vk-post-prompt.md`.  
+Перелинковка: только `vk-profile-posts-registry.md`. VK→VK: `[https://vk.com/wall…|здесь]`. Сайт/TG: полный URL.
+
+**Обложка** (один раз на оба VK-шага): `python scripts/send-vk-post.py --topic {id} --upload-cover`
+
+При `publish: yes` → MCP `vk_create_post_with_photo`, `publish_location: personal`. **Gate:** `📸 Загружено фото`.
+
+### Шаг 4 — ВК группа
+
+Task `posts-emdr-vk-writer` (режим **group**) → **отдельный** рерайт `vk-group-post.md` (не копипаст профиля).  
+Перелинковка: только `vk-group-posts-registry.md`. `group_id: "224685309"`, `from_group: true`.
+
+При `publish: yes` → MCP `vk_create_post_with_photo`, `publish_location: group`. **Gate:** `📸 Загружено фото`.
+
+После обоих VK-постов: `python scripts/send-vk-post.py --topic {id} --delete-cover`
+
+### Шаг 5 — Facebook (Zernio)
+
+Task `posts-emdr-facebook-writer` → **рерайт**.  
+Перелинковка: `profile/facebook-posts-registry.md`.
+
+При `publish: yes` → `python scripts/publish-zernio-post.py --topic {id}`.  
+**Не трогать** Макс / Telegram / VK.
+
+### Шаг 6 — b17.ru
+
+Рерайт `b17-blog-post.md` по `profile/b17-blog-post-prompt.md` (**1000–1600** знаков, без ссылок в тексте).  
+Обложка **inline в TinyMCE** (не только анонс).
+
+```bash
+python scripts/publish-b17-blog.py --topic {id}
+```
+
+Gate: форма заполнена, `b17-publish-prep.json`. Опционально `--submit` для автоклика «Сохранить».
+
+### Шаг 7 — TenChat
+
+Рерайт `tenchat-post.md` по `profile/tenchat-post-prompt.md` (**1800–2200** знаков).  
+Обложка через **скрепку** в редакторе.
+
+```bash
+python scripts/publish-tenchat-post.py --topic {id}
+```
+
+Gate: форма заполнена, `tenchat-publish-prep.json`. Опционально `--submit` для автоклика «Опубликовать».
+
+### Шаг 8 — Закрытие
+
+- Пометить тему `published` + дата в `short-blog-queue.md` / `short-blog-published.md`
+- `publish-log.md` в output
+- Обновить реестры платформ (`max`, `telegram`, `vk-profile`, `vk-group`, `facebook`)
+- Fragment шага: `incident_report:` (`shared/subagent-end-of-task-contract.md`)
+- Handoff: `=== POSTS EMDR DONE ===`
+
+### Шаг 9 — Fixic (post-run)
+
+После `=== POSTS EMDR DONE ===` или терминального blocker:
+
+1. `python scripts/incident_queue.py --project-root .`
+2. Если `OPEN_INCIDENTS=1` → **Task(`posts-emdr-fixic`)**  
+   Fallback: **Task(`generalPurpose`)** + `agents/posts-emdr-fixic.md` + `skills/posts-emdr-fixic/SKILL.md`
+3. Не начинать следующую тему с open blocker-incidents без OK пользователя
+
+| Task | Роль |
+|------|------|
+| `posts-emdr-fixic` | Post-run: incidents → правки skills/scripts/prompts/pitfalls |
+
+## CTA (обязательно в каждом посте)
+
+- Ссылки на страницу темы и EMDR — с `?utm_source` платформы (`profile/utm-sources.md`)
+- **Перед вопросом в конце:** «Записаться на бесплатную пробную сессию…» (см. ниже)
+- **ВК:** перелинковка `[wall_url|здесь]`; CTA — `на моем сайте: {url}` и `в ЛС: https://t.me/natalyamorozovaa` (без якоря «ТУТ»)
+- Макс ЛС: `https://max.ru/se13417616_biz/AZ9H9rFePFc`; остальные: `https://t.me/natalyamorozovaa`
+- При тревоге/травме: EMDR-блок по `profile/emdr-evidence.md` + ссылка [ТУТ](https://morozovanatalia.ru/emdr-therapy) с UTM
+- Объём поста Макс: **3500–3800** символов (`profile/max-post-prompt.md`)
+
+## Запреты
+
+- НЕ Ядрышко/Core для старта
+- НЕ просить пользователя «скопируйте example в local» — агент создаёт `max.env.local`, `runware.env.local` сам
+- НЕ вызывать Runware API без согласованного пайплайна short-blog (обложка на каждый пост — автоматически)
+- НЕ генерировать обложку повторно на шагах TG/VK/FB/b17/TenChat
+- НЕ завершать fragment без `incident_report:` (см. `shared/subagent-end-of-task-contract.md`)
+- НЕ пропускать Fixic gate при open incidents в `pipeline-fix-queue.md`
+- НЕ публиковать без `cover.png` с этапа MAX
+- НЕ использовать Zernio для Макс, Telegram, VK — только Facebook Page
+- НЕ LinkedIn — аккаунт заблокирован
+- НЕ эзотерика вместо EMDR-науки
+- НЕ публиковать Telegram с `--delivery photo_then_text` — только `link_preview` (одно сообщение)
+- НЕ удалять и не перепубликовывать уже вышедшие посты в соцсетях без явной просьбы пользователя
+
+## Связь с Excalibur Blog
+
+Плагин: `/Users/natala/.cursor/plugins/local/excalibur-blog`  
+Переиспользуем: cover style, human voice gate, promotion patterns.  
+Не переиспользуем: WP publish chain, utility gate, scout, 8500-char articles — unless user asks.
