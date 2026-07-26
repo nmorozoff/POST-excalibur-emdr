@@ -39,3 +39,9 @@ a set of **stdlib-only Python 3 CLI scripts** in `scripts/`, orchestrated by Cur
   cover first on a fresh checkout.
 - **b17 + TenChat (phase 3) need a local Undetectable Browser** on the operator's Mac (`127.0.0.1:25325`);
   they are skipped in cloud, and `publish-topic.py` writes `output/{topic}/browser-local-handoff.md` instead.
+- **Passive-mode FTP data transfers are blocked from the cloud pod** (observed `curl (25) 425` on upload
+  while auth/control succeeds), and `morozovanatalia.ru` returns a soft `200` for missing paths, so a
+  `200` check alone does not prove a cover was uploaded. Combined with the macOS-`sips` requirement above,
+  treat the `send-vk-post.py --upload-cover` site-hosting path as **local-Mac-only**.
+- **Runware cover generation must not be run as a test/diagnostic** (`scripts/runware-cover.py` docstring +
+  orchestrator rules); only generate covers as part of an agreed publish run.
