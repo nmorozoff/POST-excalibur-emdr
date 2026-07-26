@@ -44,7 +44,13 @@ def run_preflight(*, strict: bool = True) -> dict:
     )
     checks["telegram"]["channels_configured"] = has_channels
 
-    checks["vk"] = _check_file("vk.env.local", ["VK_ACCESS_TOKEN", "VK_GROUP_ID"])
+    checks["vk_token"] = _check_file("vk.env.local", ["VK_ACCESS_TOKEN"])
+    checks["vk_group"] = _check_file("vk.env.local", ["VK_GROUP_ID"])
+    vk_via_mcp = not checks["vk_token"]["ok"] and checks["vk_group"]["ok"]
+    checks["vk"] = {
+        "ok": checks["vk_token"]["ok"] or vk_via_mcp,
+        "mode": "api" if checks["vk_token"]["ok"] else ("mcp" if vk_via_mcp else "missing"),
+    }
     checks["zernio"] = _check_file(
         "zernio.env.local",
         ["ZERNIO_API_KEY", "ZERNIO_FACEBOOK_ACCOUNT_ID"],
@@ -77,16 +83,20 @@ def run_preflight(*, strict: bool = True) -> dict:
         "note": "b17/TenChat need local Undetectable; skipped in cloud if unreachable",
     }
 
+    script_platforms = ("max", "telegram", "zernio", "runware", "ftp")
     auto_ok = all(
         checks[p]["ok"]
-        for p in ("max", "telegram", "vk", "zernio", "runware", "ftp")
+        for p in script_platforms
     ) and checks["telegram"].get("channels_configured") and checks["reference_image"]["ok"]
 
     report = {
         "runtime": "cloud" if is_cloud_runtime() else "local",
         "checks": checks,
         "ready_for_auto_publish": auto_ok,
-        "auto_platforms": list(AUTO_PLATFORMS),
+        "vk_publish_mode": checks["vk"].get("mode", "missing"),
+        "vk_mcp_required_after_scripts": checks["vk"].get("mode") == "mcp",
+        "auto_platforms": ["max", "telegram", "facebook"],
+        "vk_platform": "mcp" if checks["vk"].get("mode") == "mcp" else "script",
         "browser_platforms_deferred": not checks["undetectable"]["ok"],
     }
 

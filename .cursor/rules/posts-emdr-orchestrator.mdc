@@ -43,20 +43,16 @@ Handoff runtime: `.cursor/posts-emdr-handoff.md`
 
 ## Cloud Agent (изолированная среда)
 
-**Секреты не в git** — только [Cursor Cloud Secrets](https://cursor.com/dashboard/cloud-agents). См. `posts-emdr-memory/CLOUD-SETUP.md`.
+См. `posts-emdr-memory/profile/cloud-publish-phases.md` и `CLOUD-SETUP.md`.
 
-Перед публикацией в cloud:
+**3 фазы:** (1) скрипты cloud: Макс/TG/FB + handoff, (2) **MCP mcp-kv** → VK, (3) **локально Mac** → b17/TenChat (Undetectable).
+
+`VK_ACCESS_TOKEN` не нужен. MCP mcp-kv — в Dashboard automation.
 
 ```bash
-python3 scripts/materialize_cloud_env.py --check
 python3 scripts/publish-topic.py --topic {id}
+# затем MCP VK по vk-mcp-handoff.json
 ```
-
-- VK: `scripts/vk_publish.py` (без MCP)
-- Обложка: Runware + `assets/reference/portrait.jpg` в репо
-- b17/TenChat: только если Undetectable доступен в pod; иначе `deferred`
-
-Install hook: `.cursor/environment.json` → `materialize_cloud_env.py`
 
 ## Пайплайн (одна тема)
 

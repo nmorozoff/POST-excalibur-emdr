@@ -26,9 +26,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from posts_emdr_env import (
     PROJECT_ROOT,
+    has_vk_access_token,
     materialize_env_files,
     reference_image_path,
     undetectable_reachable,
+    vk_group_id,
 )
 from cloud_preflight import run_preflight
 
@@ -87,6 +89,76 @@ def ensure_cover(topic: str) -> dict:
     return {"status": "generated", "path": str(cover), "detail": step_json(proc)}
 
 
+def _extract_vk_post(md_path: Path) -> str:
+    import re
+
+    text = md_path.read_text(encoding="utf-8")
+    m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
+    if not m:
+        raise SystemExit(f"Cannot parse post from {md_path}")
+    return m.group(1).strip()
+
+
+def write_vk_mcp_handoff(topic: str, photo_url: str) -> Path:
+    topic_dir = MEMORY / "output" / topic
+    handoff = {
+        "topic": topic,
+        "method": "mcp-kv",
+        "tool": "vk_create_post_with_photo",
+        "cover_public_url": photo_url,
+        "instructions": "posts-emdr-memory/profile/cloud-publish-phases.md",
+        "calls": [
+            {
+                "publish_location": "personal",
+                "from_group": False,
+                "message": _extract_vk_post(topic_dir / "vk-profile-post.md"),
+            },
+            {
+                "publish_location": "group",
+                "from_group": True,
+                "group_id": vk_group_id(),
+                "message": _extract_vk_post(topic_dir / "vk-group-post.md"),
+            },
+        ],
+    }
+    path = topic_dir / "vk-mcp-handoff.json"
+    path.write_text(json.dumps(handoff, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return path
+
+
+def write_browser_local_handoff(topic: str) -> Path:
+    topic_dir = MEMORY / "output" / topic
+    body = f"""# Browser publish — локально (b17 + TenChat)
+
+Тема: `{topic}`
+
+Cloud pod **не публикует** b17/TenChat — нужен **Undetectable Browser** на Mac.
+
+## Перед запуском
+
+1. Undetectable запущен (`http://127.0.0.1:25325`)
+2. Profile1 залогинен на b17 и TenChat
+3. `cover.png` есть в `output/{topic}/`
+
+## Команды
+
+```bash
+cd "{PROJECT_ROOT}"
+python3 scripts/publish-b17-blog.py --topic {topic} --submit
+python3 scripts/publish-tenchat-post.py --topic {topic} --submit
+```
+
+Без `--submit` — только заполнение формы, Save/Publish вручную.
+
+## После публикации
+
+Обновить реестры и `short-blog-queue.md` (если это последние платформы).
+"""
+    path = topic_dir / "browser-local-handoff.md"
+    path.write_text(body, encoding="utf-8")
+    return path
+
+
 def publish_topic(
     topic: str,
     *,
@@ -139,8 +211,11 @@ def publish_topic(
         check=True,
     )
     log["steps"]["vk_upload"] = step_json(vk_upload)
+    vk_prep = json.loads((MEMORY / "output" / topic / "vk-publish-prep.json").read_text(encoding="utf-8"))
+    photo_url = vk_prep.get("cover_public_url", "")
 
-    if not dry_run:
+    use_vk_api = has_vk_access_token() and not dry_run
+    if use_vk_api:
         log["steps"]["vk_profile"] = step_json(
             run(
                 [
@@ -167,6 +242,17 @@ def publish_topic(
             )
         )
         run([sys.executable, str(SCRIPTS / "send-vk-post.py"), "--topic", topic, "--delete-cover"])
+        log["steps"]["vk_mode"] = "api"
+    elif not dry_run and photo_url:
+        handoff_path = write_vk_mcp_handoff(topic, photo_url)
+        log["steps"]["vk_mode"] = "mcp_handoff"
+        log["steps"]["vk_mcp_handoff"] = str(handoff_path)
+        log["mcp_next"] = (
+            "Cloud Agent: MCP vk_create_post_with_photo ×2 по vk-mcp-handoff.json, "
+            "затем send-vk-post.py --delete-cover"
+        )
+    else:
+        log["steps"]["vk_mode"] = "dry_run_or_no_cover"
 
     log["steps"]["facebook"] = step_json(
         run(
@@ -192,11 +278,19 @@ def publish_topic(
             run([sys.executable, str(SCRIPTS / "publish-tenchat-post.py"), "--topic", topic, *submit])
         )
 
+    deferred: list[str] = []
+    if not undetectable_ok:
+        deferred.extend(["b17", "tenchat"])
+        if not dry_run:
+            log["steps"]["browser_local_handoff"] = str(write_browser_local_handoff(topic))
+    if log.get("steps", {}).get("vk_mode") == "mcp_handoff":
+        deferred.append("vk_mcp")
+
     if not dry_run and undetectable_ok:
         log["status"] = "published_all"
     elif not dry_run:
-        log["status"] = "published_auto_platforms"
-        log["deferred"] = ["b17", "tenchat"]
+        log["status"] = "published_scripts_partial"
+        log["deferred"] = deferred
     else:
         log["status"] = "dry_run"
 

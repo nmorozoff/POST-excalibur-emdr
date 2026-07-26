@@ -1,46 +1,44 @@
 # Posts EMDR — Cloud Agent setup
 
-Полная автоматизация в изолированной среде **без MCP** и **без локальных `.env.local` в git**.
+Три фазы: см. **`profile/cloud-publish-phases.md`**.
 
-## 1. Cursor Cloud Secrets
+## 1. Cursor Cloud Secrets + MCP
 
-Откройте [cursor.com/dashboard/cloud-agents](https://cursor.com/dashboard/cloud-agents) → ваш Environment → **Secrets**.
+**Secrets:** [cursor.com/dashboard/cloud-agents](https://cursor.com/dashboard/cloud-agents) → Runtime Secrets.
 
-Добавьте переменные как **Runtime Secrets** (тип `Runtime Secret` — не попадут в логи агента).
+**MCP:** Dashboard → **Integrations & MCP** → добавить **mcp-kv.ru** (как в локальном Cursor).  
+`VK_ACCESS_TOKEN` **не нужен** — VK публикуется через MCP на фазе 2.
 
-### Обязательные (автопубликация Макс → TG → VK → Facebook)
+### Обязательные Secrets (фаза 1 — скрипты)
 
 | Переменная | Назначение |
 |------------|------------|
 | `MAX_BOT_TOKEN` | API Макс |
 | `MAX_CHAT_ID` | ID канала Макс |
 | `TELEGRAM_BOT_TOKEN` | Бот Telegram |
-| `TELEGRAM_CHANNEL_CHAT_IDS` | ID каналов через запятую |
+| `TELEGRAM_CHANNEL_CHAT_IDS` | Каналы через запятую |
 | `TELEGRAM_CHANNEL_UTM_SOURCES` | `tg1,tg2,tg3` |
-| `VK_ACCESS_TOKEN` | VK API (wall, photos) |
-| `VK_GROUP_ID` | `224685309` |
-| `ZERNIO_API_KEY` | Facebook через Zernio |
+| `ZERNIO_API_KEY` | Facebook |
 | `ZERNIO_FACEBOOK_ACCOUNT_ID` | ID страницы FB |
-| `RUNWARE_API_KEY` | Обложки Runware i2i |
-| `FTP_SERVER` | FTP Beget |
-| `FTP_USERNAME` | FTP логин |
-| `FTP_PASSWORD` | FTP пароль |
-| `FTP_SERVER_DIR` | `/public_html/` |
+| `RUNWARE_API_KEY` | Обложки |
+| `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_SERVER_DIR` | Обложка для VK/TG preview |
 
-Шаблоны значений: `posts-emdr-memory/*.env.example`
+Список имён: `cloud-secrets-checklist.txt`
 
-### Опционально (b17 + TenChat)
+### VK (фаза 2 — MCP, не Secrets)
 
-Только если в cloud pod доступен **Undetectable Browser** (обычно нет):
+После `publish-topic.py` агент читает `output/{topic}/vk-mcp-handoff.json` и вызывает `vk_create_post_with_photo` ×2.
 
-| Переменная | Назначение |
-|------------|------------|
-| `UNDETECTABLE_BASE_URL` | `http://127.0.0.1:25325` |
-| `UNDETECTABLE_PROFILE_ID` | ID профиля |
-| `B17_COMPOSE_URL` | URL формы b17 |
-| `TENCHAT_COMPOSE_URL` | URL редактора TenChat |
+### b17 + TenChat (фаза 3 — только Mac)
 
-Без Undetectable: публикуются **5 платформ**, b17/TenChat — `deferred`.
+**Не публикуются из cloud.** Нужен Undetectable на вашем Mac:
+
+```bash
+python3 scripts/publish-b17-blog.py --topic {id} --submit
+python3 scripts/publish-tenchat-post.py --topic {id} --submit
+```
+
+Handoff: `output/{topic}/browser-local-handoff.md`
 
 ## 2. Environment install
 

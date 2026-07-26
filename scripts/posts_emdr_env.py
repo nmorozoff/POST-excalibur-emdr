@@ -144,6 +144,21 @@ def reference_image_path() -> Path:
     return Path(raw) if raw else DEFAULT_REFERENCE
 
 
+def has_vk_access_token() -> bool:
+    try:
+        data = load_env("vk.env.local")
+    except SystemExit:
+        return False
+    return bool(data.get("VK_ACCESS_TOKEN", "").strip())
+
+
+def vk_group_id() -> str:
+    try:
+        return load_env("vk.env.local").get("VK_GROUP_ID", "224685309")
+    except SystemExit:
+        return "224685309"
+
+
 def is_cloud_runtime() -> bool:
     return bool(
         os.environ.get("CURSOR_CLOUD")
