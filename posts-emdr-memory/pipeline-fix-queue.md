@@ -326,3 +326,31 @@ files_changed:
 checks_run:
 - py_compile all new scripts
 
+---
+
+## INC-20260726-0700-cloud-secrets-not-configured
+status: open
+run_date: 2026-07-26
+role: director
+topic: sb-03-body-before-mind
+severity: blocker
+category: env
+
+### What went wrong
+- Cron automation 2026-07-26: `materialize_cloud_env.py --check` → все секреты missing.
+- Контент sb-03 готов, но cover.png и публикация на 5+ платформ невозможны.
+
+### How the agent recovered this run
+- Полный контент создан в `output/sb-03-body-before-mind/`.
+- publish-log.md с инструкцией для повторного запуска.
+
+### Durable fix needed before next run
+- Владелец добавляет Runtime Secrets в Cloud Environment (см. CLOUD-SETUP.md, checklist).
+
+### Suggested files to inspect/change
+- posts-emdr-memory/CLOUD-SETUP.md
+- .cursor/environment.json
+
+### Secrets
+- MAX_BOT_TOKEN, MAX_CHAT_ID, TELEGRAM_BOT_TOKEN, TELEGRAM_CHANNEL_CHAT_IDS, VK_ACCESS_TOKEN, VK_GROUP_ID, ZERNIO_API_KEY, ZERNIO_FACEBOOK_ACCOUNT_ID, RUNWARE_API_KEY, FTP_* — не настроены в cloud environment
+

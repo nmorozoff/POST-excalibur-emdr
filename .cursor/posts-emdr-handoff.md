@@ -1,40 +1,41 @@
 # Posts EMDR — handoff
 
-status: done
-started_at: 2026-07-25
-completed_at: 2026-07-25
+status: blocked
+started_at: 2026-07-26
+completed_at:
 
 ## Текущая тема
 
-topic_id: sb-02-anxiety-as-responsibility
-title: Как тревога маскируется под «просто ответственность» — гиперконтроль
+topic_id: sb-03-body-before-mind
+title: Момент, когда тело узнаёт о тревоге раньше головы
 post_type: short-blog · наблюдение→инсайт
 site_url: https://morozovanatalia.ru/anxiety
 mode: full
 publish: yes
-queue: topics/short-blog-queue.md (#2 MSP → published)
+queue: topics/short-blog-queue.md (#3 MSP · in_progress)
 
 ## Прогресс
 
 - [x] 0 topic picked
-- [x] 1 MAX — https://max.ru/se13417616_biz/AZ-YmFZ8fEc
-- [x] 2 Telegram — @morozova_emdr/606, @nmorozova_emdr/108, @natalia_morozova_psy/2020
-- [x] 3 VK profile — https://vk.com/wall218367867_648
-- [x] 4 VK group — https://vk.com/wall-224685309_149
-- [x] 5 Facebook — https://www.facebook.com/632301483303094_122180101508837712
-- [~] 6 b17 — форма заполнена (обложка + Save вручную)
-- [~] 7 TenChat — форма заполнена (обложка + Publish вручную)
-- [x] 8 registries + queue updated
+- [x] 1 MAX — контент + cover-prompt готовы; **publish blocked** (нет RUNWARE + MAX secrets)
+- [x] 2 Telegram — контент готов; publish blocked
+- [x] 3 VK profile — контент готов; publish blocked
+- [x] 4 VK group — контент готов; publish blocked
+- [x] 5 Facebook — контент готов; publish blocked
+- [x] 6 b17 — контент готов; deferred (Undetectable + secrets)
+- [x] 7 TenChat — контент готов; deferred (Undetectable + secrets)
+- [ ] 8 registries + queue updated (после publish)
 
-output_dir: posts-emdr-memory/output/sb-02-anxiety-as-responsibility/
+output_dir: posts-emdr-memory/output/sb-03-body-before-mind/
 
-=== POSTS EMDR DONE (auto platforms) ===
+## BLOCKER
 
-Следующая в очереди MSP: `sb-03-body-before-mind`
+`ready_for_auto_publish: false` — нет Cursor Cloud Secrets.  
+См. `posts-emdr-memory/CLOUD-SETUP.md`, incident `INC-20260726-0700-cloud-secrets-not-configured`.
+
+После Secrets:
+```bash
+python3 scripts/publish-topic.py --topic sb-03-body-before-mind
+```
 
 **Пайплайн:** без кружка Макс. Обложка Runware — автоматически.
-
-## Fixic (2026-07-25)
-
-Контур собран: `pipeline-fix-queue.md`, `shared/*`, `posts-emdr-fixic`, `scripts/incident_queue.py`.  
-8 INC из sb-01/sb-02 закрыты. `OPEN_INCIDENTS=0` — можно запускать **sb-03**.
