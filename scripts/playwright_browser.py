@@ -30,7 +30,8 @@ class _PlaywrightJs:
         self.page = page
 
     def run_js(self, _base_url: str, _profile_id: str, script: str, *, timeout: int = 30) -> None:
-        self.page.evaluate(script, timeout=timeout * 1000)
+        self.page.set_default_timeout(timeout * 1000)
+        self.page.evaluate(script)
 
 
 def _patch_undetectable_js(page: Any) -> Any:
@@ -192,8 +193,8 @@ def fill_tenchat_compose_playwright(
             try:
                 added = tenchat_add_topics("", "", topic_list)
                 filled.append(f"topics:{','.join(added)}")
-            except SystemExit:
-                filled.append("topics:failed")
+            except Exception:
+                filled.append("topics:skipped")
             if cover_path:
                 time.sleep(0.5)
                 cover_result = _tenchat_attach_cover_playwright(page, cover_path)

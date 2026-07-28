@@ -34,29 +34,26 @@ Gate: в ответе MCP — `📸 Загружено фото`.
 
 Обновить реестры: `vk-profile`, `vk-group`.
 
-## Фаза 3 — b17 + TenChat (Linux VPS, Playwright)
+## Фаза 3 — b17 + TenChat (гибрид Mac + VPS)
 
-В cloud pod **нет** браузера с сессиями. Публикация на **вашем Ubuntu VPS** (тот же, что CRM) — см. **`profile/browser-linux-vps-setup.md`**.
-
-### Worker на VPS (рекомендуется)
-
-Cloud пишет `browser-local-handoff.md` → VPS cron:
+**b17.ru блокирует IP VPS** (датацентр). **b17 + TenChat** — с Mac через Undetectable:
 
 ```bash
-git pull --ff-only
-python3 scripts/fetch-topic-cover.py --all-pending
-python3 scripts/publish-browser-deferred.py --submit
+./scripts/run-mac-browser-phase3.sh --pending
 ```
 
-`browser.env.local`: `BROWSER_BACKEND=playwright` + `linux-storage-state.json` (логин один раз).
+После cloud automation: в `output/{topic}/browser-local-handoff.md` — запустить скрипт на Mac (Profile1 в Undetectable).
 
-### Fallback: Mac + Undetectable
+### VPS (Playwright, опционально)
 
-`BROWSER_BACKEND=undetectable` — как раньше.
+Storage state: `export-playwright-storage-from-undetectable.py` → scp на VPS.  
+Cron TenChat: `scripts/run-linux-browser-worker.sh` (b17 на VPS пропускается при блокировке IP).
 
-### Устарело: Windows + Undetectable
+См. **`profile/browser-linux-vps-setup.md`**.
 
-См. `browser-vps-setup.md` — только если нет Linux.
+### Fallback: Mac + Undetectable (основной путь фазы 3)
+
+`BROWSER_BACKEND=undetectable` в `b17.env.local` / `tenchat.env.local`.
 
 ## Secrets для Cloud
 

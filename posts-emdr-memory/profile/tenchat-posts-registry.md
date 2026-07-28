@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-03-body-before-mind | 2026-07-28 | Момент, когда тело узнаёт о тревоге раньше головы | https://tenchat.ru/editor | https://morozovanatalia.ru/anxiety | tenchat,психология |
 | topic_id | дата | заголовок | tenchat_url | site_url | теги |
 |----------|------|-----------|-------------|----------|------|
 

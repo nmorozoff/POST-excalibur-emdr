@@ -47,7 +47,16 @@ PLAYWRIGHT_HEADLESS=1
 
 ## 3. Логин b17 + TenChat (один раз)
 
-**Вариант A — с Mac (проще):**
+**Вариант A — экспорт из Undetectable на Mac (рекомендуется, если Profile1 уже залогинен):**
+
+```bash
+# Profile1 запущен в Undetectable
+source .venv-browser/bin/activate   # Mac: python3 -m venv .venv-browser && pip install -r requirements-browser-linux.txt
+python3 scripts/export-playwright-storage-from-undetectable.py
+scp posts-emdr-memory/browser/linux-storage-state.json ubuntu@ВАШ_VPS:~/POST-excalibur-emdr/posts-emdr-memory/browser/
+```
+
+**Вариант B — ручной bootstrap (headed):**
 
 ```bash
 pip install -r requirements-browser-linux.txt
@@ -56,13 +65,24 @@ python3 scripts/browser_bootstrap_sessions.py --headed
 scp posts-emdr-memory/browser/linux-storage-state.json ubuntu@ВАШ_VPS:~/POST-excalibur-emdr/posts-emdr-memory/browser/
 ```
 
-**Вариант B — прямо на VPS:**
+**Вариант C — прямо на VPS (нужен дисплей/xvfb):**
 
 ```bash
 xvfb-run python3 scripts/browser_bootstrap_sessions.py --headed
 ```
 
 Файл `linux-storage-state.json` — **секрет** (cookies). В git не коммитить.
+
+### ⚠️ b17.ru блокирует IP VPS
+
+На VPS `195.209.210.45` b17 отдаёт «IP временно заблокирован». **b17 публикуется с Mac** через Undetectable:
+
+```bash
+./scripts/run-mac-browser-phase3.sh sb-03-body-before-mind
+# или после cloud: ./scripts/run-mac-browser-phase3.sh --pending
+```
+
+TenChat с VPS Playwright возможен (после storage state); при сбое тематик — тоже Mac phase 3.
 
 ## 4. Проверка
 

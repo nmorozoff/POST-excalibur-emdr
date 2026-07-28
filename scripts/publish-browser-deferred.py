@@ -74,6 +74,20 @@ def run_publish(topic: str, *, submit: bool) -> dict:
         if _log_status(log_path) == "published":
             result["steps"][key] = {"skipped": True, "reason": "already_published"}
             continue
+        if key == "b17":
+            b17_check = subprocess.run(
+                [sys.executable, str(SCRIPTS / "check-b17-ip-access.py")],
+                cwd=PROJECT_ROOT,
+                capture_output=True,
+                text=True,
+            )
+            if b17_check.returncode != 0:
+                result["steps"][key] = {
+                    "skipped": True,
+                    "reason": "b17_ip_blocked_on_host",
+                    "detail": (b17_check.stdout or b17_check.stderr)[-500:],
+                }
+                continue
         proc = subprocess.run(
             [sys.executable, str(SCRIPTS / script), "--topic", topic, *submit_args],
             cwd=PROJECT_ROOT,
