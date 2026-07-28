@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Полный цикл browser worker на Linux VPS (cron).
+# Полный автономный worker на Linux VPS (без Mac).
 set -euo pipefail
 
 ROOT="${POSTS_EMDR_ROOT:-$HOME/POST-excalibur-emdr}"
@@ -10,9 +10,20 @@ if [[ -f .venv-browser/bin/activate ]]; then
   source .venv-browser/bin/activate
 fi
 
-if [[ -d .git ]]; then
-  git pull --ff-only origin main 2>/dev/null || git pull --ff-only 2>/dev/null || true
+# Git pull (private repo — нужен github.env.local с GITHUB_TOKEN)
+if [[ -f posts-emdr-memory/github.env.local ]]; then
+  # shellcheck disable=SC1091
+  set -a
+  source posts-emdr-memory/github.env.local
+  set +a
+fi
+if [[ -d .git ]] && [[ -n "${GITHUB_TOKEN:-}" ]]; then
+  git pull "https://${GITHUB_TOKEN}@github.com/nmorozoff/POST-excalibur-emdr.git" main 2>/dev/null || \
+    git pull --ff-only origin main 2>/dev/null || true
+elif [[ -d .git ]]; then
+  git pull --ff-only origin main 2>/dev/null || true
 fi
 
+python3 scripts/browser_ensure_sessions.py --refresh
 python3 scripts/fetch-topic-cover.py --all-pending
 python3 scripts/publish-browser-deferred.py --submit --finish --git-push

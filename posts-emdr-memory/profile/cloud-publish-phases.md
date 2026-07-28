@@ -34,26 +34,27 @@ Gate: в ответе MCP — `📸 Загружено фото`.
 
 Обновить реестры: `vk-profile`, `vk-group`.
 
-## Фаза 3 — b17 + TenChat (гибрид Mac + VPS)
+## Фаза 3 — b17 + TenChat (VPS, без Mac)
 
-**b17.ru блокирует IP VPS** (датацентр). **b17 + TenChat** — с Mac через Undetectable:
+**Полная инструкция:** `profile/browser-autonomous-vps.md`
+
+Cloud после фаз 1–2:
+
+1. `git push` артефактов (`output/{topic}/`, handoff, реестры)
+2. Webhook на VPS:
 
 ```bash
-./scripts/run-mac-browser-phase3.sh --pending
+curl -fsS -X POST "http://195.209.210.45:8787/publish" \
+  -H "Authorization: Bearer $VPS_WEBHOOK_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"topic":"{topic_id}"}'
 ```
 
-После cloud automation: в `output/{topic}/browser-local-handoff.md` — запустить скрипт на Mac (Profile1 в Undetectable).
+Или cron на VPS подхватит за ≤10 мин.
 
-### VPS (Playwright, опционально)
+**На VPS обязательно:** `B17_PROXY_SERVER` (residential RU) — иначе b17 заблокирован.
 
-Storage state: `export-playwright-storage-from-undetectable.py` → scp на VPS.  
-Cron TenChat: `scripts/run-linux-browser-worker.sh` (b17 на VPS пропускается при блокировке IP).
-
-См. **`profile/browser-linux-vps-setup.md`**.
-
-### Fallback: Mac + Undetectable (основной путь фазы 3)
-
-`BROWSER_BACKEND=undetectable` в `b17.env.local` / `tenchat.env.local`.
+Mac (`run-mac-browser-phase3.sh`) — только fallback.
 
 ## Secrets для Cloud
 
@@ -70,10 +71,12 @@ Cron TenChat: `scripts/run-linux-browser-worker.sh` (b17 на VPS пропуск
 
 ```
 1. pending тема из short-blog-queue.md → контент всех платформ
-2. python3 scripts/materialize_cloud_env.py
-3. python3 scripts/publish-topic.py --topic {id} [--submit если remote Undetectable OK]
+2. python3 scripts/materialize_cloud_env.py --check
+3. python3 scripts/publish-topic.py --topic {id}
 4. MCP vk_create_post_with_photo ×2 по vk-mcp-handoff.json
-5. send-vk-post.py --delete-cover; update-post-registry
-6. Если browser-local-handoff.md — VPS worker или ручной Mac для b17/TenChat
-7. Закрыть очередь; обновить реестры b17/tenchat после VPS
+5. send-vk-post.py --delete-cover; update-post-registry (max/tg/vk/fb)
+6. git add + commit + push output/{id}/ и реестры
+7. curl VPS webhook: POST /publish {"topic":"{id}"} с VPS_WEBHOOK_SECRET
+   (или VPS cron подхватит за 10 мин)
+8. НЕ помечать published в очереди — это сделает VPS worker (--finish)
 ```

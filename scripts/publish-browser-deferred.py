@@ -84,10 +84,11 @@ def run_publish(topic: str, *, submit: bool) -> dict:
             if b17_check.returncode != 0:
                 result["steps"][key] = {
                     "skipped": True,
-                    "reason": "b17_ip_blocked_on_host",
-                    "detail": (b17_check.stdout or b17_check.stderr)[-500:],
+                    "reason": "b17_not_accessible",
+                    "detail": (b17_check.stdout or b17_check.stderr)[-800:],
                 }
-                continue
+                result["status"] = "failed"
+                return result
         proc = subprocess.run(
             [sys.executable, str(SCRIPTS / script), "--topic", topic, *submit_args],
             cwd=PROJECT_ROOT,
@@ -155,8 +156,21 @@ def main() -> None:
     if not browser_ready():
         raise SystemExit(
             "Browser backend недоступен. Linux: BROWSER_BACKEND=playwright + storage state. "
-            "См. posts-emdr-memory/profile/browser-linux-vps-setup.md"
+            "См. posts-emdr-memory/profile/browser-autonomous-vps.md"
         )
+
+    if not args.list and not args.dry_run:
+        session_proc = subprocess.run(
+            [sys.executable, str(SCRIPTS / "browser_ensure_sessions.py"), "--refresh"],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        if session_proc.returncode != 0:
+            raise SystemExit(
+                "Session check failed before publish:\n"
+                f"{session_proc.stdout}\n{session_proc.stderr}"
+            )
 
     pending = pending_topics(topic=args.topic)
     if args.list:

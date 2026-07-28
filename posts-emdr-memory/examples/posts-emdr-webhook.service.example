@@ -1,0 +1,14 @@
+[Unit]
+Description=Posts EMDR VPS webhook (phase 3 trigger)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/POST-excalibur-emdr
+EnvironmentFile=/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/browser.env.local
+ExecStart=/home/ubuntu/POST-excalibur-emdr/.venv-browser/bin/python3 scripts/vps-webhook-server.py --port 8787
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

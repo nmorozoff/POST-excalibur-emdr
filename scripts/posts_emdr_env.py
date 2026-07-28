@@ -67,7 +67,15 @@ ENV_SPECS: dict[str, list[str]] = {
         "BROWSER_BACKEND",
         "PLAYWRIGHT_STORAGE_STATE",
         "PLAYWRIGHT_HEADLESS",
+        "BROWSER_PROXY_SERVER",
+        "BROWSER_PROXY_USERNAME",
+        "BROWSER_PROXY_PASSWORD",
+        "B17_PROXY_SERVER",
+        "B17_PROXY_USERNAME",
+        "B17_PROXY_PASSWORD",
+        "VPS_WEBHOOK_SECRET",
     ],
+    "github.env.local": ["GITHUB_TOKEN"],
 }
 
 DEFAULT_REFERENCE = MEMORY / "assets" / "reference" / "portrait.jpg"

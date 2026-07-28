@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 from typing import Any
 
+from browser_playwright_utils import playwright_session
 from posts_emdr_env import playwright_storage_state_path
 from undetectable_browser import (
     B17_TITLE_SELECTOR,
@@ -49,6 +50,13 @@ def _restore_undetectable_js(original: Any) -> None:
     ub.run_js = original  # type: ignore[method-assign]
 
 
+def _b17_page_ready(page: Any) -> bool:
+    html = page.content().lower()
+    return "b17_guard" not in html and "временно заблокирован" not in html and (
+        page.query_selector(B17_TITLE_SELECTOR) is not None or "tinymce" in html
+    )
+
+
 def _tenchat_attach_cover_playwright(page: Any, cover_path: Path) -> dict[str, Any]:
     if not cover_path.exists():
         raise SystemExit(f"Cover not found: {cover_path}")
@@ -60,9 +68,9 @@ def _tenchat_attach_cover_playwright(page: Any, cover_path: Path) -> dict[str, A
   btn.click();
 })();"""
     )
-    page.wait_for_selector('input[type="file"]', timeout=8000)
+    page.wait_for_selector('input[type="file"]', timeout=15000)
     page.locator('input[type="file"]').first.set_input_files(str(jpeg))
-    page.wait_for_timeout(1500)
+    page.wait_for_timeout(2000)
     page.evaluate(
         """(() => {
   const imgs = [...document.querySelectorAll('#tc-editor img, .ql-editor img, [class*="attachment"] img')];
@@ -85,22 +93,21 @@ def fill_b17_compose_playwright(
     headless: bool = True,
 ) -> dict[str, Any]:
     state_path = storage_state or playwright_storage_state_path()
-    if not state_path.is_file():
-        raise SystemExit(
-            f"Playwright storage state not found: {state_path}. "
-            "Run: python3 scripts/browser_bootstrap_sessions.py"
-        )
-
-    from playwright.sync_api import sync_playwright
-
-    with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=headless)
-        context = browser.new_context(storage_state=str(state_path))
+    with playwright_session(storage_state=state_path, headless=headless, proxy_prefix="B17_") as (
+        _pw,
+        _browser,
+        context,
+    ):
         page = context.new_page()
         original = _patch_undetectable_js(page)
         try:
             page.goto(compose_url, wait_until="domcontentloaded", timeout=120_000)
             time.sleep(pause_sec)
+            if not _b17_page_ready(page):
+                raise SystemExit(
+                    "b17 compose not ready (IP block or session expired). "
+                    "Set B17_PROXY_SERVER in browser.env.local or refresh storage state."
+                )
             set_field_value_js("", "", B17_TITLE_SELECTOR, title)
             time.sleep(0.5)
             b17_apply_form_meta("", "", section_value="1")
@@ -124,7 +131,6 @@ def fill_b17_compose_playwright(
                 submitted = True
                 time.sleep(3)
             post_url = page.url
-            context.storage_state(path=str(state_path))
             return {
                 "status": "published" if submitted else "ready_for_publish",
                 "platform": "b17",
@@ -139,8 +145,6 @@ def fill_b17_compose_playwright(
             }
         finally:
             _restore_undetectable_js(original)
-            context.close()
-            browser.close()
 
 
 def fill_tenchat_compose_playwright(
@@ -150,26 +154,28 @@ def fill_tenchat_compose_playwright(
     title: str,
     body: str,
     topics: list[str] | None = None,
-    pause_sec: float = 5.0,
+    pause_sec: float = 6.0,
     use_code_block: bool = False,
     cover_path: Path | None = None,
     auto_submit: bool = False,
     headless: bool = True,
 ) -> dict[str, Any]:
     state_path = storage_state or playwright_storage_state_path()
-    if not state_path.is_file():
-        raise SystemExit(f"Playwright storage state not found: {state_path}")
-
-    from playwright.sync_api import sync_playwright
-
-    with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=headless)
-        context = browser.new_context(storage_state=str(state_path))
+    with playwright_session(storage_state=state_path, headless=headless, proxy_prefix="") as (
+        _pw,
+        _browser,
+        context,
+    ):
         page = context.new_page()
         original = _patch_undetectable_js(page)
         try:
             page.goto(compose_url, wait_until="domcontentloaded", timeout=120_000)
             time.sleep(pause_sec)
+            if "auth/sign-in" in page.url.lower():
+                raise SystemExit(
+                    "TenChat session expired (SMS login required). "
+                    "Re-export storage state from Undetectable once, then scp to VPS."
+                )
             filled: list[str] = []
             if use_code_block:
                 page.evaluate("document.querySelector('button.ql-code-block')?.click();")
@@ -191,6 +197,7 @@ def fill_tenchat_compose_playwright(
             filled.append("title")
             topic_list = topics or ["Саморазвитие"]
             try:
+                page.wait_for_selector('input[placeholder*="тематик"]', timeout=8000)
                 added = tenchat_add_topics("", "", topic_list)
                 filled.append(f"topics:{','.join(added)}")
             except Exception:
@@ -205,7 +212,6 @@ def fill_tenchat_compose_playwright(
                 submitted = True
                 time.sleep(4)
             post_url = page.url
-            context.storage_state(path=str(state_path))
             return {
                 "status": "published" if submitted else "ready_for_publish",
                 "platform": "tenchat",
@@ -221,8 +227,6 @@ def fill_tenchat_compose_playwright(
             }
         finally:
             _restore_undetectable_js(original)
-            context.close()
-            browser.close()
 
 
 def playwright_deps_ok() -> bool:
