@@ -308,7 +308,7 @@ def main() -> None:
         return
 
     if args.publish:
-        chat_raw = env.get("MAX_CHANNEL_CHAT_ID", "")
+        chat_raw = env.get("MAX_CHANNEL_CHAT_ID") or env.get("MAX_CHAT_ID", "")
         mode = "publish"
         use_user_id = None
     else:
