@@ -29,13 +29,14 @@
 
 После `publish-topic.py` агент читает `output/{topic}/vk-mcp-handoff.json` и вызывает `vk_create_post_with_photo` ×2.
 
-### b17 + TenChat (фаза 3 — только Mac)
+### b17 + TenChat (фаза 3 — Linux VPS, Playwright)
 
-**Не публикуются из cloud.** Нужен Undetectable на вашем Mac:
+**Не из cloud pod.** На Ubuntu VPS (можно тот же, что CRM):
+
+Подробно: **`profile/browser-linux-vps-setup.md`**
 
 ```bash
-python3 scripts/publish-b17-blog.py --topic {id} --submit
-python3 scripts/publish-tenchat-post.py --topic {id} --submit
+python3 scripts/publish-browser-deferred.py --submit   # на VPS по cron
 ```
 
 Handoff: `output/{topic}/browser-local-handoff.md`

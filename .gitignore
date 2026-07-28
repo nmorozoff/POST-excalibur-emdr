@@ -1,9 +1,13 @@
 # Secrets — never commit
 **/*.env.local
 posts-emdr-memory/*.env.local
+posts-emdr-memory/_TEMP-cloud-secrets-export.txt
 
 # Generated covers (large binaries)
 posts-emdr-memory/output/**/cover.png
+
+# Playwright session cookies — never commit
+posts-emdr-memory/browser/*.json
 
 # Python
 __pycache__/

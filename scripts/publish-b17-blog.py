@@ -14,7 +14,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from undetectable_browser import B17_COMPOSE_URL_DEFAULT, fill_b17_compose, load_env_file, strip_urls_from_text
+from browser_backend import default_b17_compose_url, publish_b17
+from posts_emdr_env import browser_backend_name
+from undetectable_browser import apply_undetectable_env, load_env_file, strip_urls_from_text
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ENV_FILE = PROJECT_ROOT / "posts-emdr-memory" / "b17.env.local"
@@ -74,14 +76,15 @@ def main() -> None:
         return
 
     env = load_env_file(ENV_FILE)
-    profile_id = env.get("UNDETECTABLE_PROFILE_ID", "")
-    if not profile_id:
-        raise SystemExit(f"Set UNDETECTABLE_PROFILE_ID in {ENV_FILE} (see {ENV_EXAMPLE.name})")
+    apply_undetectable_env(env)
+    if browser_backend_name() == "undetectable":
+        profile_id = env.get("UNDETECTABLE_PROFILE_ID", "")
+        if not profile_id:
+            raise SystemExit(f"Set UNDETECTABLE_PROFILE_ID in {ENV_FILE} (see {ENV_EXAMPLE.name})")
 
-    browser_result = fill_b17_compose(
-        base_url=env.get("UNDETECTABLE_BASE_URL", "http://127.0.0.1:25325"),
-        profile_id=profile_id,
-        compose_url=env.get("B17_COMPOSE_URL", B17_COMPOSE_URL_DEFAULT),
+    browser_result = publish_b17(
+        env=env,
+        compose_url=default_b17_compose_url(env),
         title=title,
         body=body,
         cover_path=cover if cover.exists() else None,

@@ -11,7 +11,7 @@ Steps:
   2. cloud_preflight
   3. runware cover (if missing)
   4. Max → Telegram → VK (FTP + API) → Facebook
-  5. b17 + TenChat if Undetectable reachable
+  5. b17 + TenChat if browser backend ready (Playwright VPS or Undetectable)
 """
 
 from __future__ import annotations
@@ -24,12 +24,12 @@ from datetime import date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from browser_backend import browser_ready
 from posts_emdr_env import (
     PROJECT_ROOT,
     has_vk_access_token,
     materialize_env_files,
     reference_image_path,
-    undetectable_reachable,
     vk_group_id,
 )
 from cloud_preflight import run_preflight
@@ -128,19 +128,27 @@ def write_vk_mcp_handoff(topic: str, photo_url: str) -> Path:
 
 def write_browser_local_handoff(topic: str) -> Path:
     topic_dir = MEMORY / "output" / topic
-    body = f"""# Browser publish — локально (b17 + TenChat)
+    body = f"""# Browser publish — b17 + TenChat (Linux VPS)
 
 Тема: `{topic}`
 
-Cloud pod **не публикует** b17/TenChat — нужен **Undetectable Browser** на Mac.
+Cloud не опубликовал b17/TenChat — на VPS должен отработать **Playwright worker**.
 
-## Перед запуском
+## Linux VPS (рекомендуется)
 
-1. Undetectable запущен (`http://127.0.0.1:25325`)
-2. Profile1 залогинен на b17 и TenChat
-3. `cover.png` есть в `output/{topic}/`
+См. `posts-emdr-memory/profile/browser-linux-vps-setup.md`
 
-## Команды
+```bash
+cd ~/POST-excalibur-emdr
+git pull --ff-only
+source .venv-browser/bin/activate
+python3 scripts/fetch-topic-cover.py --topic {topic}
+python3 scripts/publish-browser-deferred.py --topic {topic} --submit
+```
+
+Или дождаться cron (~10 мин).
+
+## Mac (fallback, Undetectable)
 
 ```bash
 cd "{PROJECT_ROOT}"
@@ -148,11 +156,9 @@ python3 scripts/publish-b17-blog.py --topic {topic} --submit
 python3 scripts/publish-tenchat-post.py --topic {topic} --submit
 ```
 
-Без `--submit` — только заполнение формы, Save/Publish вручную.
-
 ## После публикации
 
-Обновить реестры и `short-blog-queue.md` (если это последние платформы).
+Обновить реестры b17/tenchat и `short-blog-queue.md`.
 """
     path = topic_dir / "browser-local-handoff.md"
     path.write_text(body, encoding="utf-8")
@@ -267,9 +273,9 @@ def publish_topic(
         )
     )
 
-    undetectable_ok = undetectable_reachable() and not skip_browser
-    log["steps"]["browser_platforms"] = {"undetectable": undetectable_ok, "skipped": not undetectable_ok}
-    if undetectable_ok and not dry_run:
+    browser_ok = browser_ready() and not skip_browser
+    log["steps"]["browser_platforms"] = {"ready": browser_ok, "skipped": not browser_ok}
+    if browser_ok and not dry_run:
         submit = ["--submit"] if submit_browser else []
         log["steps"]["b17"] = step_json(
             run([sys.executable, str(SCRIPTS / "publish-b17-blog.py"), "--topic", topic, *submit])
@@ -279,14 +285,14 @@ def publish_topic(
         )
 
     deferred: list[str] = []
-    if not undetectable_ok:
+    if not browser_ok:
         deferred.extend(["b17", "tenchat"])
         if not dry_run:
             log["steps"]["browser_local_handoff"] = str(write_browser_local_handoff(topic))
     if log.get("steps", {}).get("vk_mode") == "mcp_handoff":
         deferred.append("vk_mcp")
 
-    if not dry_run and undetectable_ok:
+    if not dry_run and browser_ok:
         log["status"] = "published_all"
     elif not dry_run:
         log["status"] = "published_scripts_partial"

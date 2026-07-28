@@ -1,4 +1,4 @@
 {
-  "install": "python3 scripts/materialize_cloud_env.py",
+  "install": "pip install -q Pillow && python3 scripts/materialize_cloud_env.py",
   "terminals": []
 }

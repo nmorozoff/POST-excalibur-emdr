@@ -11,11 +11,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from posts_emdr_env import (
     MEMORY,
     PROJECT_ROOT,
+    browser_backend_name,
+    browser_headless,
     is_cloud_runtime,
     load_env,
     reference_image_path,
-    undetectable_reachable,
+    playwright_storage_state_path,
 )
+from browser_backend import browser_ready
 
 AUTO_PLATFORMS = ("max", "telegram", "vk", "facebook")
 BROWSER_PLATFORMS = ("b17", "tenchat")
@@ -60,10 +63,30 @@ def run_preflight(*, strict: bool = True) -> dict:
         "ftp.env.local",
         ["FTP_SERVER", "FTP_USERNAME", "FTP_PASSWORD"],
     )
+    if checks["ftp"]["ok"]:
+        try:
+            from cover_upload import load_upload_env, probe_ftp
+
+            env = load_upload_env()
+            probe = probe_ftp(env)
+            checks["ftp"]["probe"] = probe
+            checks["ftp"]["upload_ready"] = probe.get("ok") or probe.get("wordpress_fallback")
+        except SystemExit as exc:
+            checks["ftp"]["probe"] = {"ok": False, "error": str(exc)}
+            checks["ftp"]["upload_ready"] = False
     if not checks["ftp"]["ok"]:
         legacy = Path("/Users/natala/Documents/Проекты СURSOR/sessya-morozova/.ftp-deploy.env")
         if legacy.is_file():
             checks["ftp"] = {"ok": True, "path": str(legacy), "source": "legacy_fallback"}
+            try:
+                from cover_upload import load_upload_env, probe_ftp
+
+                probe = probe_ftp(load_upload_env())
+                checks["ftp"]["probe"] = probe
+                checks["ftp"]["upload_ready"] = probe.get("ok") or probe.get("wordpress_fallback")
+            except SystemExit as exc:
+                checks["ftp"]["probe"] = {"ok": False, "error": str(exc)}
+                checks["ftp"]["upload_ready"] = False
 
     ref = reference_image_path()
     checks["reference_image"] = {
@@ -71,17 +94,25 @@ def run_preflight(*, strict: bool = True) -> dict:
         "path": str(ref),
     }
 
-    try:
-        undetectable_url = load_env("b17.env.local").get("UNDETECTABLE_BASE_URL", "")
-    except SystemExit:
-        import os
-
-        undetectable_url = os.environ.get("UNDETECTABLE_BASE_URL", "")
-    checks["undetectable"] = {
-        "ok": undetectable_reachable(undetectable_url or None),
-        "base_url": undetectable_url or "http://127.0.0.1:25325",
-        "note": "b17/TenChat need local Undetectable; skipped in cloud if unreachable",
+    browser = {
+        "ok": browser_ready(),
+        "backend": browser_backend_name(),
+        "note": "Linux VPS: BROWSER_BACKEND=playwright; Mac: undetectable",
     }
+    if browser["backend"] == "playwright":
+        state = playwright_storage_state_path()
+        browser["storage_state"] = str(state)
+        browser["storage_exists"] = state.is_file()
+        browser["headless"] = browser_headless()
+    else:
+        try:
+            undetectable_url = load_env("b17.env.local").get("UNDETECTABLE_BASE_URL", "")
+        except SystemExit:
+            import os
+
+            undetectable_url = os.environ.get("UNDETECTABLE_BASE_URL", "")
+        browser["base_url"] = undetectable_url or "http://127.0.0.1:25325"
+    checks["browser"] = browser
 
     script_platforms = ("max", "telegram", "zernio", "runware", "ftp")
     auto_ok = all(
@@ -97,7 +128,7 @@ def run_preflight(*, strict: bool = True) -> dict:
         "vk_mcp_required_after_scripts": checks["vk"].get("mode") == "mcp",
         "auto_platforms": ["max", "telegram", "facebook"],
         "vk_platform": "mcp" if checks["vk"].get("mode") == "mcp" else "script",
-        "browser_platforms_deferred": not checks["undetectable"]["ok"],
+        "browser_platforms_deferred": not checks["browser"]["ok"],
     }
 
     if strict and not auto_ok:

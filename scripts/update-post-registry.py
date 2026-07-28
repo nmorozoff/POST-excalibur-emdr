@@ -26,6 +26,8 @@ REGISTRY_FILES = {
     "vk-profile": PROFILE / "vk-profile-posts-registry.md",
     "vk-group": PROFILE / "vk-group-posts-registry.md",
     "facebook": PROFILE / "facebook-posts-registry.md",
+    "b17": PROFILE / "b17-posts-registry.md",
+    "tenchat": PROFILE / "tenchat-posts-registry.md",
 }
 
 
@@ -66,6 +68,10 @@ def _build_row(args: argparse.Namespace) -> str:
             f"| {args.topic_id} | {d} | {args.title} | {platform_post_id} | {args.url} | "
             f"{args.site_url} | {tags} |"
         )
+    if args.platform == "b17":
+        return f"| {args.topic_id} | {d} | {args.title} | {args.url} | {args.site_url} | {tags} |"
+    if args.platform == "tenchat":
+        return f"| {args.topic_id} | {d} | {args.title} | {args.url} | {args.site_url} | {tags} |"
     raise SystemExit(f"Неизвестная платформа: {args.platform}")
 
 

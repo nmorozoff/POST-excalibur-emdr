@@ -1,6 +1,6 @@
 # Cloud publish — три фазы
 
-Полный цикл MSP-поста в автоматизации **не умещается в один cloud pod**.
+Полный цикл MSP-поста в автоматизации.
 
 ## Фаза 1 — Cloud Agent (скрипты)
 
@@ -34,45 +34,49 @@ Gate: в ответе MCP — `📸 Загружено фото`.
 
 Обновить реестры: `vk-profile`, `vk-group`.
 
-## Фаза 3 — Локальный Mac (Undetectable)
+## Фаза 3 — b17 + TenChat (Linux VPS, Playwright)
 
-**Платформы:** b17.ru, TenChat.
+В cloud pod **нет** браузера с сессиями. Публикация на **вашем Ubuntu VPS** (тот же, что CRM) — см. **`profile/browser-linux-vps-setup.md`**.
 
-В cloud pod **нет** Undetectable Browser (`127.0.0.1:25325`). Эти площадки **не публикуются из cloud**.
+### Worker на VPS (рекомендуется)
 
-На Mac (Undetectable + Profile1 запущены):
+Cloud пишет `browser-local-handoff.md` → VPS cron:
 
 ```bash
-python3 scripts/publish-b17-blog.py --topic {topic_id} --submit
-python3 scripts/publish-tenchat-post.py --topic {topic_id} --submit
+git pull --ff-only
+python3 scripts/fetch-topic-cover.py --all-pending
+python3 scripts/publish-browser-deferred.py --submit
 ```
 
-Или без `--submit` — форма заполнится, Save/Publish вручную.
+`browser.env.local`: `BROWSER_BACKEND=playwright` + `linux-storage-state.json` (логин один раз).
 
-Handoff-файл: `output/{topic}/browser-local-handoff.md` (создаётся автоматически).
+### Fallback: Mac + Undetectable
 
-### Вариант: вторая automation «browser-only»
+`BROWSER_BACKEND=undetectable` — как раньше.
 
-Отдельная automation на **локальной машине** (не cloud), триггер после cloud:
+### Устарело: Windows + Undetectable
 
-1. Cloud закончил → webhook / ручной запуск
-2. Локальный агент: только b17 + TenChat
+См. `browser-vps-setup.md` — только если нет Linux.
 
-## Secrets для Cloud (без VK_ACCESS_TOKEN)
+## Secrets для Cloud
 
-См. `cloud-secrets-checklist.txt` — строка `VK_ACCESS_TOKEN` **удалена**.
+См. `cloud-secrets-checklist.txt`.  
+`VK_ACCESS_TOKEN` **не нужен** (VK через MCP).
 
-Обязательно: MCP mcp-kv в настройках automation.
+Для фазы 3 режима A добавить:
+
+- `UNDETECTABLE_BASE_URL`
+- `UNDETECTABLE_PROFILE_ID`
+- `UNDETECTABLE_API_BEARER`
 
 ## Промпт automation (полный)
 
 ```
 1. pending тема из short-blog-queue.md → контент всех платформ
 2. python3 scripts/materialize_cloud_env.py
-3. python3 scripts/publish-topic.py --topic {id}
+3. python3 scripts/publish-topic.py --topic {id} [--submit если remote Undetectable OK]
 4. MCP vk_create_post_with_photo ×2 по vk-mcp-handoff.json
 5. send-vk-post.py --delete-cover; update-post-registry
-6. Закрыть очередь для платформ 1–5; в handoff: browser-local-handoff для b17/TenChat
+6. Если browser-local-handoff.md — VPS worker или ручной Mac для b17/TenChat
+7. Закрыть очередь; обновить реестры b17/tenchat после VPS
 ```
-
-Фаза 3 — отдельно на Mac или вторая локальная automation.

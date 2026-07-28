@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import base64
 import json
+import os
 import subprocess
 import tempfile
-import subprocess
 import time
 import urllib.error
 import urllib.request
@@ -15,6 +15,16 @@ from pathlib import Path
 from typing import Any
 
 DEFAULT_API_BASE = "http://127.0.0.1:25325"
+
+
+def _api_headers(extra: dict[str, str] | None = None) -> dict[str, str]:
+    headers = {"Accept": "application/json"}
+    token = os.environ.get("UNDETECTABLE_API_BEARER", "").strip()
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    if extra:
+        headers.update(extra)
+    return headers
 
 # Заполняет заголовок и текст на странице без ручных CSS-селекторов.
 SMART_COMPOSE_FILL_JS = r"""
@@ -131,6 +141,13 @@ def load_env_file(path: Path) -> dict[str, str]:
     return data
 
 
+def apply_undetectable_env(env: dict[str, str]) -> None:
+    """Push auth token from env file into os.environ for remote VPS API."""
+    token = env.get("UNDETECTABLE_API_BEARER", "").strip()
+    if token:
+        os.environ["UNDETECTABLE_API_BEARER"] = token
+
+
 def api_request(
     base_url: str,
     method: str,
@@ -141,10 +158,9 @@ def api_request(
 ) -> dict[str, Any]:
     url = f"{base_url.rstrip('/')}{path}"
     data = None
-    headers = {"Accept": "application/json"}
+    headers = _api_headers({"Content-Type": "application/json"} if payload is not None else None)
     if payload is not None:
         data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-        headers["Content-Type"] = "application/json"
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
     with opener.open(req, timeout=timeout) as resp:
@@ -156,8 +172,8 @@ def ensure_ready(base_url: str) -> None:
         result = api_request(base_url, "GET", "/status")
     except urllib.error.URLError as exc:
         raise SystemExit(
-            "Undetectable Browser не запущен. Откройте приложение Undetectable "
-            f"и проверьте Local API ({base_url}). Ошибка: {exc}"
+            "Undetectable Browser API недоступен. Локально: запустите Undetectable. "
+            f"VPS/cloud: проверьте UNDETECTABLE_BASE_URL ({base_url}). Ошибка: {exc}"
         ) from exc
     if result.get("code") != 0:
         raise SystemExit(f"Undetectable API not ready: {result}")
@@ -482,25 +498,39 @@ TENCHAT_CODE_PRE = "pre.ql-code-block"
 def prepare_cover_jpeg_for_browser(cover_path: Path) -> Path:
     """JPEG для загрузки через браузер (base64 в evaluate не тянет большой PNG)."""
     out = Path(tempfile.gettempdir()) / f"browser-cover-{cover_path.stem}.jpg"
-    subprocess.run(
-        [
-            "sips",
-            "-s",
-            "format",
-            "jpeg",
-            "-s",
-            "formatOptions",
-            "82",
-            "--resampleWidth",
-            "800",
-            str(cover_path),
-            "--out",
-            str(out),
-        ],
-        check=True,
-        capture_output=True,
-    )
-    return out
+    try:
+        subprocess.run(
+            [
+                "sips",
+                "-s",
+                "format",
+                "jpeg",
+                "-s",
+                "formatOptions",
+                "82",
+                "--resampleWidth",
+                "800",
+                str(cover_path),
+                "--out",
+                str(out),
+            ],
+            check=True,
+            capture_output=True,
+        )
+        return out
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        try:
+            from PIL import Image
+        except ImportError as exc:
+            raise SystemExit(
+                "Нужен sips (macOS) или Pillow: pip install Pillow"
+            ) from exc
+        img = Image.open(cover_path).convert("RGB")
+        width = 800
+        height = max(1, int(img.height * width / img.width))
+        img = img.resize((width, height), Image.Resampling.LANCZOS)
+        img.save(out, "JPEG", quality=82, optimize=True)
+        return out
 
 
 def prepare_b17_cover_jpeg(cover_path: Path) -> Path:

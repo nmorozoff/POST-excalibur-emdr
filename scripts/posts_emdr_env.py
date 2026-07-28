@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -33,18 +34,39 @@ ENV_SPECS: dict[str, list[str]] = {
         "RUNWARE_COVER_QUALITY",
         "RUNWARE_REFERENCE_IMAGE",
     ],
-    "ftp.env.local": ["FTP_SERVER", "FTP_USERNAME", "FTP_PASSWORD", "FTP_SERVER_DIR"],
+    "ftp.env.local": [
+        "FTP_SERVER",
+        "FTP_USERNAME",
+        "FTP_PASSWORD",
+        "FTP_SERVER_DIR",
+        "WORDPRESS_URL",
+        "WORDPRESS_USER",
+        "WORDPRESS_APP_PASSWORD",
+    ],
+    "wordpress.env.local": [
+        "WORDPRESS_URL",
+        "WORDPRESS_SITE_URL",
+        "WORDPRESS_USER",
+        "WORDPRESS_APP_PASSWORD",
+    ],
     "b17.env.local": [
         "UNDETECTABLE_BASE_URL",
         "UNDETECTABLE_PROFILE_ID",
+        "UNDETECTABLE_API_BEARER",
         "B17_COMPOSE_URL",
     ],
     "tenchat.env.local": [
         "UNDETECTABLE_BASE_URL",
         "UNDETECTABLE_PROFILE_ID",
+        "UNDETECTABLE_API_BEARER",
         "TENCHAT_COMPOSE_URL",
         "TENCHAT_TOPICS",
         "TENCHAT_USE_CODE_BLOCK",
+    ],
+    "browser.env.local": [
+        "BROWSER_BACKEND",
+        "PLAYWRIGHT_STORAGE_STATE",
+        "PLAYWRIGHT_HEADLESS",
     ],
 }
 
@@ -167,13 +189,79 @@ def is_cloud_runtime() -> bool:
     )
 
 
+def undetectable_config() -> dict[str, str]:
+    """Merged Undetectable settings from env files + os.environ."""
+    data: dict[str, str] = {}
+    for name in ("b17.env.local", "tenchat.env.local"):
+        try:
+            data.update(load_env(name))
+        except SystemExit:
+            pass
+    base = (
+        data.get("UNDETECTABLE_BASE_URL")
+        or os.environ.get("UNDETECTABLE_BASE_URL")
+        or "http://127.0.0.1:25325"
+    )
+    return {
+        "base_url": base.rstrip("/"),
+        "profile_id": data.get("UNDETECTABLE_PROFILE_ID", ""),
+        "bearer": data.get("UNDETECTABLE_API_BEARER") or os.environ.get("UNDETECTABLE_API_BEARER", ""),
+    }
+
+
 def undetectable_reachable(base_url: str | None = None) -> bool:
     import urllib.error
     import urllib.request
 
-    url = (base_url or os.environ.get("UNDETECTABLE_BASE_URL") or "http://127.0.0.1:25325").rstrip("/")
+    cfg = undetectable_config()
+    url = (base_url or cfg["base_url"]).rstrip("/") + "/status"
+    headers = {}
+    bearer = cfg.get("bearer", "").strip()
+    if bearer:
+        headers["Authorization"] = f"Bearer {bearer}"
+    req = urllib.request.Request(url, headers=headers, method="GET")
     try:
-        with urllib.request.urlopen(f"{url}/status", timeout=3) as resp:
-            return 200 <= resp.status < 500
-    except (urllib.error.URLError, TimeoutError, OSError):
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            if resp.status != 200:
+                return False
+            body = json.loads(resp.read().decode("utf-8", errors="replace"))
+            return body.get("code") == 0
+    except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError, ValueError):
         return False
+
+
+def _browser_env() -> dict[str, str]:
+    data: dict[str, str] = {}
+    for name in ("browser.env.local", "b17.env.local", "tenchat.env.local"):
+        try:
+            data.update(load_env(name))
+        except SystemExit:
+            pass
+    for key in ("BROWSER_BACKEND", "PLAYWRIGHT_STORAGE_STATE", "PLAYWRIGHT_HEADLESS"):
+        val = os.environ.get(key, "").strip()
+        if val:
+            data[key] = val
+    return data
+
+
+def browser_backend_name() -> str:
+    data = _browser_env()
+    backend = (data.get("BROWSER_BACKEND") or os.environ.get("BROWSER_BACKEND") or "undetectable").strip().lower()
+    if backend in {"playwright", "pw"}:
+        return "playwright"
+    return "undetectable"
+
+
+def browser_headless() -> bool:
+    data = _browser_env()
+    raw = (data.get("PLAYWRIGHT_HEADLESS") or os.environ.get("PLAYWRIGHT_HEADLESS") or "1").strip().lower()
+    return raw not in {"0", "false", "no", "off"}
+
+
+def playwright_storage_state_path() -> Path:
+    data = _browser_env()
+    raw = (data.get("PLAYWRIGHT_STORAGE_STATE") or os.environ.get("PLAYWRIGHT_STORAGE_STATE") or "").strip()
+    if raw:
+        path = Path(raw)
+        return path if path.is_absolute() else PROJECT_ROOT / raw
+    return MEMORY / "browser" / "linux-storage-state.json"

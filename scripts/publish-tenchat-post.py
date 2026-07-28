@@ -14,7 +14,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from undetectable_browser import TENCHAT_COMPOSE_URL_DEFAULT, fill_tenchat_compose, load_env_file
+from browser_backend import default_tenchat_compose_url, publish_tenchat
+from posts_emdr_env import browser_backend_name
+from undetectable_browser import apply_undetectable_env, load_env_file
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ENV_FILE = PROJECT_ROOT / "posts-emdr-memory" / "tenchat.env.local"
@@ -84,6 +86,7 @@ def main() -> None:
     title, body = extract_title_and_paste_body(md_path)
     cover = topic_dir / "cover.png"
     env = load_env_file(ENV_FILE)
+    apply_undetectable_env(env)
     topics = parse_topics(env, md_path)
 
     prep = {
@@ -106,13 +109,12 @@ def main() -> None:
         return
 
     profile_id = env.get("UNDETECTABLE_PROFILE_ID", "")
-    if not profile_id:
+    if browser_backend_name() == "undetectable" and not profile_id:
         raise SystemExit(f"Set UNDETECTABLE_PROFILE_ID in {ENV_FILE} (see {ENV_EXAMPLE.name})")
 
-    browser_result = fill_tenchat_compose(
-        base_url=env.get("UNDETECTABLE_BASE_URL", "http://127.0.0.1:25325"),
-        profile_id=profile_id,
-        compose_url=env.get("TENCHAT_COMPOSE_URL", TENCHAT_COMPOSE_URL_DEFAULT),
+    browser_result = publish_tenchat(
+        env=env,
+        compose_url=default_tenchat_compose_url(env),
         title=title,
         body=body,
         topics=topics,
