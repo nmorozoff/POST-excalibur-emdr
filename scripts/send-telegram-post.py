@@ -110,8 +110,17 @@ def url_is_reachable(image_url: str) -> bool:
         req = urllib.request.Request(image_url, method=method)
         try:
             with urllib.request.urlopen(req, timeout=30, context=ctx) as resp:
-                if 200 <= resp.status < 400:
+                if not (200 <= resp.status < 400):
+                    continue
+                content_type = (resp.headers.get("Content-Type") or "").lower()
+                if content_type.startswith("image/"):
                     return True
+                # Some CDNs omit Content-Type on HEAD — verify with GET body sniff.
+                if method == "GET" and content_type.startswith("text/html"):
+                    return False
+                if method == "HEAD" and not content_type:
+                    continue
+                return not content_type.startswith("text/")
         except Exception:
             continue
     return False
@@ -197,14 +206,18 @@ def load_cover_public_url(
     candidates: list[tuple[str, str]] = []
     cover_url_file = topic_dir / "cover.url"
 
+    max_url = extract_max_cover_url(topic_dir)
+    if max_url:
+        candidates.append(("max", max_url))
+
     vk_meta = topic_dir / "vk-cover-public-url.json"
     if vk_meta.exists():
-        vk_url = (json.loads(vk_meta.read_text(encoding="utf-8")).get("url") or "").strip()
+        vk_data = json.loads(vk_meta.read_text(encoding="utf-8"))
+        vk_url = (vk_data.get("url") or "").strip()
+        vk_source = (vk_data.get("source") or "vk").strip()
         if vk_url:
-            candidates.append(("morozovanatalia", vk_url))
+            candidates.append((vk_source, vk_url))
 
-    site_cover = f"https://morozovanatalia.ru/social-covers/{topic_dir.name}.jpg"
-    candidates.append(("morozovanatalia", site_cover))
     if cover_url_file.exists():
         candidates.append(("runware", cover_url_file.read_text(encoding="utf-8").strip()))
 
@@ -212,10 +225,8 @@ def load_cover_public_url(
     if legacy_runware.exists() and cover.name == "cover-runware.png":
         candidates.append(("runware", legacy_runware.read_text(encoding="utf-8").strip()))
 
-    if not cover.name.startswith("cover"):
-        max_url = extract_max_cover_url(topic_dir)
-        if max_url:
-            candidates.append(("max", max_url))
+    site_cover = f"https://morozovanatalia.ru/social-covers/{topic_dir.name}.jpg"
+    candidates.append(("morozovanatalia", site_cover))
 
     for source, candidate in candidates:
         if candidate and url_is_reachable(candidate):
