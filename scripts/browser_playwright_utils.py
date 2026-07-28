@@ -12,25 +12,36 @@ from urllib.parse import urlparse
 from posts_emdr_env import browser_headless, load_env, playwright_storage_state_path
 
 
+def _browser_env() -> dict[str, str]:
+    try:
+        return load_env("browser.env.local")
+    except SystemExit:
+        return {}
+
+
+def _normalize_proxy_server(server: str) -> str:
+    server = server.strip()
+    if not server:
+        return server
+    if "://" not in server:
+        return f"http://{server}"
+    return server
+
+
 def _proxy_dict(prefix: str = "") -> dict[str, str] | None:
     """Build Playwright proxy dict from BROWSER_PROXY_* or B17_PROXY_* env."""
-    try:
-        load_env("browser.env.local")
-    except SystemExit:
-        pass
-
-    keys = ("SERVER", "USERNAME", "PASSWORD")
-    server = os.environ.get(f"{prefix}PROXY_SERVER", "").strip()
+    env = _browser_env()
+    server = env.get(f"{prefix}PROXY_SERVER", "").strip()
     if not server and prefix:
-        server = os.environ.get("BROWSER_PROXY_SERVER", "").strip()
+        server = env.get("BROWSER_PROXY_SERVER", "").strip()
     if not server:
         return None
 
-    proxy: dict[str, str] = {"server": server}
-    user = os.environ.get(f"{prefix}PROXY_USERNAME", "").strip() or os.environ.get(
+    proxy: dict[str, str] = {"server": _normalize_proxy_server(server)}
+    user = env.get(f"{prefix}PROXY_USERNAME", "").strip() or env.get(
         "BROWSER_PROXY_USERNAME", ""
     ).strip()
-    password = os.environ.get(f"{prefix}PROXY_PASSWORD", "").strip() or os.environ.get(
+    password = env.get(f"{prefix}PROXY_PASSWORD", "").strip() or env.get(
         "BROWSER_PROXY_PASSWORD", ""
     ).strip()
     if user:
