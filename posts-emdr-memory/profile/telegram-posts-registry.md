@@ -9,6 +9,9 @@
 
 ## Опубликованные
 
+| sb-03-body-before-mind | 2026-07-28 | Момент, когда тело узнаёт о тревоге раньше головы | @natalia_morozova_psy | 2021 | https://t.me/natalia_morozova_psy/2021 | https://morozovanatalia.ru/anxiety | тревога,тело,нервная система,EMDR,стресс,психология |
+| sb-03-body-before-mind | 2026-07-28 | Момент, когда тело узнаёт о тревоге раньше головы | @nmorozova_emdr | 109 | https://t.me/nmorozova_emdr/109 | https://morozovanatalia.ru/anxiety | тревога,тело,нервная система,EMDR,стресс,психология |
+| sb-03-body-before-mind | 2026-07-28 | Момент, когда тело узнаёт о тревоге раньше головы | @morozova_emdr | 607 | https://t.me/morozova_emdr/607 | https://morozovanatalia.ru/anxiety | тревога,тело,нервная система,EMDR,стресс,психология |
 | sb-02-anxiety-as-responsibility | 2026-07-25 | Как тревога маскируется под «просто ответственность» — гиперконтроль | @natalia_morozova_psy | 2020 | https://t.me/natalia_morozova_psy/2020 | https://morozovanatalia.ru/anxiety | тревога,гиперконтроль,ответственность,EMDR,стресс,психология |
 | sb-02-anxiety-as-responsibility | 2026-07-25 | Как тревога маскируется под «просто ответственность» — гиперконтроль | @nmorozova_emdr | 108 | https://t.me/nmorozova_emdr/108 | https://morozovanatalia.ru/anxiety | тревога,гиперконтроль,ответственность,EMDR,стресс,психология |
 | sb-02-anxiety-as-responsibility | 2026-07-25 | Как тревога маскируется под «просто ответственность» — гиперконтроль | @morozova_emdr | 606 | https://t.me/morozova_emdr/606 | https://morozovanatalia.ru/anxiety | тревога,гиперконтроль,ответственность,EMDR,стресс,психология |

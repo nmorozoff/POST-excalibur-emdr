@@ -1,0 +1,23 @@
+[
+  {
+    "topic": "sb-03-body-before-mind",
+    "location": "personal",
+    "from_group": false,
+    "photo_url": "https://i.oneme.ru/i?r=BTGBPUwtwgYUeoFhO7rESmr85xZrTUM2WZL3W-gYGMENi7J_HqH97r8QHtUvv1mBLU4",
+    "status": "published",
+    "post_id": 649,
+    "wall_url": "https://vk.com/wall218367867_649",
+    "method": "mcp-kv"
+  },
+  {
+    "topic": "sb-03-body-before-mind",
+    "location": "group",
+    "from_group": true,
+    "group_id": "224685309",
+    "photo_url": "https://i.oneme.ru/i?r=BTGBPUwtwgYUeoFhO7rESmr85xZrTUM2WZL3W-gYGMENi7J_HqH97r8QHtUvv1mBLU4",
+    "status": "published",
+    "post_id": 150,
+    "wall_url": "https://vk.com/wall-224685309_150",
+    "method": "mcp-kv"
+  }
+]
