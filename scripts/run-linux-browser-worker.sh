@@ -25,5 +25,7 @@ elif [[ -d .git ]]; then
 fi
 
 python3 scripts/browser_ensure_sessions.py --refresh
+python3 scripts/asocks_sync_proxy.py --target telegram || true
+python3 scripts/asocks_sync_proxy.py --target b17 || true
 python3 scripts/fetch-topic-cover.py --all-pending
 python3 scripts/publish-browser-deferred.py --submit --finish --git-push

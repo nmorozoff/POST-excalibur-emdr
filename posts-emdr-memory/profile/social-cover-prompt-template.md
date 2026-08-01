@@ -25,6 +25,8 @@
 
 **Одежда:** один образ из ротации [`cover-outfit-rotation.md`](./cover-outfit-rotation.md) — по номеру поста. Не придумывать outfit на лету.
 
+**Референс-фото:** портрет из ротации [`cover-reference-rotation.md`](./cover-reference-rotation.md) — `sb-04` → `portrait-04.jpg` и т.д. Обновить пул: `./scripts/sync-reference-photos.sh`.
+
 ## Промпт (Runware / GPT Image 2)
 
 ```
@@ -64,11 +66,13 @@ Format: 5:4 horizontal landscape, 1280×1024px. Ultra realistic, cinematic color
 
 ```bash
 python scripts/runware-cover.py \
+  --topic {topic_id} \
   --prompt-file posts-emdr-memory/output/{topic_id}/cover-prompt.txt \
-  --reference "/Users/natala/Desktop/РЕФЕРЕНСЫ/0C2A3279.jpg" \
   --output posts-emdr-memory/output/{topic_id}/cover.png \
   --width 1280 --height 1024 --quality low
 ```
+
+Референс подставится автоматически по номеру поста (см. `cover-reference-rotation.md`).
 
 **Runware:** обложка на каждый short-blog пост — автоматически (`scripts/runware-cover.py`). OUTFIT из `cover-outfit-rotation.md`.
 

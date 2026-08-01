@@ -1,6 +1,7 @@
 # Posts EMDR — Cloud Agent setup
 
-Три фазы: см. **`profile/cloud-publish-phases.md`**.
+Три фазы: см. **`profile/cloud-publish-phases.md`**.  
+Утренний прогон: **`.cursor/posts-emdr-handoff.md`**.
 
 ## 1. Cursor Cloud Secrets + MCP
 
@@ -15,13 +16,14 @@
 |------------|------------|
 | `MAX_BOT_TOKEN` | API Макс |
 | `MAX_CHAT_ID` | ID канала Макс |
-| `TELEGRAM_BOT_TOKEN` | Бот Telegram |
+| `TELEGRAM_BOT_TOKEN` | Бот Telegram (нужен на VPS; в Cloud можно тоже для materialize) |
 | `TELEGRAM_CHANNEL_CHAT_IDS` | Каналы через запятую |
 | `TELEGRAM_CHANNEL_UTM_SOURCES` | `tg1,tg2,tg3` |
 | `ZERNIO_API_KEY` | Facebook |
 | `ZERNIO_FACEBOOK_ACCOUNT_ID` | ID страницы FB |
 | `RUNWARE_API_KEY` | Обложки |
 | `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_SERVER_DIR` | Обложка для VK/TG preview |
+| `VPS_WEBHOOK_SECRET` | Триггер фазы 3 на VPS |
 
 Список имён: `cloud-secrets-checklist.txt`
 
@@ -29,17 +31,13 @@
 
 После `publish-topic.py` агент читает `output/{topic}/vk-mcp-handoff.json` и вызывает `vk_create_post_with_photo` ×2.
 
-### b17 + TenChat (фаза 3 — Linux VPS, Playwright)
+### Telegram + b17 + TenChat (фаза 3 — Linux VPS)
 
-**Не из cloud pod.** На Ubuntu VPS (можно тот же, что CRM):
+**Не из cloud pod.** Telegram с Cloud/датацентра **не работает** (таймаут `api.telegram.org`).
 
-Подробно: **`profile/browser-linux-vps-setup.md`**
+На Ubuntu VPS: webhook `POST /publish` или cron `run-linux-browser-worker.sh`.
 
-```bash
-python3 scripts/publish-browser-deferred.py --submit   # на VPS по cron
-```
-
-Handoff: `output/{topic}/browser-local-handoff.md`
+Подробно: **`profile/browser-autonomous-vps.md`**, **`profile/cloud-publish-phases.md`**.
 
 ## 2. Environment install
 
@@ -51,52 +49,27 @@ Handoff: `output/{topic}/browser-local-handoff.md`
 python3 scripts/materialize_cloud_env.py --check
 ```
 
-Скрипт создаёт `posts-emdr-memory/*.env.local` из Secrets и проверяет preflight.
-
-## 3. Публикация одной командой
-
-После генерации контента агентом:
+## 3. Публикация
 
 ```bash
-python3 scripts/publish-topic.py --topic sb-03-body-before-mind
+python3 scripts/publish-topic.py --topic sb-05-tolerate-uncertainty
+# → Макс + FB + VK handoff; Telegram/b17/TenChat deferred
+# затем MCP VK ×2, git push, curl webhook
 ```
-
-Шаги:
-1. materialize secrets
-2. preflight
-3. Runware cover (референс: `posts-emdr-memory/assets/reference/portrait.jpg` в репо)
-4. Max → Telegram → VK (API) → Facebook
-5. b17/TenChat — если Undetectable доступен
 
 ## 4. Референс обложки
 
-В репозитории: `posts-emdr-memory/assets/reference/portrait.jpg`  
-Переопределение: `RUNWARE_REFERENCE_IMAGE=/path/to.jpg`
+Ротация: `posts-emdr-memory/assets/reference/portrait-01.jpg` … `portrait-08.jpg`  
+См. `profile/cover-reference-rotation.md`
 
 ## 5. Промпт для Cloud Agent
 
-```
-1. Взять первую pending из topics/short-blog-queue.md
-2. Сгенерировать контент всех платформ
-3. python3 scripts/materialize_cloud_env.py --check
-4. python3 scripts/publish-topic.py --topic {id}
-5. Обновить реестры и очередь
-```
+См. `.cursor/posts-emdr-handoff.md` (блок «Запуск Cloud Agent»).
 
-## 6. Локально vs Cloud
-
-| | Локальный Mac | Cloud pod |
-|--|---------------|-----------|
-| Секреты | `*.env.local` | Cursor Secrets → materialize |
-| VK | `vk_publish.py` (без MCP) | то же |
-| FTP | `ftp.env.local` или legacy fallback | Secrets |
-| b17/TenChat | Undetectable локально | обычно skip |
-
-## 7. Проверка
+## 6. Проверка
 
 ```bash
 python3 scripts/cloud_preflight.py
-python3 scripts/cloud_preflight.py --json
 ```
 
-Exit `0` = готово к `publish-topic.py`.
+Exit `0` = готово к `publish-topic.py` (VK через MCP после скриптов).

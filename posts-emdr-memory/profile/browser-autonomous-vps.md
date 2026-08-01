@@ -45,6 +45,26 @@ B17_PROXY_SERVER=http://USER:PASS@host:port
 
 Нужен **резидентский RU proxy** (не datacenter). Без proxy b17 на VPS не работает.
 
+### ASocks (рекомендуется)
+
+1. В `browser.env.local`:
+   ```env
+   ASOCKS_API_BASE=https://api.asocks.com
+   ASOCKS_API_KEY=ваш_ключ
+   ASOCKS_PORT_NAME=b17-emdr
+   ```
+2. Синхронизация логина/хоста/порта из API:
+   ```bash
+   python3 scripts/asocks_sync_proxy.py
+   python3 scripts/asocks_check.py
+   ```
+3. В кабинете [ASocks](https://docs.asocks.com/ru/):
+   - **Whitelist** → IP VPS: `195.209.210.45`
+   - Тип авторизации порта: **Password Authorization**
+   - Проверить, что есть **трафик** (`all_available_traffic` > 0 в `asocks_check.py`)
+
+Порт ASocks обычно **9999**, не 443. API whitelist в документации может быть недоступен — whitelist только через кабинет.
+
 ### 3. GitHub token для `git pull` на VPS
 
 ```bash

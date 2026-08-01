@@ -35,6 +35,20 @@ def load_env() -> dict[str, str]:
     return _load("telegram.env.local", required=["TELEGRAM_BOT_TOKEN"])
 
 
+def _urlopen(req: urllib.request.Request, *, timeout: int = 120, context=None):
+    import sys
+
+    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+    from browser_playwright_utils import telegram_proxy_for_urllib
+
+    proxies = telegram_proxy_for_urllib()
+    if proxies:
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler(proxies))
+        return opener.open(req, timeout=timeout)
+    ctx = context or ssl.create_default_context()
+    return urllib.request.urlopen(req, timeout=timeout, context=ctx)
+
+
 def api_call_form(token: str, method: str, data: dict | None = None, files: dict | None = None) -> dict:
     url = API.format(token=token, method=method)
     if files:
@@ -66,7 +80,7 @@ def api_call_form(token: str, method: str, data: dict | None = None, files: dict
         encoded = urllib.parse.urlencode(data or {}).encode()
         req = urllib.request.Request(url, data=encoded, method="POST")
     ctx = ssl.create_default_context()
-    with urllib.request.urlopen(req, timeout=120, context=ctx) as resp:
+    with _urlopen(req, timeout=120, context=ctx) as resp:
         return json.loads(resp.read().decode())
 
 
@@ -80,20 +94,28 @@ def api_call_json(token: str, method: str, payload: dict) -> dict:
         method="POST",
     )
     ctx = ssl.create_default_context()
-    with urllib.request.urlopen(req, timeout=120, context=ctx) as resp:
+    with _urlopen(req, timeout=120, context=ctx) as resp:
         return json.loads(resp.read().decode())
 
 
 def extract_html(md_path: Path) -> str:
     text = md_path.read_text(encoding="utf-8")
     m = re.search(
-        r"## Текст поста \(HTML[^\n]*\n\n(.*?)(?=<!-- END_POST -->|\Z)",
+        r"## Текст поста \(HTML[^\n]*\n\n"
+        r"(.*?)"
+        r"(?=<!-- END_POST -->|\n---\s*\n## |\Z)",
         text,
         flags=re.DOTALL,
     )
     if not m:
         raise SystemExit(f"Cannot parse HTML from {md_path}")
-    return m.group(1).strip()
+    body = m.group(1).strip()
+    if re.search(r"^\s*##\s", body, flags=re.MULTILINE):
+        raise SystemExit(
+            f"Telegram post in {md_path} includes markdown sections after the body. "
+            "Add <!-- END_POST --> before meta/notes."
+        )
+    return body
 
 
 def normalize_typography(text: str) -> str:

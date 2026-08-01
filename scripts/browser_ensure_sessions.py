@@ -14,7 +14,7 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from browser_playwright_utils import b17_proxy_configured, playwright_session
+from browser_playwright_utils import b17_proxy_configured, playwright_session, tenchat_proxy_prefix
 from posts_emdr_env import browser_backend_name, load_env, playwright_storage_state_path
 
 
@@ -27,7 +27,9 @@ def _page_ok(url: str, html: str, final_url: str) -> bool:
     if "auth/sign-in" in final_url.lower():
         return False
     if "tenchat.ru/editor" in final_url and "editor" in final_url.lower():
-        return True
+        if "ошибка сервера" in low:
+            return False
+        return "#tc-editor" in html or "ql-editor" in low
     if "my_blog.php" in final_url or "mod=edit" in final_url:
         return "#form_name" in html or "tinymce" in low or "my_blog" in final_url
     return "login" not in low
@@ -53,11 +55,12 @@ def ensure_sessions(*, refresh: bool = False) -> dict:
     checks: dict[str, object] = {"storage_state": str(state), "sites": {}}
     b17_blocked_no_proxy = False
 
+    ten_px = tenchat_proxy_prefix()
     with playwright_session(proxy_prefix="B17_") as (_pw, _browser, context):
         page = context.new_page()
         for key, url, proxy_prefix in (
             ("b17", "https://www.b17.ru/my_blog.php?mod=edit", "B17_"),
-            ("tenchat", "https://tenchat.ru/editor", ""),
+            ("tenchat", "https://tenchat.ru/editor", ten_px or "B17_"),
         ):
             if key == "b17" and not b17_proxy_configured():
                 probe = __import__("check_b17_ip_access", fromlist=["check_b17_access"]).check_b17_access()

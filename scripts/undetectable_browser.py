@@ -300,7 +300,10 @@ def wait_for_tinymce_and_set(base_url: str, profile_id: str, html_body: str, *, 
             profile_id,
             f"""(() => {{
   if (window.tinymce && tinymce.get('tinymce_textarea')) {{
-    tinymce.get('tinymce_textarea').setContent({html_json});
+    const ed = tinymce.get('tinymce_textarea');
+    ed.setContent({html_json});
+    ed.save();
+    if (typeof tinymce.triggerSave === 'function') tinymce.triggerSave();
     return true;
   }}
   return false;
@@ -315,7 +318,10 @@ def wait_for_tinymce_and_set(base_url: str, profile_id: str, html_body: str, *, 
   if (!(window.tinymce && tinymce.get('tinymce_textarea'))) {{
     throw new Error('TinyMCE not ready on b17 edit page');
   }}
-  tinymce.get('tinymce_textarea').setContent({html_json});
+  const ed = tinymce.get('tinymce_textarea');
+  ed.setContent({html_json});
+  ed.save();
+  if (typeof tinymce.triggerSave === 'function') tinymce.triggerSave();
 }})();""",
     )
 
@@ -440,7 +446,10 @@ def set_tenchat_body_html(base_url: str, profile_id: str, html: str) -> None:
   if (document.querySelector('button.ql-code-block.ql-active')) {{
     document.querySelector('button.ql-code-block')?.click();
   }}
-  const editor = document.querySelector('#tc-editor .ql-editor');
+  const editor =
+    document.querySelector('#tc-editor .ql-editor') ||
+    document.querySelector('#tc-editor [contenteditable="true"]') ||
+    document.querySelector('.ql-editor');
   if (!editor) throw new Error('TenChat ql-editor not found');
   editor.focus();
   const container = editor.closest('.ql-container');
@@ -538,14 +547,22 @@ def prepare_b17_cover_jpeg(cover_path: Path) -> Path:
     return prepare_cover_jpeg_for_browser(cover_path)
 
 
-def b17_inline_cover_html(cover_path: Path) -> str:
-    """Обложка в теле заметки (TinyMCE), не в «Картинка для анонса»."""
-    if not cover_path.exists():
+def b17_cover_public_url(cover_path: Path, *, public_url: str | None = None) -> str:
+    """HTTPS URL обложки для TinyMCE. data:image/base64 b17 отклоняет при «Сохранить»."""
+    if public_url and public_url.startswith("https://"):
+        return public_url.strip()
+    topic = cover_path.parent.name
+    site = f"https://morozovanatalia.ru/social-covers/{topic}.jpg"
+    return site
+
+
+def b17_inline_cover_html(cover_path: Path, *, public_url: str | None = None) -> str:
+    """Обложка в теле заметки (TinyMCE) через HTTPS URL, не base64 и не «анонс»."""
+    if not cover_path.exists() and not (public_url and public_url.startswith("https://")):
         raise SystemExit(f"Cover not found: {cover_path}")
-    jpeg = prepare_cover_jpeg_for_browser(cover_path)
-    b64 = base64.b64encode(jpeg.read_bytes()).decode("ascii")
+    src = b17_cover_public_url(cover_path, public_url=public_url)
     return (
-        f'<p><img src="data:image/jpeg;base64,{b64}" alt="" '
+        f'<p><img src="{src}" alt="" '
         'style="max-width:100%;height:auto;display:block;margin:0 auto 16px;" /></p>'
     )
 
@@ -646,7 +663,7 @@ def fill_b17_compose(
     wait_for_tinymce_and_set(base_url, profile_id, html_body)
     filled = ["title", "latname", "razdel", "author", "tinymce_body"]
     if cover_path:
-        filled.append("cover:inline_tinymce")
+        filled.append("cover:https_tinymce")
     if publish_not_draft:
         run_js(
             base_url,

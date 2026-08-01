@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""VPS worker: publish b17 + TenChat for topics deferred from cloud.
+"""VPS worker: Telegram + b17 + TenChat for topics deferred from cloud.
 
 Linux VPS (Playwright) — cron:
 
   scripts/run-linux-browser-worker.sh
 
-Или вручную:
+Или вручную / webhook:
 
   python3 scripts/fetch-topic-cover.py --all-pending
-  python3 scripts/publish-browser-deferred.py --submit --finish
+  python3 scripts/publish-browser-deferred.py --submit --finish --git-push
 """
 
 from __future__ import annotations
@@ -37,6 +37,17 @@ def _log_status(path: Path) -> str | None:
         return None
 
 
+def _telegram_done(topic_dir: Path) -> bool:
+    status = _log_status(topic_dir / "telegram-publish-log.json")
+    return status in {"sent", "published"}
+
+
+def _platform_done(topic_dir: Path, key: str) -> bool:
+    if key == "telegram":
+        return _telegram_done(topic_dir)
+    return _log_status(topic_dir / f"{key}-publish-log.json") == "published"
+
+
 def pending_topics(*, topic: str | None = None) -> list[str]:
     output = MEMORY / "output"
     if not output.is_dir():
@@ -50,29 +61,116 @@ def pending_topics(*, topic: str | None = None) -> list[str]:
             continue
         handoff = topic_dir / "browser-local-handoff.md"
         done = topic_dir / "browser-local-handoff.done.md"
+        # Need handoff OR explicit --topic, plus drafts
+        has_drafts = (topic_dir / "telegram-post.md").is_file() or (
+            topic_dir / "b17-blog-post.md"
+        ).is_file()
+        if topic:
+            if has_drafts and not (
+                _platform_done(topic_dir, "telegram")
+                and _platform_done(topic_dir, "b17")
+                and _platform_done(topic_dir, "tenchat")
+                and done.is_file()
+            ):
+                topics.append(tid)
+            continue
         if not handoff.is_file() and not done.is_file():
             continue
-        if done.is_file() and _log_status(topic_dir / "b17-publish-log.json") == "published":
-            if _log_status(topic_dir / "tenchat-publish-log.json") == "published":
-                continue
-        b17 = _log_status(topic_dir / "b17-publish-log.json")
-        ten = _log_status(topic_dir / "tenchat-publish-log.json")
-        if b17 == "published" and ten == "published" and done.is_file():
+        if (
+            done.is_file()
+            and _platform_done(topic_dir, "telegram")
+            and _platform_done(topic_dir, "b17")
+            and _platform_done(topic_dir, "tenchat")
+        ):
+            continue
+        if not has_drafts:
             continue
         topics.append(tid)
     return topics
 
 
+def sync_telegram_proxy() -> dict:
+    """ASocks KZ → TELEGRAM_PROXY_* перед Bot API."""
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPTS / "asocks_sync_proxy.py"), "--target", "telegram"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+    )
+    out: dict = {
+        "exit_code": proc.returncode,
+        "stdout_tail": (proc.stdout or "")[-800:],
+        "stderr_tail": (proc.stderr or "")[-400:],
+    }
+    if proc.returncode != 0:
+        # Не блокируем, если TELEGRAM_PROXY_* уже в browser.env.local
+        try:
+            env = load_env("browser.env.local")
+            if env.get("TELEGRAM_PROXY_SERVER"):
+                out["fallback"] = "existing_TELEGRAM_PROXY_SERVER"
+                out["ok"] = True
+                return out
+        except SystemExit:
+            pass
+        out["ok"] = False
+        return out
+    out["ok"] = True
+    return out
+
+
 def run_publish(topic: str, *, submit: bool) -> dict:
     submit_args = ["--submit"] if submit else []
     result: dict = {"topic": topic, "steps": {}}
+    topic_dir = MEMORY / "output" / topic
+
+    # 1) Telegram via ASocks KZ
+    if not _telegram_done(topic_dir):
+        if not (topic_dir / "telegram-post.md").is_file():
+            result["steps"]["telegram"] = {"skipped": True, "reason": "no_telegram-post.md"}
+        else:
+            result["steps"]["telegram_proxy"] = sync_telegram_proxy()
+            if not result["steps"]["telegram_proxy"].get("ok"):
+                result["steps"]["telegram"] = {
+                    "skipped": True,
+                    "reason": "telegram_proxy_sync_failed",
+                    "detail": result["steps"]["telegram_proxy"],
+                }
+                result["status"] = "failed"
+                return result
+            proc = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPTS / "send-telegram-post.py"),
+                    "--topic",
+                    topic,
+                    "--publish",
+                ],
+                cwd=PROJECT_ROOT,
+                capture_output=True,
+                text=True,
+            )
+            result["steps"]["telegram"] = {
+                "exit_code": proc.returncode,
+                "stdout_tail": proc.stdout[-2000:] if proc.stdout else "",
+                "stderr_tail": proc.stderr[-1000:] if proc.stderr else "",
+            }
+            if proc.returncode != 0:
+                result["status"] = "failed"
+                return result
+    else:
+        result["steps"]["telegram"] = {"skipped": True, "reason": "already_published"}
+
+    # 2–3) b17 + TenChat
     for script, key in (
         ("publish-b17-blog.py", "b17"),
         ("publish-tenchat-post.py", "tenchat"),
     ):
-        log_path = MEMORY / "output" / topic / f"{key}-publish-log.json"
-        if _log_status(log_path) == "published":
+        if _platform_done(topic_dir, key):
             result["steps"][key] = {"skipped": True, "reason": "already_published"}
+            continue
+        md_name = "b17-blog-post.md" if key == "b17" else "tenchat-post.md"
+        if not (topic_dir / md_name).is_file():
+            result["steps"][key] = {"skipped": True, "reason": f"no_{md_name}"}
             continue
         if key == "b17":
             b17_check = subprocess.run(
@@ -86,6 +184,21 @@ def run_publish(topic: str, *, submit: bool) -> dict:
                     "skipped": True,
                     "reason": "b17_not_accessible",
                     "detail": (b17_check.stdout or b17_check.stderr)[-800:],
+                }
+                result["status"] = "failed"
+                return result
+        if key == "tenchat":
+            ten_check = subprocess.run(
+                [sys.executable, str(SCRIPTS / "check-tenchat-access.py")],
+                cwd=PROJECT_ROOT,
+                capture_output=True,
+                text=True,
+            )
+            if ten_check.returncode != 0:
+                result["steps"][key] = {
+                    "skipped": True,
+                    "reason": "tenchat_not_ready",
+                    "detail": (ten_check.stdout or ten_check.stderr)[-800:],
                 }
                 result["status"] = "failed"
                 return result
@@ -112,11 +225,12 @@ def git_push_changes(topic: str) -> dict:
         f"posts-emdr-memory/output/{topic}/",
         "posts-emdr-memory/profile/b17-posts-registry.md",
         "posts-emdr-memory/profile/tenchat-posts-registry.md",
+        "posts-emdr-memory/profile/telegram-posts-registry.md",
         "posts-emdr-memory/topics/short-blog-queue.md",
         "posts-emdr-memory/topics/short-blog-published.md",
     ]
     subprocess.run(["git", "add", *paths], cwd=PROJECT_ROOT, check=False)
-    msg = f"browser-worker: published {topic} (b17+tenchat)"
+    msg = f"browser-worker: published {topic} (tg+b17+tenchat)"
     commit = subprocess.run(
         ["git", "commit", "-m", msg],
         cwd=PROJECT_ROOT,
@@ -139,7 +253,7 @@ def git_push_changes(topic: str) -> dict:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Publish deferred b17/TenChat from VPS")
+    parser = argparse.ArgumentParser(description="Publish deferred Telegram/b17/TenChat from VPS")
     parser.add_argument("--topic", help="Single topic id (default: all pending)")
     parser.add_argument("--submit", action="store_true", help="Auto-click Save/Publish")
     parser.add_argument("--finish", action="store_true", help="Registries + queue after publish")

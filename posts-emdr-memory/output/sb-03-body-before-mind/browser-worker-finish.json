@@ -1,13 +1,9 @@
 {
   "topic": "sb-03-body-before-mind",
   "status": "browser_worker_finished",
-  "date": "2026-07-28",
+  "date": "2026-07-30",
   "b17_url": "https://www.b17.ru/my_blog.php?mod=edit",
   "tenchat_url": "https://tenchat.ru/editor",
-  "site_url": "https://morozovanatalia.ru/anxiety",
-  "queue": {
-    "exit_code": 0,
-    "stdout": "OK marked published: sb-03-body-before-mind → short-blog-published.md",
-    "stderr": ""
-  }
+  "site_url": "https://morozovanatalia.ru/Момент, когда тело узнаёт о тревоге раньше головы",
+  "queue": null
 }

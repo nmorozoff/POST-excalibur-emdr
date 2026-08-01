@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Minimal webhook: cloud automation → instant VPS phase 3 (no Mac).
+"""Minimal webhook: cloud automation → instant VPS phase 3 (Telegram+b17+TenChat).
 
-Usage on VPS (systemd or screen):
-  export VPS_WEBHOOK_SECRET=your-secret
+Usage on VPS (systemd):
+  EnvironmentFile=.../browser.env.local
   python3 scripts/vps-webhook-server.py --port 8787
 
-Cloud automation (last step):
+Cloud automation (last step after git push):
   curl -fsS -X POST "http://195.209.210.45:8787/publish" \\
     -H "Authorization: Bearer $VPS_WEBHOOK_SECRET" \\
     -H "Content-Type: application/json" \\
-    -d '{"topic":"sb-04-what-if-phrase"}'
+    -d '{"topic":"sb-05-tolerate-uncertainty"}'
 """
 
 from __future__ import annotations
@@ -24,6 +24,43 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 WORKER = PROJECT_ROOT / "scripts" / "run-linux-browser-worker.sh"
+
+
+def _git_pull() -> dict:
+    env_file = PROJECT_ROOT / "posts-emdr-memory" / "github.env.local"
+    env = os.environ.copy()
+    if env_file.is_file():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            env[k.strip()] = v.strip().strip('"').strip("'")
+    token = env.get("GITHUB_TOKEN", "").strip()
+    if not (PROJECT_ROOT / ".git").is_dir():
+        return {"ok": False, "reason": "no_git"}
+    if token:
+        url = f"https://{token}@github.com/nmorozoff/POST-excalibur-emdr.git"
+        proc = subprocess.run(
+            ["git", "pull", url, "main"],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+    else:
+        proc = subprocess.run(
+            ["git", "pull", "--ff-only", "origin", "main"],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+    return {
+        "ok": proc.returncode == 0,
+        "stdout_tail": (proc.stdout or "")[-500:],
+        "stderr_tail": (proc.stderr or "")[-500:],
+    }
 
 
 class WebhookHandler(BaseHTTPRequestHandler):
@@ -41,6 +78,12 @@ class WebhookHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+
+    def do_GET(self) -> None:  # noqa: N802
+        if self.path in ("/health", "/health/", "/"):
+            self._json(200, {"ok": True, "service": "posts-emdr-webhook"})
+            return
+        self._json(404, {"error": "not found"})
 
     def do_POST(self) -> None:  # noqa: N802
         if self.path not in ("/publish", "/publish/"):
@@ -60,7 +103,22 @@ class WebhookHandler(BaseHTTPRequestHandler):
         topic = (data.get("topic") or "").strip()
         env = os.environ.copy()
         env["POSTS_EMDR_ROOT"] = str(PROJECT_ROOT)
+        pull = _git_pull()
+
         if topic:
+            # cover may be gitignored — fetch from site/FTP
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(PROJECT_ROOT / "scripts" / "fetch-topic-cover.py"),
+                    "--topic",
+                    topic,
+                ],
+                cwd=PROJECT_ROOT,
+                capture_output=True,
+                text=True,
+                env=env,
+            )
             cmd = [
                 sys.executable,
                 str(PROJECT_ROOT / "scripts" / "publish-browser-deferred.py"),
@@ -68,6 +126,7 @@ class WebhookHandler(BaseHTTPRequestHandler):
                 topic,
                 "--submit",
                 "--finish",
+                "--git-push",
             ]
         else:
             cmd = [str(WORKER)]
@@ -78,6 +137,7 @@ class WebhookHandler(BaseHTTPRequestHandler):
             {
                 "ok": proc.returncode == 0,
                 "topic": topic or None,
+                "git_pull": pull,
                 "stdout_tail": (proc.stdout or "")[-3000:],
                 "stderr_tail": (proc.stderr or "")[-1500:],
             },
@@ -93,9 +153,17 @@ def main() -> None:
     parser.add_argument("--port", type=int, default=8787)
     args = parser.parse_args()
 
-    secret = os.environ.get("VPS_WEBHOOK_SECRET", "").strip()
+    secret = os.environ.get("VPS_WEBHOOK_SECRET", "").strip().strip('"')
     if not secret:
-        raise SystemExit("Set VPS_WEBHOOK_SECRET in environment")
+        # fallback: browser.env.local
+        env_path = PROJECT_ROOT / "posts-emdr-memory" / "browser.env.local"
+        if env_path.is_file():
+            for line in env_path.read_text(encoding="utf-8").splitlines():
+                if line.strip().startswith("VPS_WEBHOOK_SECRET="):
+                    secret = line.split("=", 1)[1].strip().strip('"').strip("'")
+                    break
+    if not secret:
+        raise SystemExit("Set VPS_WEBHOOK_SECRET in environment or browser.env.local")
 
     WebhookHandler.secret = secret
     server = HTTPServer((args.host, args.port), WebhookHandler)

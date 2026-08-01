@@ -88,10 +88,29 @@ def run_preflight(*, strict: bool = True) -> dict:
                 checks["ftp"]["probe"] = {"ok": False, "error": str(exc)}
                 checks["ftp"]["upload_ready"] = False
 
+    from posts_emdr_env import REFERENCE_MANIFEST, reference_slot_count
+
     ref = reference_image_path()
+    manifest_ok = REFERENCE_MANIFEST.is_file()
+    slot_files = 0
+    if manifest_ok:
+        import json
+
+        try:
+            data = json.loads(REFERENCE_MANIFEST.read_text(encoding="utf-8"))
+            for item in data.get("slots") or []:
+                p = ref.parent / str(item.get("file", ""))
+                if p.is_file():
+                    slot_files += 1
+        except (json.JSONDecodeError, OSError):
+            pass
     checks["reference_image"] = {
         "ok": ref.is_file(),
         "path": str(ref),
+        "manifest": str(REFERENCE_MANIFEST) if manifest_ok else None,
+        "rotation_slots_ready": slot_files,
+        "rotation_slots_total": reference_slot_count(),
+        "rotation_ok": slot_files >= reference_slot_count() or not manifest_ok,
     }
 
     browser = {

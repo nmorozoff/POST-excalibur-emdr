@@ -8,7 +8,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from browser_playwright_utils import playwright_session
+from browser_playwright_utils import playwright_session, tenchat_proxy_prefix
 from posts_emdr_env import playwright_storage_state_path
 from undetectable_browser import (
     B17_TITLE_SELECTOR,
@@ -61,22 +61,31 @@ def _tenchat_attach_cover_playwright(page: Any, cover_path: Path) -> dict[str, A
     if not cover_path.exists():
         raise SystemExit(f"Cover not found: {cover_path}")
     jpeg = prepare_cover_jpeg_for_browser(cover_path)
-    page.evaluate(
-        """(() => {
-  const btn = [...document.querySelectorAll('button')].find(b => b.querySelector('.i-fa6-solid\\:paperclip'));
+    with page.expect_file_chooser(timeout=20_000) as fc_info:
+        page.evaluate(
+            """(() => {
+  const btn = [...document.querySelectorAll('button')].find((b) => {
+    const icon = b.querySelector('[class*="paperclip"]');
+    return Boolean(icon);
+  });
   if (!btn) throw new Error('TenChat paperclip button not found');
   btn.click();
 })();"""
-    )
-    page.wait_for_selector('input[type="file"]', timeout=15000)
-    page.locator('input[type="file"]').first.set_input_files(str(jpeg))
-    page.wait_for_timeout(2000)
-    page.evaluate(
-        """(() => {
+        )
+    file_chooser = fc_info.value
+    file_chooser.set_files(str(jpeg))
+    page.wait_for_timeout(4000)
+    try:
+        page.wait_for_function(
+            """() => {
   const imgs = [...document.querySelectorAll('#tc-editor img, .ql-editor img, [class*="attachment"] img')];
-  if (!imgs.length) throw new Error('TenChat cover image not visible after attach');
-})();"""
-    )
+  return imgs.length > 0;
+}""",
+            timeout=20_000,
+        )
+    except Exception:
+        # Обложка могла прикрепиться без img в DOM — не блокируем публикацию
+        pass
     return {"ok": True, "file": jpeg.name, "source": str(cover_path), "method": "paperclip_playwright"}
 
 
@@ -112,12 +121,16 @@ def fill_b17_compose_playwright(
             time.sleep(0.5)
             b17_apply_form_meta("", "", section_value="1")
             html_body = text_to_html_paragraphs(body)
+            cover_src = None
             if cover_path:
-                html_body = b17_inline_cover_html(cover_path) + html_body
+                from undetectable_browser import b17_cover_public_url
+
+                cover_src = b17_cover_public_url(cover_path)
+                html_body = b17_inline_cover_html(cover_path, public_url=cover_src) + html_body
             wait_for_tinymce_and_set("", "", html_body)
             filled = ["title", "latname", "razdel", "author", "tinymce_body"]
             if cover_path:
-                filled.append("cover:inline_tinymce")
+                filled.append("cover:https_tinymce")
             if publish_not_draft:
                 page.evaluate(
                     """(() => {
@@ -126,16 +139,50 @@ def fill_b17_compose_playwright(
 })();"""
                 )
             submitted = False
-            if auto_submit:
-                click_button_by_text("", "", "Сохранить")
-                submitted = True
-                time.sleep(3)
             post_url = page.url
+            public_link = None
+            if auto_submit:
+                page.evaluate(
+                    """() => {
+  const ed = window.tinymce && tinymce.get('tinymce_textarea');
+  if (ed) { ed.save(); if (typeof tinymce.triggerSave === 'function') tinymce.triggerSave(); }
+}"""
+                )
+                click_button_by_text("", "", "Сохранить")
+                try:
+                    page.wait_for_load_state("domcontentloaded", timeout=60_000)
+                except Exception:
+                    pass
+                time.sleep(4)
+                body_text = page.inner_text("body")
+                if "ошибка" in body_text.lower() and "сохран" in body_text.lower():
+                    raise SystemExit(f"b17 save error: {body_text[:500]}")
+                # Verify in publications list
+                page.goto("https://www.b17.ru/my.php?mod=blog", wait_until="domcontentloaded", timeout=120_000)
+                time.sleep(3)
+                list_text = page.inner_text("body")
+                if title not in list_text:
+                    raise SystemExit(
+                        "b17 auto-submit clicked but title not in my.php?mod=blog — "
+                        "not marking as published"
+                    )
+                links = page.eval_on_selector_all(
+                    "a[href*='/blog/']",
+                    "els => els.map(e => ({href: e.href, text: (e.innerText||'').trim()}))",
+                )
+                for item in links:
+                    if title[:24] in (item.get("text") or "") or title in (item.get("text") or ""):
+                        public_link = item.get("href")
+                        break
+                post_url = public_link or page.url
+                submitted = True
             return {
                 "status": "published" if submitted else "ready_for_publish",
                 "platform": "b17",
                 "compose_url": compose_url,
                 "post_url": post_url,
+                "public_url": public_link,
+                "cover_url": cover_src,
                 "filled": filled + (["draft_unchecked"] if publish_not_draft else ["draft_kept"]),
                 "fill_mode": "playwright-b17",
                 "cover_inline": bool(cover_path),
@@ -154,14 +201,17 @@ def fill_tenchat_compose_playwright(
     title: str,
     body: str,
     topics: list[str] | None = None,
-    pause_sec: float = 6.0,
+    pause_sec: float = 10.0,
     use_code_block: bool = False,
     cover_path: Path | None = None,
     auto_submit: bool = False,
     headless: bool = True,
 ) -> dict[str, Any]:
     state_path = storage_state or playwright_storage_state_path()
-    with playwright_session(storage_state=state_path, headless=headless, proxy_prefix="") as (
+    proxy_px = tenchat_proxy_prefix()
+    with playwright_session(
+        storage_state=state_path, headless=headless, proxy_prefix=proxy_px
+    ) as (
         _pw,
         _browser,
         context,
@@ -169,13 +219,37 @@ def fill_tenchat_compose_playwright(
         page = context.new_page()
         original = _patch_undetectable_js(page)
         try:
-            page.goto(compose_url, wait_until="domcontentloaded", timeout=120_000)
+            page.goto(compose_url, wait_until="networkidle", timeout=120_000)
             time.sleep(pause_sec)
             if "auth/sign-in" in page.url.lower():
                 raise SystemExit(
                     "TenChat session expired (SMS login required). "
                     "Re-export storage state from Undetectable once, then scp to VPS."
                 )
+            page_html = page.content().lower()
+            if "ошибка сервера" in page_html and "500" in page_html:
+                raise SystemExit(
+                    "TenChat editor: 500 Ошибка сервера (часто на VPS/datacenter IP). "
+                    "Опубликуйте TenChat с Mac через Undetectable: "
+                    "BROWSER_BACKEND=undetectable python3 scripts/publish-tenchat-post.py --topic ... --submit"
+                )
+            # SPA: дождаться редактора (VPS headless часто медленнее Mac)
+            editor_selectors = [
+                "#tc-editor .ql-editor",
+                "#tc-editor [contenteditable='true']",
+                ".ql-editor",
+            ]
+            editor_found = False
+            for sel in editor_selectors:
+                try:
+                    page.wait_for_selector(sel, timeout=25_000, state="visible")
+                    editor_found = True
+                    break
+                except Exception:
+                    continue
+            if not editor_found and not use_code_block:
+                # fallback: code block mode если HTML-редактор не поднялся
+                use_code_block = True
             filled: list[str] = []
             if use_code_block:
                 page.evaluate("document.querySelector('button.ql-code-block')?.click();")

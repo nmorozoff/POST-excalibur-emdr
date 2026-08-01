@@ -55,8 +55,32 @@ def b17_proxy_configured() -> bool:
     return _proxy_dict("B17_") is not None or _proxy_dict("") is not None
 
 
+def residential_proxy_configured() -> bool:
+    return b17_proxy_configured() or _proxy_dict("TENCHAT_") is not None
+
+
+def tenchat_proxy_prefix() -> str:
+    """TenChat на VPS: только через residential (обычно тот же ASocks, что и b17)."""
+    env = _browser_env()
+    if env.get("TENCHAT_PROXY_SERVER", "").strip():
+        return "TENCHAT_"
+    if env.get("TENCHAT_USE_B17_PROXY", "1").strip().lower() not in {"0", "false", "no"}:
+        if b17_proxy_configured():
+            return "B17_"
+    return ""
+
+
 def b17_proxy_for_urllib() -> dict[str, str] | None:
-    proxy = _proxy_dict("B17_") or _proxy_dict("")
+    return _urllib_proxies_from_prefix("B17_") or _urllib_proxies_from_prefix("")
+
+
+def telegram_proxy_for_urllib() -> dict[str, str] | None:
+    """Telegram Bot API через residential (ASocks KZ и т.п.), не с Mac."""
+    return _urllib_proxies_from_prefix("TELEGRAM_") or b17_proxy_for_urllib()
+
+
+def _urllib_proxies_from_prefix(prefix: str) -> dict[str, str] | None:
+    proxy = _proxy_dict(prefix)
     if not proxy:
         return None
     server = proxy["server"]
@@ -77,26 +101,35 @@ def playwright_session(
     storage_state: Path | None = None,
     headless: bool | None = None,
     proxy_prefix: str = "",
+    require_storage: bool = True,
 ) -> Iterator[tuple[Any, Any, Any]]:
     """Yield (playwright, browser, context). Caller owns pages."""
     from playwright.sync_api import sync_playwright
 
     state_path = storage_state or playwright_storage_state_path()
-    if not state_path.is_file():
+    if require_storage and not state_path.is_file():
         raise SystemExit(
             f"Playwright storage state not found: {state_path}. "
-            "Run export-playwright-storage-from-undetectable.py once, then scp to VPS."
+            "Run browser_bootstrap_sessions.py on VPS, then save storage state."
         )
 
     proxy = _proxy_dict(proxy_prefix)
     launch_headless = browser_headless() if headless is None else headless
 
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=launch_headless, proxy=proxy)
-        context = browser.new_context(storage_state=str(state_path))
+        browser = pw.chromium.launch(
+            headless=launch_headless,
+            proxy=proxy,
+            args=["--disable-blink-features=AutomationControlled"],
+        )
+        ctx_kwargs: dict[str, Any] = {"locale": "ru-RU"}
+        if require_storage and state_path.is_file():
+            ctx_kwargs["storage_state"] = str(state_path)
+        context = browser.new_context(**ctx_kwargs)
         try:
             yield pw, browser, context
         finally:
-            context.storage_state(path=str(state_path))
+            if require_storage and state_path.is_file():
+                context.storage_state(path=str(state_path))
             context.close()
             browser.close()

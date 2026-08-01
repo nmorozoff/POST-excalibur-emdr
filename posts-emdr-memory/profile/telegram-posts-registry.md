@@ -9,6 +9,9 @@
 
 ## Опубликованные
 
+| sb-04-what-if-phrase | 2026-08-01 | Фраза «а вдруг» и как она запускает сценарий в голове | @natalia_morozova_psy | 2023 | https://t.me/natalia_morozova_psy/2023 | https://morozovanatalia.ru/anxiety | тревога,сценарий,а вдруг,EMDR,стресс,психология |
+| sb-04-what-if-phrase | 2026-08-01 | Фраза «а вдруг» и как она запускает сценарий в голове | @nmorozova_emdr | 111 | https://t.me/nmorozova_emdr/111 | https://morozovanatalia.ru/anxiety | тревога,сценарий,а вдруг,EMDR,стресс,психология |
+| sb-04-what-if-phrase | 2026-08-01 | Фраза «а вдруг» и как она запускает сценарий в голове | @morozova_emdr | 609 | https://t.me/morozova_emdr/609 | https://morozovanatalia.ru/anxiety | тревога,сценарий,а вдруг,EMDR,стресс,психология |
 | sb-03-body-before-mind | 2026-07-28 | Момент, когда тело узнаёт о тревоге раньше головы | @natalia_morozova_psy | 2021 | https://t.me/natalia_morozova_psy/2021 | https://morozovanatalia.ru/anxiety | тревога,тело,нервная система,EMDR,стресс,психология |
 | sb-03-body-before-mind | 2026-07-28 | Момент, когда тело узнаёт о тревоге раньше головы | @nmorozova_emdr | 109 | https://t.me/nmorozova_emdr/109 | https://morozovanatalia.ru/anxiety | тревога,тело,нервная система,EMDR,стресс,психология |
 | sb-03-body-before-mind | 2026-07-28 | Момент, когда тело узнаёт о тревоге раньше головы | @morozova_emdr | 607 | https://t.me/morozova_emdr/607 | https://morozovanatalia.ru/anxiety | тревога,тело,нервная система,EMDR,стресс,психология |

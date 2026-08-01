@@ -326,3 +326,49 @@ files_changed:
 checks_run:
 - py_compile all new scripts
 
+---
+
+## INC-20260801-2150-b17-base64-save-rejected
+status: fixed
+run_date: 2026-08-01
+role: script
+topic: sb-04-what-if-phrase
+severity: high
+category: b17
+
+### What went wrong
+- Лог писал `status: published` после клика «Сохранить», но заметки на b17 не было.
+- Ошибка формы: «Ошибка сохранения встроенного в текст изображения» — из‑за `data:image;base64` в TinyMCE.
+- То же ложное `published` у sb-03 (заметки тоже нет в списке).
+
+### How the agent recovered this run
+- Обложка через HTTPS `social-covers/{topic}.jpg`.
+- Verification: заголовок должен появиться в `my.php?mod=blog`, иначе не `published`.
+- sb-04 опубликован: https://www.b17.ru/blog/fraza_a_vdrug_i_kak_ona_zapuskaet_scenariy_v_golove/
+
+### Durable fix needed before next run
+- Запретить base64 inline для b17; HTTPS cover URL + post-submit verification.
+
+### Suggested files to inspect/change
+- `scripts/undetectable_browser.py`
+- `scripts/playwright_browser.py`
+- `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
+- `posts-emdr-memory/profile/b17-blog-post-prompt.md`
+
+### Secrets
+- none recorded
+
+### Fixic resolution
+fixed_at: 2026-08-01
+fix_summary:
+- `b17_inline_cover_html` → HTTPS URL (не base64).
+- TinyMCE `ed.save()` / `triggerSave` перед submit.
+- Playwright: fail если title нет в списке публикаций.
+files_changed:
+- scripts/undetectable_browser.py
+- scripts/playwright_browser.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/profile/b17-blog-post-prompt.md
+checks_run:
+- live publish sb-04 + public URL 200
+

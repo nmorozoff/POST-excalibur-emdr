@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -73,12 +74,26 @@ ENV_SPECS: dict[str, list[str]] = {
         "B17_PROXY_SERVER",
         "B17_PROXY_USERNAME",
         "B17_PROXY_PASSWORD",
+        "TELEGRAM_PROXY_SERVER",
+        "TELEGRAM_PROXY_USERNAME",
+        "TELEGRAM_PROXY_PASSWORD",
+        "TELEGRAM_PROXY_CONNECT_PORT",
+        "TELEGRAM_ASOCKS_PORT_NAME",
+        "TELEGRAM_ASOCKS_PORT_ID",
+        "ASOCKS_API_BASE",
+        "ASOCKS_API_KEY",
+        "ASOCKS_PORT_NAME",
+        "ASOCKS_PORT_ID",
+        "B17_PROXY_CONNECT_PORT",
         "VPS_WEBHOOK_SECRET",
     ],
     "github.env.local": ["GITHUB_TOKEN"],
 }
 
 DEFAULT_REFERENCE = MEMORY / "assets" / "reference" / "portrait.jpg"
+REFERENCE_DIR = MEMORY / "assets" / "reference"
+REFERENCE_MANIFEST = REFERENCE_DIR / "manifest.json"
+_TOPIC_NUM_RE = re.compile(r"(?:^|[-_])sb[-_]?(\d+)", re.I)
 
 
 def _parse_env_file(path: Path) -> dict[str, str]:
@@ -162,13 +177,69 @@ def materialize_env_files(*, memory_dir: Path | None = None, force: bool = False
     return written
 
 
-def reference_image_path() -> Path:
+def post_number_from_topic(topic_id: str | None) -> int | None:
+    """sb-04-foo → 4; legacy 01-panic-night → 1."""
+    if not topic_id:
+        return None
+    m = _TOPIC_NUM_RE.search(topic_id)
+    if m:
+        return int(m.group(1))
+    m = re.match(r"^(\d+)", topic_id)
+    if m:
+        return int(m.group(1))
+    return None
+
+
+def reference_slot_count() -> int:
+    if not REFERENCE_MANIFEST.is_file():
+        return 8
+    try:
+        data = json.loads(REFERENCE_MANIFEST.read_text(encoding="utf-8"))
+        slots = data.get("slots") or []
+        return max(len(slots), 1)
+    except (json.JSONDecodeError, OSError):
+        return 8
+
+
+def reference_slot_for_topic(topic_id: str | None) -> int:
+    """1-based slot for portrait rotation (8 slots by default)."""
+    n = post_number_from_topic(topic_id)
+    if n is None:
+        return 1
+    count = reference_slot_count()
+    return ((n - 1) % count) + 1
+
+
+def _reference_from_manifest(slot: int) -> Path | None:
+    if not REFERENCE_MANIFEST.is_file():
+        return None
+    try:
+        data = json.loads(REFERENCE_MANIFEST.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+    slots = data.get("slots") or []
+    for item in slots:
+        if int(item.get("n", 0)) == slot:
+            path = REFERENCE_DIR / str(item.get("file", ""))
+            if path.is_file():
+                return path
+    fallback_name = data.get("fallback", "portrait.jpg")
+    fallback = REFERENCE_DIR / fallback_name
+    return fallback if fallback.is_file() else None
+
+
+def reference_image_path(topic_id: str | None = None) -> Path:
+    """Portrait for Runware i2i. Rotates by topic unless RUNWARE_REFERENCE_IMAGE is set."""
     env = load_env("runware.env.local")
     raw = env.get("RUNWARE_REFERENCE_IMAGE", "").strip()
     if raw:
         p = Path(raw)
         if p.is_file():
             return p
+    if topic_id:
+        rotated = _reference_from_manifest(reference_slot_for_topic(topic_id))
+        if rotated is not None:
+            return rotated
     if DEFAULT_REFERENCE.is_file():
         return DEFAULT_REFERENCE
     return Path(raw) if raw else DEFAULT_REFERENCE

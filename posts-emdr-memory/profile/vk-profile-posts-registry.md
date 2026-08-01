@@ -10,6 +10,7 @@
 
 ## Опубликованные
 
+| sb-04-what-if-phrase | 2026-08-01 | Фраза «а вдруг» и как она запускает сценарий в голове | 650 | https://vk.com/wall218367867_650 | https://morozovanatalia.ru/anxiety | тревога,сценарий,а вдруг,EMDR,стресс,психология |
 | sb-03-body-before-mind | 2026-07-28 | Момент, когда тело узнаёт о тревоге раньше головы | 649 | https://vk.com/wall218367867_649 | https://morozovanatalia.ru/anxiety | тревога,тело,нервная система,EMDR,стресс,психология |
 | sb-02-anxiety-as-responsibility | 2026-07-25 | Как тревога маскируется под «просто ответственность» — гиперконтроль | 648 | https://vk.com/wall218367867_648 | https://morozovanatalia.ru/anxiety | тревога,гиперконтроль,ответственность,EMDR,стресс,психология |
 | topic_id | дата | заголовок | post_id | url | site_url | теги |

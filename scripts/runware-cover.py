@@ -21,6 +21,7 @@ import argparse
 import base64
 import json
 import os
+import re
 import sys
 import uuid
 from pathlib import Path
@@ -124,6 +125,11 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description="Runware GPT Image 2 cover generator")
     parser.add_argument("--prompt-file", type=Path, required=True)
+    parser.add_argument(
+        "--topic",
+        default=None,
+        help="topic_id for reference rotation (e.g. sb-04-what-if-phrase)",
+    )
     parser.add_argument("--reference", type=Path, default=None, help="Portrait reference (i2i)")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--width", type=int, default=default_width, help="default from runware.env.local")
@@ -142,9 +148,28 @@ def main() -> None:
         import sys
 
         sys.path.insert(0, str(Path(__file__).resolve().parent))
-        from posts_emdr_env import reference_image_path
+        from posts_emdr_env import reference_image_path, reference_slot_for_topic
 
-        reference = reference_image_path()
+        topic = args.topic
+        if topic is None:
+            stem = args.output.parent.name
+            if stem.startswith("sb-") or re.match(r"^\d", stem):
+                topic = stem
+        reference = reference_image_path(topic)
+        if topic:
+            print(
+                json.dumps(
+                    {
+                        "reference_rotation": {
+                            "topic": topic,
+                            "slot": reference_slot_for_topic(topic),
+                            "path": str(reference),
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+                file=sys.stderr,
+            )
     if reference and not reference.exists():
         raise SystemExit(f"Reference not found: {reference}")
 

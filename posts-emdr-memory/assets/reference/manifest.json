@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "description": "Ротация портретов для Runware. Файлы: portrait-01.jpg … portrait-08.jpg (scripts/sync-reference-photos.sh)",
+  "slots": [
+  {"n": 1, "file": "portrait-01.jpg", "source_hint": "0C2A3279.jpg"},
+  {"n": 2, "file": "portrait-02.jpg", "source_hint": "0C2A3302.jpg"},
+  {"n": 3, "file": "portrait-03.jpg", "source_hint": "0C2A3049.jpg"},
+  {"n": 4, "file": "portrait-04.jpg", "source_hint": "0C2A3054.jpg"},
+  {"n": 5, "file": "portrait-05.jpg", "source_hint": "DSC01047.JPG"},
+  {"n": 6, "file": "portrait-06.jpg", "source_hint": "DSC01066.JPG"},
+  {"n": 7, "file": "portrait-07.jpg", "source_hint": "DSC09654.JPG"},
+  {"n": 8, "file": "portrait-08.jpg", "source_hint": "0C2A2869.jpg"}
+  ],
+  "fallback": "portrait.jpg"
+}

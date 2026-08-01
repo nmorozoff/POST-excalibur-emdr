@@ -10,8 +10,8 @@ Steps:
   1. materialize_cloud_env (from Cursor Secrets)
   2. cloud_preflight
   3. runware cover (if missing)
-  4. Max → Telegram → VK (FTP + API) → Facebook
-  5. b17 + TenChat if browser backend ready (Playwright VPS or Undetectable)
+  4. Max → VK (FTP + MCP handoff) → Facebook
+  5. Telegram + b17 + TenChat → VPS (ASocks / Playwright), не Cloud
 """
 
 from __future__ import annotations
@@ -71,17 +71,17 @@ def ensure_cover(topic: str) -> dict:
         return {"status": "exists", "path": str(cover)}
     if not prompt.exists():
         raise SystemExit(f"Missing {prompt}")
-    ref = reference_image_path()
+    ref = reference_image_path(topic)
     if not ref.is_file():
         raise SystemExit(f"Reference image missing: {ref}")
     proc = run(
         [
             sys.executable,
             str(SCRIPTS / "runware-cover.py"),
+            "--topic",
+            topic,
             "--prompt-file",
             str(prompt),
-            "--reference",
-            str(ref),
             "--output",
             str(cover),
         ]
@@ -128,37 +128,40 @@ def write_vk_mcp_handoff(topic: str, photo_url: str) -> Path:
 
 def write_browser_local_handoff(topic: str) -> Path:
     topic_dir = MEMORY / "output" / topic
-    body = f"""# Browser publish — b17 + TenChat (Linux VPS)
+    body = f"""# VPS publish — Telegram + b17 + TenChat
 
 Тема: `{topic}`
 
-Cloud не опубликовал b17/TenChat — на VPS должен отработать **Playwright worker**.
+Cloud опубликовал Макс / VK(MCP) / Facebook. Осталось на **VPS**:
 
-## Linux VPS (рекомендуется)
+1. Telegram ×3 (ASocks KZ → `api.telegram.org`)
+2. b17 (Playwright + residential RU)
+3. TenChat (Playwright)
 
-См. `posts-emdr-memory/profile/browser-linux-vps-setup.md`
+## Триггер
+
+Webhook (сразу после `git push`):
+
+```bash
+curl -fsS -X POST "http://195.209.210.45:8787/publish" \\
+  -H "Authorization: Bearer $VPS_WEBHOOK_SECRET" \\
+  -H "Content-Type: application/json" \\
+  -d '{{"topic":"{topic}"}}'
+```
+
+Или cron ≤10 мин: `scripts/run-linux-browser-worker.sh`
+
+## Вручную на VPS
 
 ```bash
 cd ~/POST-excalibur-emdr
-git pull --ff-only
 source .venv-browser/bin/activate
+python3 scripts/asocks_sync_proxy.py --target telegram
 python3 scripts/fetch-topic-cover.py --topic {topic}
-python3 scripts/publish-browser-deferred.py --topic {topic} --submit
+python3 scripts/publish-browser-deferred.py --topic {topic} --submit --finish --git-push
 ```
 
-Или дождаться cron (~10 мин).
-
-## Mac (fallback, Undetectable)
-
-```bash
-cd "{PROJECT_ROOT}"
-python3 scripts/publish-b17-blog.py --topic {topic} --submit
-python3 scripts/publish-tenchat-post.py --topic {topic} --submit
-```
-
-## После публикации
-
-Обновить реестры b17/tenchat и `short-blog-queue.md`.
+См. `posts-emdr-memory/profile/cloud-publish-phases.md`
 """
     path = topic_dir / "browser-local-handoff.md"
     path.write_text(body, encoding="utf-8")
@@ -195,14 +198,12 @@ def publish_topic(
         )
     )
 
-    tg_cmd = [
-        sys.executable,
-        str(SCRIPTS / "send-telegram-post.py"),
-        "--topic",
-        topic,
-        *publish_flag,
-    ]
-    log["steps"]["telegram"] = step_json(run(tg_cmd, check=True))
+    # Telegram всегда на VPS (api.telegram.org блокируется с Cloud/датацентра).
+    log["steps"]["telegram"] = {
+        "deferred": True,
+        "reason": "vps_asocks_kz",
+        "note": "publish-browser-deferred.py на VPS",
+    }
 
     vk_flags = ["--dry-run"] if dry_run else []
     vk_upload = run(
@@ -284,15 +285,16 @@ def publish_topic(
             run([sys.executable, str(SCRIPTS / "publish-tenchat-post.py"), "--topic", topic, *submit])
         )
 
-    deferred: list[str] = []
+    deferred: list[str] = ["telegram"]
     if not browser_ok:
         deferred.extend(["b17", "tenchat"])
-        if not dry_run:
-            log["steps"]["browser_local_handoff"] = str(write_browser_local_handoff(topic))
+    if not dry_run:
+        # Всегда пишем VPS handoff: Telegram + (часто) b17/TenChat
+        log["steps"]["browser_local_handoff"] = str(write_browser_local_handoff(topic))
     if log.get("steps", {}).get("vk_mode") == "mcp_handoff":
         deferred.append("vk_mcp")
 
-    if not dry_run and browser_ok:
+    if not dry_run and browser_ok and "telegram" not in deferred:
         log["status"] = "published_all"
     elif not dry_run:
         log["status"] = "published_scripts_partial"
