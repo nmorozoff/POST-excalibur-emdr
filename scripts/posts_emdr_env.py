@@ -35,6 +35,13 @@ ENV_SPECS: dict[str, list[str]] = {
         "RUNWARE_COVER_QUALITY",
         "RUNWARE_REFERENCE_IMAGE",
     ],
+    "kie.env.local": [
+        "KIE_API_KEY",
+        "KIE_API_BASE",
+        "KIE_COVER_ASPECT_RATIO",
+        "KIE_COVER_RESOLUTION",
+        "KIE_REFERENCE_IMAGE",
+    ],
     "ftp.env.local": [
         "FTP_SERVER",
         "FTP_USERNAME",
@@ -125,7 +132,13 @@ def load_env(
         if val:
             data[key] = val
 
-    # RUNWARE_API_KEY also accepted bare in environ (runware-cover legacy)
+    # KIE_API_KEY also accepted bare in environ (cloud secrets)
+    if filename == "kie.env.local" and not data.get("KIE_API_KEY"):
+        bare = os.environ.get("KIE_API_KEY", "").strip()
+        if bare:
+            data["KIE_API_KEY"] = bare
+
+    # RUNWARE_API_KEY legacy
     if filename == "runware.env.local" and not data.get("RUNWARE_API_KEY"):
         bare = os.environ.get("RUNWARE_API_KEY", "").strip()
         if bare:
@@ -229,13 +242,17 @@ def _reference_from_manifest(slot: int) -> Path | None:
 
 
 def reference_image_path(topic_id: str | None = None) -> Path:
-    """Portrait for Runware i2i. Rotates by topic unless RUNWARE_REFERENCE_IMAGE is set."""
-    env = load_env("runware.env.local")
-    raw = env.get("RUNWARE_REFERENCE_IMAGE", "").strip()
-    if raw:
-        p = Path(raw)
-        if p.is_file():
-            return p
+    """Portrait for cover i2i (Kie/Runware). Rotates by topic unless KIE/RUNWARE override set."""
+    for env_name, key in (
+        ("kie.env.local", "KIE_REFERENCE_IMAGE"),
+        ("runware.env.local", "RUNWARE_REFERENCE_IMAGE"),
+    ):
+        env = load_env(env_name)
+        raw = env.get(key, "").strip()
+        if raw:
+            p = Path(raw)
+            if p.is_file():
+                return p
     if topic_id:
         rotated = _reference_from_manifest(reference_slot_for_topic(topic_id))
         if rotated is not None:

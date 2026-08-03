@@ -15,13 +15,14 @@ browser_navigate → https://gemini.google.com
 6. Сгенерировать → скачать PNG
 7. Сохранить: `posts-emdr-memory/output/{topic_id}/cover.png`
 
-## Fallback — MCP KV
+## Fallback — только если Kie недоступен
 
-```text
-CallMcpTool: user-mcp-kv / nano_banana_2
-  prompt: <из cover-prompt-template.md>
-  reference: <URL или upload>
-```
+**Запрещено:** референс = обложка предыдущего поста (`cover.png` sb-04 и т.д.) — ломает ротацию.
+
+**Правильно:** `python3 scripts/kie-cover.py --topic {id} --prompt-file ... --output .../cover.png`  
+Референс: `assets/reference/portrait-NN.jpg` по [`cover-reference-rotation.md`](../posts-emdr-memory/profile/cover-reference-rotation.md).
+
+MCP `nano_banana_2` — **не использовать** для MSP short-blog (нет гарантии ротации).
 
 ## Gate
 

@@ -21,7 +21,8 @@
 | `TELEGRAM_CHANNEL_UTM_SOURCES` | `tg1,tg2,tg3` |
 | `ZERNIO_API_KEY` | Facebook |
 | `ZERNIO_FACEBOOK_ACCOUNT_ID` | ID страницы FB |
-| `RUNWARE_API_KEY` | Обложки |
+| `RUNWARE_API_KEY` | Обложки (legacy, опционально) |
+| `KIE_API_KEY` | Обложки (основной, тот же что Carusel) |
 | `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_SERVER_DIR` | Обложка для VK/TG preview |
 | `VPS_WEBHOOK_SECRET` | Триггер фазы 3 на VPS |
 

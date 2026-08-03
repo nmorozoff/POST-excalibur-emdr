@@ -57,11 +57,19 @@
 
 **Правильно:** `mcp_auth` для `user-mcp-kv`, затем повторить вызов. Не логировать токены.
 
-## Runware / обложки
+## Обложки (Kie / Runware)
 
+- **Основной генератор:** `scripts/kie-cover.py` — Kie `gpt-image-2-image-to-image`, **5:4, 1K**, ключ `KIE_API_KEY` (Carusel или Cloud Secrets).
+- Ротация портрета: `assets/reference/portrait-NN.jpg` по `cover-reference-rotation.md` (sb-05 → portrait-05).
 - Одна `cover.png` на тему — только на шаге MAX.
 - Ротация одежды: `profile/cover-outfit-rotation.md` (без double-beige).
-- Не вызывать Runware повторно на TG/VK/FB/b17/TenChat.
+- Не вызывать генерацию повторно на TG/VK/FB/b17/TenChat.
+- **Запрещено:** MCP `nano_banana_2` с референсом = обложка прошлого поста (sb-04 cover → sb-05 выглядит как клон).
+- **Запрещено:** `portrait.jpg` как дефолт — это копия `portrait-01.jpg`; при сбое ротации всегда слот 1.
+
+## Runware (legacy)
+
+- `runware-cover.py` только если нет Kie. При `insufficientCredits` — не fallback на nano_banana; использовать `kie-cover.py`.
 
 ## b17 / TenChat: публикация
 

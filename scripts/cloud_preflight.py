@@ -58,7 +58,12 @@ def run_preflight(*, strict: bool = True) -> dict:
         "zernio.env.local",
         ["ZERNIO_API_KEY", "ZERNIO_FACEBOOK_ACCOUNT_ID"],
     )
+    checks["kie"] = _check_file("kie.env.local", ["KIE_API_KEY"])
     checks["runware"] = _check_file("runware.env.local", ["RUNWARE_API_KEY"])
+    checks["cover_api"] = {
+        "ok": checks["kie"]["ok"] or checks["runware"]["ok"],
+        "preferred": "kie" if checks["kie"]["ok"] else ("runware" if checks["runware"]["ok"] else "missing"),
+    }
     checks["ftp"] = _check_file(
         "ftp.env.local",
         ["FTP_SERVER", "FTP_USERNAME", "FTP_PASSWORD"],
@@ -133,11 +138,12 @@ def run_preflight(*, strict: bool = True) -> dict:
         browser["base_url"] = undetectable_url or "http://127.0.0.1:25325"
     checks["browser"] = browser
 
-    script_platforms = ("max", "telegram", "zernio", "runware", "ftp")
+    script_platforms = ("max", "telegram", "zernio", "ftp")
+    cover_ok = checks["cover_api"]["ok"]
     auto_ok = all(
         checks[p]["ok"]
         for p in script_platforms
-    ) and checks["telegram"].get("channels_configured") and checks["reference_image"]["ok"]
+    ) and checks["telegram"].get("channels_configured") and checks["reference_image"]["ok"] and cover_ok
 
     report = {
         "runtime": "cloud" if is_cloud_runtime() else "local",

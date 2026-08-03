@@ -27,14 +27,16 @@
 ./scripts/sync-reference-photos.sh
 ```
 
-Runware сам подберёт референс по `topic_id`:
+Runware сам подберёт референс по `topic_id` (legacy). **Основной путь — Kie:**
 
 ```bash
-python3 scripts/runware-cover.py \
+python3 scripts/kie-cover.py \
   --topic sb-04-what-if-phrase \
   --prompt-file posts-emdr-memory/output/sb-04-what-if-phrase/cover-prompt.txt \
   --output posts-emdr-memory/output/sb-04-what-if-phrase/cover.png
 ```
+
+Параметры: **5:4, 1K**. Ключ: `KIE_API_KEY` (`kie.env.local` или Carusel `.env`).
 
 Переопределение одного поста: `--reference path/to.jpg`
 

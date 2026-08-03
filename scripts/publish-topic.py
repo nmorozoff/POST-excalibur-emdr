@@ -9,7 +9,7 @@ Usage:
 Steps:
   1. materialize_cloud_env (from Cursor Secrets)
   2. cloud_preflight
-  3. runware cover (if missing)
+  3. kie cover (if missing) — gpt-image-2 via Kie.ai 5:4 1K
   4. Max → VK (FTP + MCP handoff) → Facebook
   5. Telegram + b17 + TenChat → VPS (ASocks / Playwright), не Cloud
 """
@@ -77,13 +77,15 @@ def ensure_cover(topic: str) -> dict:
     proc = run(
         [
             sys.executable,
-            str(SCRIPTS / "runware-cover.py"),
+            str(SCRIPTS / "kie-cover.py"),
             "--topic",
             topic,
             "--prompt-file",
             str(prompt),
             "--output",
             str(cover),
+            "--task-log",
+            str(topic_dir / "kie-cover-log.json"),
         ]
     )
     return {"status": "generated", "path": str(cover), "detail": step_json(proc)}
