@@ -17,11 +17,12 @@ if [[ -f posts-emdr-memory/github.env.local ]]; then
   source posts-emdr-memory/github.env.local
   set +a
 fi
-if [[ -d .git ]] && [[ -n "${GITHUB_TOKEN:-}" ]]; then
-  git pull "https://${GITHUB_TOKEN}@github.com/nmorozoff/POST-excalibur-emdr.git" main 2>/dev/null || \
-    git pull --ff-only origin main 2>/dev/null || true
-elif [[ -d .git ]]; then
-  git pull --ff-only origin main 2>/dev/null || true
+if [[ -d .git ]]; then
+  git stash push -u -m "vps-cron-auto" 2>/dev/null || true
+  if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+    git remote set-url origin "https://${GITHUB_TOKEN}@github.com/nmorozoff/POST-excalibur-emdr.git" 2>/dev/null || true
+  fi
+  git fetch origin main 2>/dev/null && git reset --hard FETCH_HEAD 2>/dev/null || true
 fi
 
 python3 scripts/browser_ensure_sessions.py --refresh || echo "WARN: session refresh failed (continue; per-platform checks apply)"

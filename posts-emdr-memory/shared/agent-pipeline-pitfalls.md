@@ -69,7 +69,8 @@
 
 ## Runware (legacy)
 
-- `runware-cover.py` только если нет Kie. При `insufficientCredits` — не fallback на nano_banana; использовать `kie-cover.py`.
+- MSP short-blog: **только** `scripts/kie-cover.py` (`publish-topic.py` → `ensure_cover`).
+- `runware-cover.py` — legacy, только если нет `KIE_API_KEY`. При `insufficientCredits` — не fallback на nano_banana; использовать `kie-cover.py` или пополнить кошелёк Runware (human).
 
 ## b17 / TenChat: публикация
 
@@ -114,3 +115,9 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 **Причина:** webhook ждал `publish-browser-deferred` синхронно в HTTP-потоке.
 
 **Правильно:** принять задачу (202) и гонять publish в background; cron worker не должен падать на `browser_ensure_sessions` из‑за TenChat (`|| true` / soft gate).
+
+## TenChat вне MSP short-blog (VPS phase 3)
+
+**Симптом:** `--finish` / deferred worker блокируются на `tenchat_not_ready` или `tenchat=published`.
+
+**Правильно:** MSP short-blog VPS worker — только Telegram + b17 (`publish-browser-deferred.py`, `browser_worker_finish.py`). TenChat — отдельно (Mac/ручной), не gate для очереди.
