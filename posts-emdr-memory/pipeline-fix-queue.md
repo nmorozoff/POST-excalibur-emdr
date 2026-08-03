@@ -372,3 +372,122 @@ files_changed:
 checks_run:
 - live publish sb-04 + public URL 200
 
+
+## INC-20260803-1030-runware-credits
+status: open
+run_date: 2026-08-03
+role: cover
+topic: sb-05-tolerate-uncertainty
+severity: medium
+category: runware
+
+### What went wrong
+- Runware API HTTP 400 `insufficientCredits` — обложка не сгенерировалась штатным `runware-cover.py`.
+
+### How the agent recovered this run
+- MCP `nano_banana_2` i2i (референс: публичная обложка sb-04) → `cover.png` 1280×1024.
+
+### Durable fix needed before next run
+- Пополнить баланс Runware (https://my.runware.ai/wallet) или зафиксировать MCP fallback в skill/скрипте.
+
+### Suggested files to inspect/change
+- `scripts/runware-cover.py`
+- `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
+
+### Secrets
+- none recorded
+
+## INC-20260803-1035-cloud-ftp-425
+status: fixed
+run_date: 2026-08-03
+role: cover-upload
+topic: sb-05-tolerate-uncertainty
+severity: medium
+category: ftp
+
+### What went wrong
+- Cloud FTP data-channel 425/PORT fail — `send-vk-post --upload-cover` с cloud DC не заливал social-covers.
+
+### How the agent recovered this run
+- VK/FB: публичный JPEG (Imgur) для MCP/Zernio.
+- VPS `ensure_site_cover` в `publish-browser-deferred.py` — FTP с VPS OK → `social-covers/sb-05-….jpg`.
+
+### Durable fix needed before next run
+- Оставить VPS upload-cover перед b17/TG (уже в deferred worker).
+
+### Suggested files to inspect/change
+- `scripts/publish-browser-deferred.py`
+- `scripts/cover_upload.py`
+
+### Secrets
+- none recorded
+
+### Fixic resolution
+fixed_at: 2026-08-03
+fix_summary:
+- deferred worker uploads site cover before platforms
+files_changed:
+- scripts/publish-browser-deferred.py
+
+## INC-20260803-1040-telegram-asocks-port
+status: fixed
+run_date: 2026-08-03
+role: telegram
+topic: sb-05-tolerate-uncertainty
+severity: high
+category: telegram
+
+### What went wrong
+- VPS Telegram: `SSL: UNEXPECTED_EOF_WHILE_READING` через proxy.
+
+### How the agent recovered this run
+- Найдено: `asocks_sync_proxy` подставлял `B17_PROXY_CONNECT_PORT=443` вместо template `:9999`.
+
+### Durable fix needed before next run
+- Не наследовать B17 CONNECT_PORT для Telegram (сделано).
+
+### Suggested files to inspect/change
+- `scripts/asocks_sync_proxy.py`
+
+### Secrets
+- none recorded
+
+### Fixic resolution
+fixed_at: 2026-08-03
+fix_summary:
+- Telegram sync uses only TELEGRAM_PROXY_CONNECT_PORT or template port
+files_changed:
+- scripts/asocks_sync_proxy.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+
+## INC-20260803-1045-tenchat-session-blocks-vps
+status: open
+run_date: 2026-08-03
+role: vps
+topic: sb-05-tolerate-uncertainty
+severity: high
+category: tenchat
+
+### What went wrong
+- TenChat session `ok: false` на VPS; `browser_ensure_sessions` + `set -e` в cron worker блокировали весь phase 3.
+- Webhook HTTP-поток зависал на sync Playwright (health connection reset).
+- `--finish` требует tenchat=published → очередь не закрывается без релогина.
+
+### How the agent recovered this run
+- Soft session gate в deferred + cron `|| echo WARN`.
+- Webhook → async 202 + background Popen.
+- Cloud Max/VK/FB уже опубликованы; site cover залита.
+
+### Durable fix needed before next run
+- Релогин TenChat на VPS (`tenchat-vnc-login.sh`).
+- Перезапуск systemd webhook после деплоя async-сервера.
+- Повтор `/publish` или cron для TG+b17+TenChat.
+
+### Suggested files to inspect/change
+- `scripts/vps-webhook-server.py`
+- `scripts/run-linux-browser-worker.sh`
+- `scripts/publish-browser-deferred.py`
+- `posts-emdr-memory/profile/browser-autonomous-vps.md`
+
+### Secrets
+- none recorded

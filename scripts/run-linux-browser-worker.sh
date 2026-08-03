@@ -24,7 +24,7 @@ elif [[ -d .git ]]; then
   git pull --ff-only origin main 2>/dev/null || true
 fi
 
-python3 scripts/browser_ensure_sessions.py --refresh
+python3 scripts/browser_ensure_sessions.py --refresh || echo "WARN: session refresh failed (continue; per-platform checks apply)"
 python3 scripts/asocks_sync_proxy.py --target telegram || true
 python3 scripts/asocks_sync_proxy.py --target b17 || true
 python3 scripts/fetch-topic-cover.py --all-pending

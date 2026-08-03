@@ -131,15 +131,31 @@ class WebhookHandler(BaseHTTPRequestHandler):
         else:
             cmd = [str(WORKER)]
 
-        proc = subprocess.run(cmd, cwd=PROJECT_ROOT, capture_output=True, text=True, env=env)
+        # Async: do not block HTTP thread (Playwright can take many minutes).
+        log_path = PROJECT_ROOT / "posts-emdr-memory" / "output" / (topic or "_cron") / "vps-webhook-run.log"
+        if topic:
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+        else:
+            log_path = PROJECT_ROOT / "posts-emdr-memory" / "vps-webhook-cron.log"
+        log_f = open(log_path, "ab", buffering=0)
+        proc = subprocess.Popen(
+            cmd,
+            cwd=PROJECT_ROOT,
+            stdout=log_f,
+            stderr=subprocess.STDOUT,
+            env=env,
+            start_new_session=True,
+        )
         self._json(
-            200 if proc.returncode == 0 else 500,
+            202,
             {
-                "ok": proc.returncode == 0,
+                "ok": True,
+                "accepted": True,
+                "pid": proc.pid,
                 "topic": topic or None,
                 "git_pull": pull,
-                "stdout_tail": (proc.stdout or "")[-3000:],
-                "stderr_tail": (proc.stderr or "")[-1500:],
+                "log": str(log_path),
+                "note": "publish running in background; poll output logs / git for completion",
             },
         )
 
