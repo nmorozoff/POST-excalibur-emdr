@@ -93,7 +93,9 @@ def sync_from_api(
     host, port_num, login = _parse_template(template)
     password = port.get("password") or ""
     login = port.get("login") or login
-    connect_port = env.get(connect_key, env.get("B17_PROXY_CONNECT_PORT", "")).strip()
+    # Only apply CONNECT_PORT for this target — do NOT fall back to B17 port for Telegram.
+    # ASocks KZ template uses :9999; forcing :443 breaks HTTPS CONNECT (SSL EOF).
+    connect_port = env.get(connect_key, "").strip()
     if connect_port.isdigit():
         port_num = connect_port
 
