@@ -27,6 +27,7 @@ WORKER = PROJECT_ROOT / "scripts" / "run-linux-browser-worker.sh"
 
 
 def _git_pull() -> dict:
+    """Fetch origin/main; stash dirty tree so VPS automation never blocks on local drift."""
     env_file = PROJECT_ROOT / "posts-emdr-memory" / "github.env.local"
     env = os.environ.copy()
     if env_file.is_file():
@@ -39,27 +40,52 @@ def _git_pull() -> dict:
     token = env.get("GITHUB_TOKEN", "").strip()
     if not (PROJECT_ROOT / ".git").is_dir():
         return {"ok": False, "reason": "no_git"}
+
+    remote = "origin"
     if token:
-        url = f"https://{token}@github.com/nmorozoff/POST-excalibur-emdr.git"
-        proc = subprocess.run(
-            ["git", "pull", url, "main"],
+        remote_url = f"https://{token}@github.com/nmorozoff/POST-excalibur-emdr.git"
+        subprocess.run(
+            ["git", "remote", "set-url", "origin", remote_url],
             cwd=PROJECT_ROOT,
             capture_output=True,
             text=True,
             env=env,
         )
-    else:
-        proc = subprocess.run(
-            ["git", "pull", "--ff-only", "origin", "main"],
-            cwd=PROJECT_ROOT,
-            capture_output=True,
-            text=True,
-            env=env,
-        )
+
+    stash = subprocess.run(
+        ["git", "stash", "push", "-u", "-m", "vps-webhook-auto"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    fetch = subprocess.run(
+        ["git", "fetch", remote, "main"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    if fetch.returncode != 0:
+        return {
+            "ok": False,
+            "stash_exit": stash.returncode,
+            "stdout_tail": (fetch.stdout or "")[-500:],
+            "stderr_tail": (fetch.stderr or "")[-500:],
+        }
+    reset = subprocess.run(
+        ["git", "reset", "--hard", "FETCH_HEAD"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
     return {
-        "ok": proc.returncode == 0,
-        "stdout_tail": (proc.stdout or "")[-500:],
-        "stderr_tail": (proc.stderr or "")[-500:],
+        "ok": reset.returncode == 0,
+        "mode": "fetch_reset_hard",
+        "stash_exit": stash.returncode,
+        "stdout_tail": (reset.stdout or "")[-500:],
+        "stderr_tail": (reset.stderr or "")[-500:],
     }
 
 
