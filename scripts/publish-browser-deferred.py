@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""VPS worker: Telegram + b17 + TenChat for topics deferred from cloud.
+"""VPS worker: Telegram + b17 for MSP short-blog topics deferred from cloud.
+
+TenChat вне scope MSP short-blog — worker и --finish не блокируются на TenChat.
 
 Linux VPS (Playwright) — cron:
 
@@ -25,6 +27,10 @@ from browser_worker_finish import finish_topic
 from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env
 
 SCRIPTS = PROJECT_ROOT / "scripts"
+
+
+def _msp_deferred_complete(topic_dir: Path) -> bool:
+    return _platform_done(topic_dir, "telegram") and _platform_done(topic_dir, "b17")
 
 
 def _log_status(path: Path) -> str | None:
@@ -66,22 +72,12 @@ def pending_topics(*, topic: str | None = None) -> list[str]:
             topic_dir / "b17-blog-post.md"
         ).is_file()
         if topic:
-            if has_drafts and not (
-                _platform_done(topic_dir, "telegram")
-                and _platform_done(topic_dir, "b17")
-                and _platform_done(topic_dir, "tenchat")
-                and done.is_file()
-            ):
+            if has_drafts and not (_msp_deferred_complete(topic_dir) and done.is_file()):
                 topics.append(tid)
             continue
         if not handoff.is_file() and not done.is_file():
             continue
-        if (
-            done.is_file()
-            and _platform_done(topic_dir, "telegram")
-            and _platform_done(topic_dir, "b17")
-            and _platform_done(topic_dir, "tenchat")
-        ):
+        if done.is_file() and _msp_deferred_complete(topic_dir):
             continue
         if not has_drafts:
             continue
@@ -203,48 +199,31 @@ def run_publish(topic: str, *, submit: bool) -> dict:
     else:
         result["steps"]["telegram"] = {"skipped": True, "reason": "already_published"}
 
-    # 2–3) b17 + TenChat
-    for script, key in (
-        ("publish-b17-blog.py", "b17"),
-        ("publish-tenchat-post.py", "tenchat"),
-    ):
+    result["steps"]["tenchat"] = {"skipped": True, "reason": "out_of_msp_short_blog_pipeline"}
+
+    # 2) b17
+    for script, key in (("publish-b17-blog.py", "b17"),):
         if _platform_done(topic_dir, key):
             result["steps"][key] = {"skipped": True, "reason": "already_published"}
             continue
-        md_name = "b17-blog-post.md" if key == "b17" else "tenchat-post.md"
+        md_name = "b17-blog-post.md"
         if not (topic_dir / md_name).is_file():
             result["steps"][key] = {"skipped": True, "reason": f"no_{md_name}"}
             continue
-        if key == "b17":
-            b17_check = subprocess.run(
-                [sys.executable, str(SCRIPTS / "check-b17-ip-access.py")],
-                cwd=PROJECT_ROOT,
-                capture_output=True,
-                text=True,
-            )
-            if b17_check.returncode != 0:
-                result["steps"][key] = {
-                    "skipped": True,
-                    "reason": "b17_not_accessible",
-                    "detail": (b17_check.stdout or b17_check.stderr)[-800:],
-                }
-                result["status"] = "failed"
-                return result
-        if key == "tenchat":
-            ten_check = subprocess.run(
-                [sys.executable, str(SCRIPTS / "check-tenchat-access.py")],
-                cwd=PROJECT_ROOT,
-                capture_output=True,
-                text=True,
-            )
-            if ten_check.returncode != 0:
-                result["steps"][key] = {
-                    "skipped": True,
-                    "reason": "tenchat_not_ready",
-                    "detail": (ten_check.stdout or ten_check.stderr)[-800:],
-                }
-                result["status"] = "failed"
-                return result
+        b17_check = subprocess.run(
+            [sys.executable, str(SCRIPTS / "check-b17-ip-access.py")],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        if b17_check.returncode != 0:
+            result["steps"][key] = {
+                "skipped": True,
+                "reason": "b17_not_accessible",
+                "detail": (b17_check.stdout or b17_check.stderr)[-800:],
+            }
+            result["status"] = "failed"
+            return result
         proc = subprocess.run(
             [sys.executable, str(SCRIPTS / script), "--topic", topic, *submit_args],
             cwd=PROJECT_ROOT,
@@ -273,7 +252,7 @@ def git_push_changes(topic: str) -> dict:
         "posts-emdr-memory/topics/short-blog-published.md",
     ]
     subprocess.run(["git", "add", *paths], cwd=PROJECT_ROOT, check=False)
-    msg = f"browser-worker: published {topic} (tg+b17+tenchat)"
+    msg = f"browser-worker: published {topic} (tg+b17)"
     commit = subprocess.run(
         ["git", "commit", "-m", msg],
         cwd=PROJECT_ROOT,
@@ -296,7 +275,7 @@ def git_push_changes(topic: str) -> dict:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Publish deferred Telegram/b17/TenChat from VPS")
+    parser = argparse.ArgumentParser(description="Publish deferred Telegram/b17 from VPS (MSP short-blog)")
     parser.add_argument("--topic", help="Single topic id (default: all pending)")
     parser.add_argument("--submit", action="store_true", help="Auto-click Save/Publish")
     parser.add_argument("--finish", action="store_true", help="Registries + queue after publish")

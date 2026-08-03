@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Minimal webhook: cloud automation → instant VPS phase 3 (Telegram+b17+TenChat).
+"""Minimal webhook: cloud automation → instant VPS phase 3 (Telegram+b17; TenChat out of MSP scope).
 
 Usage on VPS (systemd):
   EnvironmentFile=.../browser.env.local

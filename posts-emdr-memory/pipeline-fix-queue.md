@@ -374,7 +374,7 @@ checks_run:
 
 
 ## INC-20260803-1030-runware-credits
-status: open
+status: needs-human
 run_date: 2026-08-03
 role: cover
 topic: sb-05-tolerate-uncertainty
@@ -396,6 +396,19 @@ category: runware
 
 ### Secrets
 - none recorded
+
+### Fixic resolution
+fixed_at: 2026-08-03
+fix_summary:
+- MSP short-blog: primary `kie-cover.py` (уже в `publish-topic.py` / pitfalls).
+- `runware-cover.py`: явный exit при `insufficientCredits` → hint на kie-cover.
+needed_decision_or_secret:
+- Пополнить кошелёк Runware, если нужен legacy `runware-cover.py` без Kie.
+files_changed:
+- `scripts/runware-cover.py`
+- `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
+checks_run:
+- `python -m py_compile scripts/runware-cover.py`
 
 ## INC-20260803-1035-cloud-ftp-425
 status: fixed
@@ -461,7 +474,7 @@ files_changed:
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
 
 ## INC-20260803-1045-tenchat-session-blocks-vps
-status: open
+status: fixed
 run_date: 2026-08-03
 role: vps
 topic: sb-05-tolerate-uncertainty
@@ -491,3 +504,17 @@ category: tenchat
 
 ### Secrets
 - none recorded
+
+### Fixic resolution
+fixed_at: 2026-08-03
+fix_summary:
+- TenChat снят из MSP short-blog VPS gate: deferred worker публикует только TG+b17.
+- `browser_worker_finish.py`: finish без tenchat=published; tenchat registry только если уже published.
+- Pitfall: TenChat вне MSP phase 3.
+files_changed:
+- `scripts/publish-browser-deferred.py`
+- `scripts/browser_worker_finish.py`
+- `scripts/vps-webhook-server.py`
+- `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
+checks_run:
+- `python -m py_compile scripts/publish-browser-deferred.py scripts/browser_worker_finish.py scripts/vps-webhook-server.py`
