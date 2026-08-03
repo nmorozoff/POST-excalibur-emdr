@@ -1,13 +1,9 @@
 # Posts EMDR — Handoff
 
-status: cloud_done_awaiting_vps
+status: cloud_done_vps_blocked
 updated_at: 2026-08-03
 topic_id: sb-05-tolerate-uncertainty
-title: Что происходит, если разрешить себе не знать, чем всё закончится
-post_type: наблюдение→инсайт
-site_url: https://morozovanatalia.ru/anxiety
 mode: full publish
-cta: soft slot 2 (no full session CTA — #05)
 
 ## Published (cloud)
 
@@ -18,16 +14,16 @@ cta: soft slot 2 (no full session CTA — #05)
 | VK group | https://vk.com/wall-224685309_153 |
 | Facebook | https://www.facebook.com/632301483303094_122181018242837712 |
 
-## Pipeline
+Site cover: https://morozovanatalia.ru/social-covers/sb-05-tolerate-uncertainty.jpg
 
-- [x] Content all platforms
-- [x] Cover (MCP nano_banana_2 — Runware out of credits)
-- [x] Max + Facebook
-- [x] VK MCP ×2 + photo gate
-- [x] Registries max/vk/fb
-- [ ] VPS: TG + b17 + TenChat + --finish
-- [ ] Do NOT mark published in queue (VPS --finish)
+## Blocked (VPS phase 3)
 
-## Notes
+1. Restart webhook systemd (async server + clear hung process)
+2. TenChat re-login (`tenchat-vnc-login.sh`)
+3. Re-trigger: `curl ... /publish {"topic":"sb-05-tolerate-uncertainty"}`
+4. Do NOT mark published until VPS --finish
 
-Cloud FTP 425 → Imgur cover URL in handoff; VPS uploads to social-covers before b17.
+incident_report: posts-emdr-memory/pipeline-fix-queue.md#INC-20260803-1045-tenchat-session-blocks-vps
+
+=== POSTS EMDR DONE ===
+(cloud phases complete; VPS deferred open)
