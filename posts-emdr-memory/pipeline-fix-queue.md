@@ -518,3 +518,33 @@ files_changed:
 - `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
 checks_run:
 - `python -m py_compile scripts/publish-browser-deferred.py scripts/browser_worker_finish.py scripts/vps-webhook-server.py`
+
+---
+
+## INC-20260803-1800-vps-git-pull-dirty-tree
+status: open
+run_date: 2026-08-03
+role: vps
+topic: sb-05-tolerate-uncertainty
+severity: high
+category: vps
+
+### What went wrong
+- Webhook HTTP 202, но `git_pull` на VPS failed: локальные изменения + untracked `kie-*.py` блокируют merge.
+- Phase 3 (Telegram, b17) не завершён; `--finish` не выполнен.
+
+### How the agent recovered this run
+- Cloud фазы 1–2 OK (Max, VK×2, Facebook).
+- Повторный webhook после fix `stash -u` + `reset --hard FETCH_HEAD` в ветке `cursor/short-blog-end-to-end-dcaa`.
+
+### Durable fix needed before next run
+- Merge fix в `main`; на VPS: `systemctl restart posts-emdr-webhook` (или деплой нового `vps-webhook-server.py`).
+- Повтор `POST /publish` с topic sb-05.
+
+### Suggested files to inspect/change
+- `scripts/vps-webhook-server.py`
+- `scripts/run-linux-browser-worker.sh`
+
+### Secrets
+- none recorded
+
