@@ -196,8 +196,10 @@ def run_publish(topic: str, *, submit: bool) -> dict:
                 "stderr_tail": proc.stderr[-1000:] if proc.stderr else "",
             }
             if proc.returncode != 0:
-                result["status"] = "failed"
-                return result
+                result["steps"]["telegram"]["failed"] = True
+                # Continue to b17/TenChat — do not block the whole deferred pipeline on TG SSL/proxy blips
+                result["telegram_failed"] = True
+                # previously: result["status"] = "failed"; return result
     else:
         result["steps"]["telegram"] = {"skipped": True, "reason": "already_published"}
 
