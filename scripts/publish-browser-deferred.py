@@ -118,10 +118,51 @@ def sync_telegram_proxy() -> dict:
     return out
 
 
+def ensure_site_cover(topic: str) -> dict:
+    """FTP upload cover → morozovanatalia.ru/social-covers/{topic}.jpg (b17 TinyMCE HTTPS)."""
+    topic_dir = MEMORY / "output" / topic
+    cover = topic_dir / "cover.png"
+    if not cover.is_file():
+        return {"ok": False, "reason": "no_cover.png"}
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(SCRIPTS / "send-vk-post.py"),
+            "--topic",
+            topic,
+            "--upload-cover",
+        ],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+    )
+    out: dict = {
+        "exit_code": proc.returncode,
+        "stdout_tail": (proc.stdout or "")[-800:],
+        "stderr_tail": (proc.stderr or "")[-400:],
+    }
+    if proc.returncode != 0:
+        out["ok"] = False
+        return out
+    try:
+        data = json.loads(proc.stdout or "{}")
+        out["cover_public_url"] = data.get("cover_public_url")
+        out["ok"] = bool(out.get("cover_public_url"))
+    except json.JSONDecodeError:
+        out["ok"] = False
+    return out
+
+
 def run_publish(topic: str, *, submit: bool) -> dict:
     submit_args = ["--submit"] if submit else []
     result: dict = {"topic": topic, "steps": {}}
     topic_dir = MEMORY / "output" / topic
+
+    # 0) Site cover for b17 HTTPS + Telegram link_preview (VPS FTP usually works when cloud DC FTP fails)
+    result["steps"]["site_cover"] = ensure_site_cover(topic)
+    if not result["steps"]["site_cover"].get("ok"):
+        # Non-fatal for TenChat (local file attach); b17 may fail verify — surface in log
+        result["steps"]["site_cover"]["warning"] = "upload_failed_continue"
 
     # 1) Telegram via ASocks KZ
     if not _telegram_done(topic_dir):

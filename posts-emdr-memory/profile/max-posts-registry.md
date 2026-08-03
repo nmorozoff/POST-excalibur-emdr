@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-05-tolerate-uncertainty | 2026-08-03 | Что происходит, если разрешить себе не знать, чем всё закончится | https://max.ru/se13417616_biz/AZ_HI8MTTQI | https://morozovanatalia.ru/anxiety | тревога,неопределённость,контроль,EMDR,стресс,психология |
 | sb-04-what-if-phrase | 2026-07-30 | Фраза «а вдруг» и как она запускает сценарий в голове | https://max.ru/se13417616_biz/AZ-yQhSdWYw | https://morozovanatalia.ru/anxiety | тревога,сценарий,а вдруг,EMDR,стресс,психология |
 | sb-03-body-before-mind | 2026-07-28 | Момент, когда тело узнаёт о тревоге раньше головы | https://max.ru/se13417616_biz/AZ-ocPU0c6Q | https://morozovanatalia.ru/anxiety | тревога,тело,нервная система,EMDR,стресс,психология |
 | sb-02-anxiety-as-responsibility | 2026-07-25 | Как тревога маскируется под «просто ответственность» — гиперконтроль | https://max.ru/se13417616_biz/AZ-YmFZ8fEc | https://morozovanatalia.ru/anxiety | тревога,гиперконтроль,ответственность,EMDR,стресс,психология |
