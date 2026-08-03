@@ -261,6 +261,7 @@ def publish_topic(
     else:
         log["steps"]["vk_mode"] = "dry_run_or_no_cover"
 
+    fb_flags = ["--dry-run"] if dry_run else []
     log["steps"]["facebook"] = step_json(
         run(
             [
@@ -268,7 +269,7 @@ def publish_topic(
                 str(SCRIPTS / "publish-zernio-post.py"),
                 "--topic",
                 topic,
-                *publish_flag,
+                *fb_flags,
             ],
             check=True,
         )

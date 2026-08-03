@@ -26,6 +26,6 @@
 
 Подробнее о тревожности: https://morozovanatalia.ru/anxiety?utm_source=vk_group
 
-Если откликается — в ЛС: https://t.me/natalyamorozovaa
+Если хотите обсудить это лично — я на связи в ЛС: https://t.me/natalyamorozovaa
 
 А вы замечали, что тело реагирует раньше, чем вы успеваете понять, что тревожитесь? 👇
