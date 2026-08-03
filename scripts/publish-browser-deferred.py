@@ -322,9 +322,18 @@ def main() -> None:
             text=True,
         )
         if session_proc.returncode != 0:
-            raise SystemExit(
-                "Session check failed before publish:\n"
-                f"{session_proc.stdout}\n{session_proc.stderr}"
+            # Do not hard-fail: per-platform checks skip TenChat/b17 individually.
+            # Telegram Bot API does not need browser sessions.
+            print(
+                json.dumps(
+                    {
+                        "warning": "session_check_failed_continue",
+                        "stdout_tail": (session_proc.stdout or "")[-800:],
+                        "stderr_tail": (session_proc.stderr or "")[-400:],
+                    },
+                    ensure_ascii=False,
+                ),
+                flush=True,
             )
 
     pending = pending_topics(topic=args.topic)
