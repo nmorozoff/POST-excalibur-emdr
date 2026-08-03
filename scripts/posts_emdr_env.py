@@ -93,6 +93,7 @@ ENV_SPECS: dict[str, list[str]] = {
         "ASOCKS_PORT_ID",
         "B17_PROXY_CONNECT_PORT",
         "VPS_WEBHOOK_SECRET",
+        "POSTS_EMDR_SKIP_TENCHAT",
     ],
     "github.env.local": ["GITHUB_TOKEN"],
 }
@@ -154,6 +155,12 @@ def load_env(
             raise SystemExit(f"Missing {filename}: {', '.join(missing)}. {hint}")
 
     return data
+
+
+def skip_tenchat() -> bool:
+    """TenChat снят с MSP short-blog (2026-08-03). Default: skip."""
+    val = os.environ.get("POSTS_EMDR_SKIP_TENCHAT", "1").strip().lower()
+    return val in ("1", "true", "yes", "on")
 
 
 def materialize_env_files(*, memory_dir: Path | None = None, force: bool = False) -> list[str]:

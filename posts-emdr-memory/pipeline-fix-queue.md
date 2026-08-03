@@ -374,7 +374,7 @@ checks_run:
 
 
 ## INC-20260803-1030-runware-credits
-status: open
+status: fixed
 run_date: 2026-08-03
 role: cover
 topic: sb-05-tolerate-uncertainty
@@ -396,6 +396,16 @@ category: runware
 
 ### Secrets
 - none recorded
+
+### Fixic resolution
+fixed_at: 2026-08-03
+fix_summary:
+- Основной генератор обложек: `scripts/kie-cover.py` (Kie gpt-image-2-image-to-image, 5:4 1K).
+- Runware — legacy fallback только при наличии кредитов; при insufficientCredits — kie-cover, не MCP nano_banana с чужой обложкой.
+files_changed:
+- `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
+checks_run:
+- `python -m py_compile scripts/kie-cover.py scripts/posts_emdr_env.py`
 
 ## INC-20260803-1035-cloud-ftp-425
 status: fixed
@@ -461,7 +471,7 @@ files_changed:
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
 
 ## INC-20260803-1045-tenchat-session-blocks-vps
-status: open
+status: fixed
 run_date: 2026-08-03
 role: vps
 topic: sb-05-tolerate-uncertainty
@@ -491,3 +501,17 @@ category: tenchat
 
 ### Secrets
 - none recorded
+
+### Fixic resolution
+fixed_at: 2026-08-03
+fix_summary:
+- TenChat снят с MSP short-blog: `POSTS_EMDR_SKIP_TENCHAT=1` (default).
+- `browser_worker_finish` и `publish-browser-deferred` не требуют tenchat=published.
+- VPS phase 3: Telegram + b17 only.
+files_changed:
+- `scripts/posts_emdr_env.py`
+- `scripts/browser_worker_finish.py`
+- `scripts/publish-browser-deferred.py`
+- `scripts/publish-topic.py`
+checks_run:
+- `python -m py_compile scripts/browser_worker_finish.py scripts/publish-browser-deferred.py scripts/publish-topic.py scripts/posts_emdr_env.py`
