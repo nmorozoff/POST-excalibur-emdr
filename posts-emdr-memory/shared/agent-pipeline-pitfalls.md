@@ -90,3 +90,19 @@
 `python3 scripts/materialize_cloud_env.py` → `publish-topic.py`.  
 VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.  
 Полная инструкция: `posts-emdr-memory/CLOUD-SETUP.md`.
+
+## Telegram ASocks: порт 443 вместо 9999
+
+**Симптом:** VPS `URLError: SSL: UNEXPECTED_EOF_WHILE_READING` к `api.telegram.org`.
+
+**Причина:** `asocks_sync_proxy.py --target telegram` подставлял `B17_PROXY_CONNECT_PORT=443` вместо порта из template KZ (`:9999`).
+
+**Правильно:** для Telegram только `TELEGRAM_PROXY_CONNECT_PORT` (если задан); иначе порт из ASocks template.
+
+## VPS webhook hangs (sync Playwright)
+
+**Симптом:** `POST /publish` не отвечает минутами; health connection reset.
+
+**Причина:** webhook ждал `publish-browser-deferred` синхронно в HTTP-потоке.
+
+**Правильно:** принять задачу (202) и гонять publish в background; cron worker не должен падать на `browser_ensure_sessions` из‑за TenChat (`|| true` / soft gate).

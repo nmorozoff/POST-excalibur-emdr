@@ -2,22 +2,30 @@
 
 **Date:** 2026-08-03
 **Topic:** sb-05-tolerate-uncertainty
-**Mode:** full publish (cloud phases 1–2)
+**Mode:** full publish (cloud 1–2 done; VPS phase 3 blocked on TenChat + hung webhook)
 
-## Done
+## Done (cloud)
 
-- Content all platforms
+- Content all platforms + END_POST
 - Cover: MCP nano_banana_2 (Runware insufficientCredits)
-- Max published
-- Facebook (Zernio) published
-- VK profile + group via MCP (photo gate OK)
-- Registries: max, vk-profile, vk-group, facebook
-- VPS deferred: TG + b17 + TenChat
-- publish-browser-deferred: added site_cover FTP upload before platforms
+- Max https://max.ru/se13417616_biz/AZ_HI8MTTQI
+- VK profile https://vk.com/wall218367867_652 (📸)
+- VK group https://vk.com/wall-224685309_153 (📸)
+- Facebook https://www.facebook.com/632301483303094_122181018242837712
+- Registries max/vk-profile/vk-group/facebook
+- Site cover on VPS FTP: https://morozovanatalia.ru/social-covers/sb-05-tolerate-uncertainty.jpg
+- Queue NOT marked published (await VPS --finish)
 
-## Blockers / workarounds
+## Fixic shipped this run
 
-- Runware credits empty
-- Cloud FTP PORT/PASV 425 — used Imgur for VK/FB; VPS uploads site cover
+- VPS ensure_site_cover before platforms
+- Soft TenChat session gate + cron continue
+- Telegram ASocks port: no B17 CONNECT_PORT override
+- Continue deferred if Telegram fails
+- Webhook async 202 (needs systemd restart on VPS)
 
-incident_report: open=0; runware_insufficient_credits=workaround_nano_banana_2; cloud_ftp_425=workaround_imgur_plus_vps_upload; status=cloud_done_awaiting_vps
+## Remaining
+
+- Restart VPS webhook service; TenChat re-login; re-trigger publish for TG+b17+TenChat
+
+incident_report: posts-emdr-memory/pipeline-fix-queue.md#INC-20260803-1045-tenchat-session-blocks-vps
