@@ -22,7 +22,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_backend import browser_ready
 from browser_worker_finish import finish_topic
-from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env
+from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env, skip_tenchat
 
 SCRIPTS = PROJECT_ROOT / "scripts"
 
@@ -45,6 +45,8 @@ def _telegram_done(topic_dir: Path) -> bool:
 def _platform_done(topic_dir: Path, key: str) -> bool:
     if key == "telegram":
         return _telegram_done(topic_dir)
+    if key == "tenchat" and skip_tenchat():
+        return True
     return _log_status(topic_dir / f"{key}-publish-log.json") == "published"
 
 
@@ -203,11 +205,11 @@ def run_publish(topic: str, *, submit: bool) -> dict:
     else:
         result["steps"]["telegram"] = {"skipped": True, "reason": "already_published"}
 
-    # 2–3) b17 + TenChat
-    for script, key in (
-        ("publish-b17-blog.py", "b17"),
-        ("publish-tenchat-post.py", "tenchat"),
-    ):
+    # 2–3) b17 + TenChat (optional when POSTS_EMDR_SKIP_TENCHAT=1)
+    browser_platforms: list[tuple[str, str]] = [("publish-b17-blog.py", "b17")]
+    if not skip_tenchat():
+        browser_platforms.append(("publish-tenchat-post.py", "tenchat"))
+    for script, key in browser_platforms:
         if _platform_done(topic_dir, key):
             result["steps"][key] = {"skipped": True, "reason": "already_published"}
             continue
@@ -273,7 +275,8 @@ def git_push_changes(topic: str) -> dict:
         "posts-emdr-memory/topics/short-blog-published.md",
     ]
     subprocess.run(["git", "add", *paths], cwd=PROJECT_ROOT, check=False)
-    msg = f"browser-worker: published {topic} (tg+b17+tenchat)"
+    suffix = "tg+b17" if skip_tenchat() else "tg+b17+tenchat"
+    msg = f"browser-worker: published {topic} ({suffix})"
     commit = subprocess.run(
         ["git", "commit", "-m", msg],
         cwd=PROJECT_ROOT,

@@ -12,7 +12,7 @@ from datetime import date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import MEMORY, PROJECT_ROOT
+from posts_emdr_env import MEMORY, PROJECT_ROOT, skip_tenchat
 
 SCRIPTS = PROJECT_ROOT / "scripts"
 PROFILE = MEMORY / "profile"
@@ -91,14 +91,23 @@ def finish_topic(topic_id: str, *, skip_queue: bool = False) -> dict:
     b17_status = _log_status(topic_dir, "b17")
     ten_status = _log_status(topic_dir, "tenchat")
     tg_ok = tg_status in {"sent", "published"} or not (topic_dir / "telegram-post.md").is_file()
-    if not tg_ok or b17_status != "published" or ten_status != "published":
+    ten_required = not skip_tenchat() and (topic_dir / "tenchat-post.md").is_file()
+    ten_ok = ten_status == "published" or not ten_required
+    if not tg_ok or b17_status != "published" or not ten_ok:
         raise SystemExit(
             f"Not ready to finish {topic_id}: telegram={tg_status}, "
-            f"b17={b17_status}, tenchat={ten_status} (need tg sent/published + b17/ten published)"
+            f"b17={b17_status}, tenchat={ten_status} "
+            f"(need tg sent/published + b17 published"
+            + ("" if not ten_required else " + tenchat published")
+            + ")"
         )
 
     b17_log = _read_json(topic_dir / "b17-publish-log.json")
-    ten_log = _read_json(topic_dir / "tenchat-publish-log.json")
+    ten_log = (
+        _read_json(topic_dir / "tenchat-publish-log.json")
+        if (topic_dir / "tenchat-publish-log.json").is_file()
+        else {}
+    )
     d = date.today().isoformat()
     site_url = _site_url_for_topic(topic_id)
     title_b17 = _extract_title(topic_dir, "b17")
@@ -119,7 +128,7 @@ def finish_topic(topic_id: str, *, skip_queue: bool = False) -> dict:
             b17_registry,
             f"| {topic_id} | {d} | {title_b17} | {b17_url} | {site_url} | b17,психология |",
         )
-    if not _registry_has_topic(ten_registry, topic_id):
+    if ten_required and not _registry_has_topic(ten_registry, topic_id):
         _append_registry(
             ten_registry,
             f"| {topic_id} | {d} | {title_ten} | {ten_url} | {site_url} | tenchat,психология |",

@@ -30,6 +30,7 @@ from posts_emdr_env import (
     has_vk_access_token,
     materialize_env_files,
     reference_image_path,
+    skip_tenchat,
     vk_group_id,
 )
 from cloud_preflight import run_preflight
@@ -130,15 +131,16 @@ def write_vk_mcp_handoff(topic: str, photo_url: str) -> Path:
 
 def write_browser_local_handoff(topic: str) -> Path:
     topic_dir = MEMORY / "output" / topic
-    body = f"""# VPS publish — Telegram + b17 + TenChat
+
+    tenchat_line = "" if skip_tenchat() else "\n3. TenChat (Playwright)"
+    body = f"""# VPS publish — Telegram + b17
 
 Тема: `{topic}`
 
 Cloud опубликовал Макс / VK(MCP) / Facebook. Осталось на **VPS**:
 
-1. Telegram ×3 (ASocks KZ → `api.telegram.org`)
-2. b17 (Playwright + residential RU)
-3. TenChat (Playwright)
+1. Telegram (ASocks KZ → `api.telegram.org`)
+2. b17 (Playwright + residential RU){tenchat_line}
 
 ## Триггер
 
@@ -283,13 +285,18 @@ def publish_topic(
         log["steps"]["b17"] = step_json(
             run([sys.executable, str(SCRIPTS / "publish-b17-blog.py"), "--topic", topic, *submit])
         )
-        log["steps"]["tenchat"] = step_json(
-            run([sys.executable, str(SCRIPTS / "publish-tenchat-post.py"), "--topic", topic, *submit])
-        )
+        if not skip_tenchat():
+            log["steps"]["tenchat"] = step_json(
+                run([sys.executable, str(SCRIPTS / "publish-tenchat-post.py"), "--topic", topic, *submit])
+            )
+        else:
+            log["steps"]["tenchat"] = {"skipped": True, "reason": "POSTS_EMDR_SKIP_TENCHAT"}
 
     deferred: list[str] = ["telegram"]
     if not browser_ok:
-        deferred.extend(["b17", "tenchat"])
+        deferred.append("b17")
+        if not skip_tenchat():
+            deferred.append("tenchat")
     if not dry_run:
         # Всегда пишем VPS handoff: Telegram + (часто) b17/TenChat
         log["steps"]["browser_local_handoff"] = str(write_browser_local_handoff(topic))
