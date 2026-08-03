@@ -9,6 +9,8 @@
 
 ## Опубликованные
 
+| sb-05-tolerate-uncertainty | 2026-08-03 | Что происходит, если разрешить себе не знать, чем всё закончится | @natalia_morozova_psy | 2024 | https://t.me/natalia_morozova_psy/2024 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
+| sb-05-tolerate-uncertainty | 2026-08-03 | Что происходит, если разрешить себе не знать, чем всё закончится | @nmorozova_emdr | 113 | https://t.me/nmorozova_emdr/113 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-04-what-if-phrase | 2026-08-01 | Фраза «а вдруг» и как она запускает сценарий в голове | @natalia_morozova_psy | 2023 | https://t.me/natalia_morozova_psy/2023 | https://morozovanatalia.ru/anxiety | тревога,сценарий,а вдруг,EMDR,стресс,психология |
 | sb-04-what-if-phrase | 2026-08-01 | Фраза «а вдруг» и как она запускает сценарий в голове | @nmorozova_emdr | 111 | https://t.me/nmorozova_emdr/111 | https://morozovanatalia.ru/anxiety | тревога,сценарий,а вдруг,EMDR,стресс,психология |
 | sb-04-what-if-phrase | 2026-08-01 | Фраза «а вдруг» и как она запускает сценарий в голове | @morozova_emdr | 609 | https://t.me/morozova_emdr/609 | https://morozovanatalia.ru/anxiety | тревога,сценарий,а вдруг,EMDR,стресс,психология |

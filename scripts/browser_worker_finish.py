@@ -103,21 +103,23 @@ def finish_topic(topic_id: str, *, skip_queue: bool = False) -> dict:
         )
 
     b17_log = _read_json(topic_dir / "b17-publish-log.json")
-    ten_log = (
-        _read_json(topic_dir / "tenchat-publish-log.json")
-        if (topic_dir / "tenchat-publish-log.json").is_file()
-        else {}
-    )
+    title_b17 = _extract_title(topic_dir, "b17")
+    title_ten = ""
+    ten_url = ""
+    if ten_required:
+        ten_log = _read_json(topic_dir / "tenchat-publish-log.json")
+        title_ten = _extract_title(topic_dir, "tenchat")
+        ten_url = ten_log.get("post_url") or ten_log.get("compose_url", "https://tenchat.ru/")
+    else:
+        ten_log = {}
+
     d = date.today().isoformat()
     site_url = _site_url_for_topic(topic_id)
-    title_b17 = _extract_title(topic_dir, "b17")
-    title_ten = _extract_title(topic_dir, "tenchat")
     b17_url = (
         b17_log.get("public_url")
         or b17_log.get("post_url")
         or b17_log.get("compose_url", "https://www.b17.ru/my_blog.php")
     )
-    ten_url = ten_log.get("post_url") or ten_log.get("compose_url", "https://tenchat.ru/")
 
     b17_registry = PROFILE / "b17-posts-registry.md"
     ten_registry = PROFILE / "tenchat-posts-registry.md"

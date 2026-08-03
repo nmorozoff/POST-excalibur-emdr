@@ -1,0 +1,13 @@
+{
+  "topic": "sb-05-tolerate-uncertainty",
+  "status": "browser_worker_finished",
+  "date": "2026-08-03",
+  "b17_url": "https://www.b17.ru/blog/chto_proishodit_esli_razreshit_sebe_ne_znat_chem_vse_zakonchitsya/",
+  "tenchat_url": "",
+  "site_url": "https://morozovanatalia.ru/anxiety",
+  "queue": {
+    "exit_code": 0,
+    "stdout": "OK marked published: sb-05-tolerate-uncertainty → short-blog-published.md",
+    "stderr": ""
+  }
+}
