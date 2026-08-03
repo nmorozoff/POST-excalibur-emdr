@@ -1,5 +1,7 @@
 # Posts EMDR — Handoff
 
+=== POSTS EMDR DONE ===
+
 status: partial_vps_pending
 updated_at: 2026-08-03
 topic_id: sb-05-tolerate-uncertainty
@@ -7,6 +9,11 @@ title: Что происходит, если разрешить себе не з
 post_type: наблюдение→инсайт
 site_url: https://morozovanatalia.ru/anxiety
 mode: full publish
+otchetik: partial
+
+## INC vps-pending
+
+INC-20260803-1800-vps-git-pull-dirty-tree — VPS git_pull blocked phase 3. Fix merged to main (PR #12): stash+reset. **На VPS:** `git stash -u && git fetch origin main && git reset --hard origin/main && systemctl restart posts-emdr-webhook`, затем повтор `POST /publish`.
 
 ## Published (cloud)
 
@@ -19,29 +26,16 @@ mode: full publish
 
 ## Pending (VPS phase 3)
 
-| Platform | Status |
-|----------|--------|
-| Telegram @nmorozova_emdr | pending |
-| Telegram @natalia_morozova_psy | pending |
-| b17 | pending |
-| TenChat | out of scope |
-
-## Blocker
-
-INC-20260803-1800-vps-git-pull-dirty-tree — VPS git_pull merge conflict. Fix pushed: stash+reset in vps-webhook-server.py (branch cursor/short-blog-end-to-end-dcaa). Needs merge to main + webhook restart + retry POST /publish.
+- Telegram @nmorozova_emdr, @natalia_morozova_psy
+- b17.ru
+- TenChat: out of scope
 
 ## Pipeline
 
-- [x] Content all platforms
-- [x] Cover (kie-cover.py)
-- [x] Max + Facebook
-- [x] VK MCP ×2 + photo gate
-- [x] Registries max/vk/fb
-- [x] git push (cloud)
-- [x] VPS webhook 202 (git_pull failed)
-- [ ] VPS: TG + b17 + --finish
-- [ ] Do NOT mark published in queue (VPS --finish)
-
-## Otchetik
-
-Verdict: **partial** — cloud pass, VPS pending.
+- [x] Fixic gate (OPEN_INCIDENTS=0)
+- [x] Content + cover (kie-cover.py)
+- [x] Cloud Max + Facebook
+- [x] VK MCP ×2
+- [x] git push + PR #12 merged
+- [x] VPS webhook 202 (×2; git_pull failed until VPS reset)
+- [ ] VPS TG + b17 + --finish
