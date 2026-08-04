@@ -285,7 +285,7 @@ def publish_topic(
                 str(SCRIPTS / "publish-zernio-post.py"),
                 "--topic",
                 topic,
-                *publish_flag,
+                *(["--dry-run"] if dry_run else []),
             ],
             check=True,
         )
