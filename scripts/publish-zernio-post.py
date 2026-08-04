@@ -105,6 +105,11 @@ def publish_facebook(env: dict[str, str], content: str, cover_url: str, dry_run:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--topic", default="01-panic-night")
+    parser.add_argument(
+        "--publish",
+        action="store_true",
+        help="No-op compatibility flag (publish-topic.py); real publish unless --dry-run",
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--skip-cover-cleanup", action="store_true")
     args = parser.parse_args()
@@ -140,10 +145,17 @@ def main() -> None:
                 "page": plat.get("accountId", {}).get("displayName") if isinstance(plat.get("accountId"), dict) else None,
             }
         )
-        if log.get("status") != "published":
+        status = log.get("status")
+        if status == "published":
+            if not args.skip_cover_cleanup:
+                delete_cover(args.topic)
+        elif status == "scheduled":
+            log["note"] = (
+                "Zernio scheduled — Meta transient error, auto-retry expected; "
+                "verify platform_post_url later"
+            )
+        else:
             raise SystemExit(f"Zernio gate failed: {json.dumps(result, ensure_ascii=False)}")
-        if not args.skip_cover_cleanup:
-            delete_cover(args.topic)
 
     log_path = topic_dir / "zernio-publish-log.json"
     log_path.write_text(json.dumps(log, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

@@ -167,10 +167,19 @@ def verify_topic(topic: str) -> dict:
     # Facebook
     fb_log = _read_json(topic_dir / "zernio-publish-log.json")
     fb_reg = _registry_row(topic, PROFILE / "facebook-posts-registry.md")
-    fb_ok = bool((fb_log and fb_log.get("status") in {"published", "ok", "sent"}) or fb_reg)
-    report["platforms"]["facebook"] = {"ok": fb_ok, "log": bool(fb_log), "registry": fb_reg}
-    if fb_log and fb_log.get("post_url"):
-        report["links"]["facebook"] = fb_log["post_url"]
+    fb_status = (fb_log or {}).get("status")
+    fb_scheduled = fb_status == "scheduled"
+    fb_ok = bool((fb_log and fb_status in {"published", "ok", "sent"}) or fb_reg)
+    report["platforms"]["facebook"] = {
+        "ok": fb_ok,
+        "scheduled": fb_scheduled,
+        "status": fb_status,
+        "log": bool(fb_log),
+        "registry": fb_reg,
+    }
+    fb_url = (fb_log or {}).get("platform_post_url") or (fb_log or {}).get("post_url")
+    if fb_url:
+        report["links"]["facebook"] = fb_url
     elif fb_reg:
         m = re.search(
             rf"\| {re.escape(topic)} \| [^|]+ \| [^|]+ \| [^|]+ \| (https://www\.facebook\.com/[^\s|]+)",
@@ -178,7 +187,11 @@ def verify_topic(topic: str) -> dict:
         )
         if m:
             report["links"]["facebook"] = m.group(1)
-    if not fb_ok:
+    if not fb_ok and fb_scheduled:
+        report["issues"].append(
+            "Facebook: Zernio scheduled — ожидается auto-retry Meta (не hard_fail)"
+        )
+    elif not fb_ok:
         report["issues"].append("Facebook: нет publish-log или реестра")
 
     # b17
@@ -220,7 +233,10 @@ def verify_topic(topic: str) -> dict:
 
     hard_fail = any(
         not report["platforms"].get(p, {}).get("ok")
-        for p in ("max", "vk_profile", "vk_group", "facebook")
+        for p in ("max", "vk_profile", "vk_group")
+    ) or (
+        not report["platforms"]["facebook"]["ok"]
+        and not report["platforms"]["facebook"].get("scheduled")
     )
     vps_pending = not report["platforms"]["telegram"]["ok"] or not report["platforms"]["b17"]["ok"]
 
@@ -228,7 +244,11 @@ def verify_topic(topic: str) -> dict:
         report["overall"] = "pass"
     elif hard_fail:
         report["overall"] = "fail"
-    elif vps_pending or (not handoff_done and not finish and vps_platforms_ok):
+    elif (
+        vps_pending
+        or (not handoff_done and not finish and vps_platforms_ok)
+        or report["platforms"]["facebook"].get("scheduled")
+    ):
         report["overall"] = "partial"
     else:
         report["overall"] = "fail"

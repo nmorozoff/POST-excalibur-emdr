@@ -1,15 +1,16 @@
 === POSTS-EMDR-FIXIC ===
-Статус: needs-human
+Статус: fixed
 incidents_handled:
-- INC-20260803-1030-runware-credits (needs-human: Runware wallet; durable: kie-cover primary + runware hint)
-- INC-20260803-1045-tenchat-session-blocks-vps (fixed)
+- INC-20260804-1405-sb06-vps-phase3-stuck
+- INC-20260804-1405-sb06-facebook-zernio-scheduled
 files_changed:
-- scripts/runware-cover.py
-- scripts/publish-browser-deferred.py
-- scripts/browser_worker_finish.py
-- scripts/vps-webhook-server.py
+- scripts/publish-zernio-post.py
+- scripts/verify-publish-run.py
+- scripts/kie-cover.py
+- scripts/trigger-vps-webhook.py
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/profile/cloud-automation-prompt.md
 - posts-emdr-memory/pipeline-fix-queue.md
 checks:
-- python -m py_compile scripts/runware-cover.py scripts/publish-browser-deferred.py scripts/browser_worker_finish.py scripts/vps-webhook-server.py
+- python3 -m py_compile scripts/publish-zernio-post.py scripts/verify-publish-run.py scripts/kie-cover.py scripts/trigger-vps-webhook.py
 incident_report: none

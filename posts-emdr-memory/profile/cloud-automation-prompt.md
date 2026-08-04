@@ -45,6 +45,7 @@ python3 scripts/send-vk-post.py --topic {id} --delete-cover
 git add posts-emdr-memory/output/{id}/ posts-emdr-memory/profile/*-posts-registry.md
 git commit -m "publish: {id}"
 git push
+ВАЖНО: VPS тянет origin/main — контент должен быть в main до webhook (merge PR если feature branch).
 
 ШАГ 5 VPS WEBHOOK фаза 3
 Проверка секрета: python3 scripts/verify-vps-webhook-secret.py

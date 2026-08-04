@@ -30,14 +30,12 @@ MODEL = "gpt-image-2-image-to-image"
 
 
 def reference_public_https(reference: Path, slot: int | None) -> str:
-    """HTTPS URL портрета для Kie input_urls (refs/ на сайте, не Kie upload API)."""
-    name = reference.name
-    if slot is not None:
-        name = f"portrait-{slot:02d}.jpg"
-    remote_name = f"refs/{name}"
-    url = public_cover_url(remote_name)
+    """HTTPS URL портрета для Kie input_urls (refs/ на сайте, не Kie upload API).
 
-    def _reachable() -> bool:
+    Если CDN слот пуст — пробуем предыдущие слоты (sb-06 portrait-06 → portrait-05).
+    """
+
+    def _reachable(url: str) -> bool:
         try:
             req = urllib.request.Request(url, method="GET")
             req.add_header("Range", "bytes=0-31")
@@ -47,14 +45,51 @@ def reference_public_https(reference: Path, slot: int | None) -> str:
         except Exception:
             return False
 
-    if _reachable():
-        return url
+    def _try_slot(s: int | None, ref_file: Path) -> str | None:
+        name = ref_file.name if s is None else f"portrait-{s:02d}.jpg"
+        remote_name = f"refs/{name}"
+        url = public_cover_url(remote_name)
+        if _reachable(url):
+            return url
+        if ref_file.is_file():
+            env = load_upload_env()
+            upload_cover(ref_file, remote_name, env)
+            if _reachable(url):
+                return url
+        return None
 
-    env = load_upload_env()
-    upload_cover(reference, remote_name, env)
-    if not _reachable():
-        raise SystemExit(f"Reference uploaded but not reachable: {url}")
-    return url
+    slots_to_try: list[int | None] = []
+    if slot is not None:
+        slots_to_try = list(range(slot, 0, -1))
+    else:
+        slots_to_try = [None]
+
+    ref_dir = reference.parent
+    last_url = ""
+    for s in slots_to_try:
+        ref_file = reference if s is None else ref_dir / f"portrait-{s:02d}.jpg"
+        if not ref_file.is_file():
+            continue
+        url = _try_slot(s, ref_file)
+        if url:
+            if slot is not None and s != slot:
+                print(
+                    json.dumps(
+                        {
+                            "reference_fallback": {
+                                "requested_slot": slot,
+                                "used_slot": s,
+                                "url": url,
+                            }
+                        },
+                        ensure_ascii=False,
+                    ),
+                    file=sys.stderr,
+                )
+            return url
+        last_url = public_cover_url(f"refs/portrait-{s:02d}.jpg" if s else f"refs/{ref_file.name}")
+
+    raise SystemExit(f"Reference uploaded but not reachable: {last_url}")
 
 
 def main() -> None:

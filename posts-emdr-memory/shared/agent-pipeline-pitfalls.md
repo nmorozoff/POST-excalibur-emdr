@@ -121,3 +121,34 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 **Симптом:** `--finish` / deferred worker блокируются на `tenchat_not_ready` или `tenchat=published`.
 
 **Правильно:** MSP short-blog VPS worker — только Telegram + b17 (`publish-browser-deferred.py`, `browser_worker_finish.py`). TenChat — отдельно (Mac/ручной), не gate для очереди.
+
+## VPS phase 3: контент не на main
+
+**Симптом (2026-08-04, sb-06):** webhook HTTP 202, но через 12+ мин нет `telegram-publish-log.json` / `b17-publish-log.json`.
+
+**Причина:** контент был на feature branch; VPS `git pull origin main` не видел `output/{topic}/`.
+
+**Правильно:**
+- Merge/push в **main** до `trigger-vps-webhook.py`.
+- `trigger-vps-webhook.py` проверяет локальную ветку `main` (обход: `--skip-main-check`).
+- После merge — повторный webhook для той же темы.
+
+## Zernio Facebook: status scheduled
+
+**Симптом:** `zernio-publish-log.json` → `status: scheduled`, `platform_post_url: null` (Meta transient error).
+
+**Правильно:** `publish-zernio-post.py` не падает на `scheduled` (ожидается auto-retry Zernio). `verify-publish-run.py` → `partial`, не `fail`. Проверить пост в Meta через 10–30 мин.
+
+## publish-topic.py: --publish для Zernio
+
+**Симптом:** `publish-topic.py` падает на шаге Facebook: `unrecognized arguments: --publish`.
+
+**Причина:** `publish-zernio-post.py` не принимал флаг `--publish` (в отличие от `send-max-draft.py`).
+
+**Правильно:** `publish-zernio-post.py --publish` — no-op совместимости; реальная публикация unless `--dry-run`.
+
+## Kie cover: пустой CDN портрета
+
+**Симптом (sb-06):** `refs/portrait-06.jpg` на CDN пуст/недоступен.
+
+**Правильно:** `kie-cover.py` пробует предыдущие слоты (06 → 05 → … → 01) и логирует `reference_fallback` в stderr / `kie-cover-log.json`.

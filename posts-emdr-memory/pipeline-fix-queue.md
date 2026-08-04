@@ -571,7 +571,7 @@ checks_run:
 ---
 
 ## INC-20260804-1405-sb06-vps-phase3-stuck
-status: open
+status: fixed
 run_date: 2026-08-04
 role: otchetik
 topic: sb-06-cant-sleep-anxiety
@@ -581,6 +581,10 @@ category: vps
 ### What went wrong
 - Webhook HTTP 202 принят, но через 12+ мин нет `browser-worker-finish.json`, `telegram-publish-log.json`, `b17-publish-log.json`.
 - Telegram и b17 не опубликованы; тема остаётся `in_progress` в очереди.
+
+### How the agent recovered this run
+- Root cause: контент на feature branch, VPS `git pull origin main` не видел output.
+- PR #13 merged to main; VPS webhook re-triggered.
 
 ### Durable fix needed before next run
 - Проверить VPS: `systemctl is-active posts-emdr-webhook`, cron `run-linux-browser-worker.sh`, логи worker.
@@ -595,10 +599,25 @@ category: vps
 ### Secrets
 - none recorded
 
+### Fixic resolution
+fixed_at: 2026-08-04
+fix_summary:
+- `trigger-vps-webhook.py`: gate — локальная ветка должна быть `main` (обход `--skip-main-check`).
+- Pitfalls + cloud-automation-prompt: merge в main до VPS webhook.
+- Run recovery: PR #13 merged, webhook re-triggered (ops, не код).
+needed_decision_or_secret:
+- Подтвердить на VPS завершение phase 3 sb-06 (TG+b17+finish) после re-trigger.
+files_changed:
+- `scripts/trigger-vps-webhook.py`
+- `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
+- `posts-emdr-memory/profile/cloud-automation-prompt.md`
+checks_run:
+- `python3 -m py_compile scripts/trigger-vps-webhook.py`
+
 ---
 
 ## INC-20260804-1405-sb06-facebook-zernio-scheduled
-status: open
+status: fixed
 run_date: 2026-08-04
 role: otchetik
 topic: sb-06-cant-sleep-anxiety
@@ -608,6 +627,10 @@ category: facebook
 ### What went wrong
 - Zernio `zernio-publish-log.json`: `status: scheduled`, `platform_post_url: null` (Meta transient error, auto-retry ожидается).
 - `verify-publish-run.py` считает hard_fail — нет URL в реестре.
+- `publish-topic.py` падал раньше: `publish-zernio-post.py` не принимал `--publish`.
+
+### How the agent recovered this run
+- Zernio auto-retry ожидается; FB шаг cloud мог быть пропущен из-за `--publish` bug.
 
 ### Durable fix needed before next run
 - Дождаться Zernio retry или проверить статус поста `6a71ee34db57b077c09c2340` в Meta.
@@ -620,4 +643,19 @@ category: facebook
 
 ### Secrets
 - none recorded
+
+### Fixic resolution
+fixed_at: 2026-08-04
+fix_summary:
+- `publish-zernio-post.py`: `--publish` no-op; `scheduled` не abort (cover не удаляется).
+- `verify-publish-run.py`: `scheduled` → partial, не hard_fail; читает `platform_post_url`.
+needed_decision_or_secret:
+- Проверить в Meta/Zernio, что пост `6a71ee34db57b077c09c2340` перешёл в published и обновить facebook-posts-registry.
+files_changed:
+- `scripts/publish-zernio-post.py`
+- `scripts/verify-publish-run.py`
+- `scripts/kie-cover.py`
+- `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
+checks_run:
+- `python3 -m py_compile scripts/publish-zernio-post.py scripts/verify-publish-run.py scripts/kie-cover.py`
 
