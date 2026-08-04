@@ -695,3 +695,50 @@ files_changed:
 checks_run:
 - python3 -m py_compile scripts/verify-publish-run.py scripts/publish-zernio-post.py
 
+---
+
+## INC-20260804-1742-sb07-vps-phase3-pending
+status: needs-human
+run_date: 2026-08-04
+role: otchetik
+topic: sb-07-five-minute-pause
+severity: high
+category: vps
+
+### What went wrong
+- После cloud + MCP VK webhook принят, но через 10+ мин повторной проверки нет `browser-worker-finish.json`, `telegram-publish-log.json`, `b17-publish-log.json`.
+- Telegram не отправлен в @nmorozova_emdr и @natalia_morozova_psy; b17 не published; тема остаётся `in_progress` в очереди.
+
+### How the agent recovered this run
+- verify-publish-run.py ×2 (initial + retry через 10 мин) → overall partial; отчёт отправлен в ЛС Макс.
+- Fixic: повторный `trigger-vps-webhook.py --topic sb-07-five-minute-pause` → HTTP 202, git_pull OK, pid background; через 5+ мин всё ещё partial (нет commit `browser-worker: published sb-07`).
+
+### Durable fix needed before next run
+- Проверить VPS: `systemctl is-active posts-emdr-webhook`, cron `run-linux-browser-worker.sh`, логи worker.
+- Повторить phase 3 для sb-07 или ручная публикация TG+b17.
+
+### Suggested files to inspect/change
+- VPS: `~/POST-excalibur-emdr/posts-emdr-memory/output/sb-07-five-minute-pause/vps-webhook-run.log`
+- `scripts/run-linux-browser-worker.sh`
+- `posts-emdr-memory/output/sb-07-five-minute-pause/browser-local-handoff.md`
+
+### Secrets
+- none recorded
+
+### Fixic resolution
+fixed_at: 2026-08-04
+fix_summary:
+- Pitfall «VPS phase 3 partial после retry otchetik» — recovery playbook (re-webhook → wait → VPS logs).
+- Otchetik/Fixic skills: эскалация partial-after-retry → Fixic; probe webhook один раз.
+- VPS worker sb-07 не завершился после re-webhook — нужна ручная проверка на VPS (логи, telegram.env, b17 session).
+needed_decision_or_secret:
+- SSH на VPS: прочитать vps-webhook-run.log; при необходимости `publish-browser-deferred.py --topic sb-07-five-minute-pause --submit --finish --git-push`.
+files_changed:
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- skills/posts-emdr-otchetik/SKILL.md
+- skills/posts-emdr-fixic/SKILL.md
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 scripts/trigger-vps-webhook.py --topic sb-07-five-minute-pause (202)
+- python3 scripts/verify-publish-run.py --topic sb-07-five-minute-pause (partial)
+

@@ -1,13 +1,13 @@
 === POSTS-EMDR-FIXIC ===
-Статус: fixed
+Статус: needs-human
 incidents_handled:
-- INC-20260804-1405-sb06-vps-phase3-stuck
-- INC-20260804-1405-sb06-facebook-zernio-scheduled
+- INC-20260804-1742-sb07-vps-phase3-pending
 files_changed:
-- scripts/verify-publish-run.py
-- scripts/publish-zernio-post.py
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- skills/posts-emdr-otchetik/SKILL.md
+- skills/posts-emdr-fixic/SKILL.md
 - posts-emdr-memory/pipeline-fix-queue.md
 checks:
-- python3 -m py_compile scripts/verify-publish-run.py scripts/publish-zernio-post.py
-incident_report: posts-emdr-memory/pipeline-fix-queue.md#INC-20260804-1405-sb06-facebook-zernio-scheduled
+- python3 scripts/trigger-vps-webhook.py --topic sb-07-five-minute-pause (HTTP 202, git_pull OK)
+- python3 scripts/verify-publish-run.py --topic sb-07-five-minute-pause (partial, no finish json)
+incident_report: posts-emdr-memory/pipeline-fix-queue.md#INC-20260804-1742-sb07-vps-phase3-pending

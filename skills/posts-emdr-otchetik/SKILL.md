@@ -78,6 +78,7 @@ python3 scripts/send-max-publish-report.py --topic {topic_id}
 |---------|----------|
 | pass | Fixic **не** обязателен (только если были старые open INC) |
 | partial | Записать INC `vps-pending`; **не** вызывать Fixic до повторной проверки |
+| partial (после retry) | INC `vps-phase3-pending` → **Task(`posts-emdr-fixic`)**; Fixic документирует recovery (pitfalls), может один раз `trigger-vps-webhook.py` |
 | fail | Записать INC; сообщить Директору: **Task(`posts-emdr-fixic`)** |
 
 Отчётик **сам не чинит** скрипты — только incidents + отчёт. Чинит **Fixic**.
