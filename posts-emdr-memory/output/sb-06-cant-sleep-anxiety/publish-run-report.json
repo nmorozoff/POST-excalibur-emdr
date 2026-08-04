@@ -1,6 +1,6 @@
 {
   "topic": "sb-06-cant-sleep-anxiety",
-  "overall": "fail",
+  "overall": "partial",
   "platforms": {
     "max": {
       "ok": true,
@@ -10,14 +10,18 @@
     },
     "telegram": {
       "ok": false,
-      "delivery": null,
-      "channels": [],
+      "delivery": "link_preview_single_message",
+      "channels": [
+        "morozova_emdr"
+      ],
       "missing_channels": [
         "nmorozova_emdr",
         "natalia_morozova_psy"
       ],
-      "cover_source": null,
-      "urls": []
+      "cover_source": "catbox",
+      "urls": [
+        "https://t.me/morozova_emdr/613"
+      ]
     },
     "vk_profile": {
       "ok": true,
@@ -29,14 +33,16 @@
     },
     "facebook": {
       "ok": false,
+      "scheduled": true,
+      "status": "scheduled",
       "log": true,
       "registry": false
     },
     "b17": {
-      "ok": false,
-      "log": false,
-      "registry": false,
-      "status": null
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published"
     }
   },
   "covers": {
@@ -52,24 +58,25 @@
     }
   },
   "queue": {
-    "published": false,
-    "still_in_queue": true
+    "published": true,
+    "still_in_queue": false
   },
   "vps": {
-    "finish_json": false,
+    "finish_json": true,
     "handoff_done": false,
-    "status": null
+    "status": "browser_worker_finished"
   },
   "issues": [
-    "Telegram: не отправлен (или VPS ещё не отработал)",
-    "Facebook: нет publish-log или реестра",
-    "b17: не published (VPS мог ещё не отработать)",
-    "Тема всё ещё in_progress в очереди",
-    "VPS phase 3: нет finish (webhook/cron ещё не завершил)"
+    "Telegram: нет каналов ['nmorozova_emdr', 'natalia_morozova_psy']",
+    "Facebook: Zernio scheduled — ожидается auto-retry Meta (не hard_fail)"
   ],
   "links": {
     "max": "https://max.ru/se13417616_biz/AZ_NBEdwWCU",
+    "telegram": [
+      "https://t.me/morozova_emdr/613"
+    ],
     "vk_profile": "https://vk.com/wall218367867_654",
-    "vk_group": "https://vk.com/wall-224685309_154"
+    "vk_group": "https://vk.com/wall-224685309_154",
+    "b17": "https://www.b17.ru/blog/pochemu_posle_trevozhnogo_dnya_trudno_usnut_hotya_telo_ustalo/"
   }
 }

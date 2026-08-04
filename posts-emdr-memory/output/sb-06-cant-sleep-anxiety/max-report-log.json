@@ -1,0 +1,68 @@
+{
+  "status": "sent",
+  "topic": "sb-06-cant-sleep-anxiety",
+  "chat_id": "[REDACTED]",
+  "overall": "partial",
+  "result": {
+    "message": {
+      "recipient": {
+        "chat_id": "[REDACTED]",
+        "chat_type": "dialog",
+        "user_id": 12014678
+      },
+      "timestamp": 1785853079515,
+      "body": {
+        "mid": "mid.0000000016b6922b019fcd236fdb3f84",
+        "seq": 117037667419111300,
+        "text": "⏳ Posts EMDR — sb-06-cant-sleep-anxiety\nСтатус: partial\n\nСсылки:\n• max: https://max.ru/se13417616_biz/AZ_NBEdwWCU\n• telegram: https://t.me/morozova_emdr/613\n• vk_profile: https://vk.com/wall218367867_654\n• vk_group: https://vk.com/wall-224685309_154\n• b17: https://www.b17.ru/blog/pochemu_posle_trevozhnogo_dnya_trudno_usnut_hotya_telo_ustalo/\n\nПроблемы:\n• Telegram: нет каналов ['nmorozova_emdr', 'natalia_morozova_psy']\n• Facebook: Zernio scheduled — ожидается auto-retry Meta (не hard_fail)\n\nVPS мог ещё публиковать TG/b17. Подождите 5–15 мин и повторите проверку.",
+        "attachments": [
+          {
+            "payload": {
+              "url": "https://max.ru/se13417616_biz/AZ_NBEdwWCU",
+              "token": "f9LHodD0cOIfXGBfVwVSketfVWamIj0foj5t2RMzq3Xg0gRLoHyVoicVmHm4gJVMoDfG1GZb4886xhGUOm5v"
+            },
+            "title": "Психолог | EMDR терапевт | Морозова Наталья",
+            "description": "За 2-4 сессии избавляю от фобий, страхов, ОКР, панических атак, ПТСР.\nЗапись на сайте www.morozovanatalia.ru?utm_source=max",
+            "image_url": "https://i.oneme.ru/i?r=BTGBPUwtwgYUeoFhO7rESmr8F-FUAo2Gmb8WAZBxonjEAbJ_HqH97r8QHtUvv1mBLU4",
+            "type": "share"
+          }
+        ],
+        "markup": [
+          {
+            "from": 2,
+            "length": 37,
+            "type": "strong"
+          },
+          {
+            "from": 48,
+            "length": 7,
+            "type": "strong"
+          },
+          {
+            "from": 57,
+            "length": 7,
+            "type": "strong"
+          },
+          {
+            "from": 345,
+            "length": 9,
+            "type": "strong"
+          },
+          {
+            "from": 495,
+            "length": 72,
+            "type": "emphasized"
+          }
+        ]
+      },
+      "sender": {
+        "user_id": 369215101,
+        "first_name": "КАРУСЕЛЬКА",
+        "username": "id771605638595_bot",
+        "is_bot": true,
+        "last_activity_time": 1785853079532,
+        "name": "КАРУСЕЛЬКА"
+      }
+    }
+  }
+}
