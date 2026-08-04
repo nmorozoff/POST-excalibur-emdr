@@ -622,7 +622,7 @@ checks_run:
 ---
 
 ## INC-20260804-1405-sb06-vps-phase3-stuck
-status: open
+status: fixed
 run_date: 2026-08-04
 role: otchetik
 topic: sb-06-cant-sleep-anxiety
@@ -646,10 +646,19 @@ category: vps
 ### Secrets
 - none recorded
 
+### Fixic resolution
+fixed_at: 2026-08-04
+fix_summary:
+- VPS phase 3 завершился: `browser-worker-finish.json` (2026-08-04), `b17-publish-log.json` status published, тема в short-blog-published.md.
+- Первоначальный «stuck» был временным lag otchetik; root cause Telegram wrong channel — INC-20260804-1800-telegram-wrong-channel-morozova-emdr (уже fixed).
+- Дополнительный durable fix для VPS worker не требуется.
+files_changed:
+- posts-emdr-memory/pipeline-fix-queue.md
+
 ---
 
 ## INC-20260804-1405-sb06-facebook-zernio-scheduled
-status: open
+status: fixed
 run_date: 2026-08-04
 role: otchetik
 topic: sb-06-cant-sleep-anxiety
@@ -671,4 +680,18 @@ category: facebook
 
 ### Secrets
 - none recorded
+
+### Fixic resolution
+fixed_at: 2026-08-04
+fix_summary:
+- verify-publish-run.py: `scheduled` без реестра → partial (не hard_fail), issue с hint на Meta retry.
+- publish-zernio-post.py: polling GET `/api/v1/posts/{id}` до 10 мин; scheduled → exit 3, cover не удаляется.
+- Pitfall: Zernio scheduled / Meta transient.
+files_changed:
+- scripts/verify-publish-run.py
+- scripts/publish-zernio-post.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 -m py_compile scripts/verify-publish-run.py scripts/publish-zernio-post.py
 

@@ -51,6 +51,19 @@
 
 **Правильно:** уникальная строка с URL сайта темы в тексте Facebook; не копировать Макс дословно.
 
+## Zernio Facebook: status scheduled (Meta transient)
+
+**Симптом (2026-08-04, sb-06):** `zernio-publish-log.json` → `status: scheduled`, `platform_post_url: null` после POST; Meta transient error, Zernio auto-retry.
+
+**Причина:** Meta API временно не принял пост; Zernio ставит scheduled и ретраит.
+
+**Правильно:**
+- `publish-zernio-post.py`: polling GET `/api/v1/posts/{id}` до 10 мин; при scheduled — exit 3, лог без hard fail.
+- `verify-publish-run.py`: `scheduled` без реестра → **partial** (не hard_fail); повторить verify через 10–15 мин.
+- Не удалять cover с FTP, пока статус не `published`.
+
+**Не делать:** считать scheduled как терминальный fail в otchetik/verify.
+
 ## MCP user-mcp-kv: intermittent auth
 
 **Симптом:** VK publish падает с auth error.
