@@ -7,6 +7,12 @@ posts-emdr-memory/_TEMP-cloud-secrets-export.txt
 # Generated covers (large binaries)
 posts-emdr-memory/output/**/cover.png
 
+# VPS runtime logs
+posts-emdr-memory/output/**/vps-webhook-run.log
+
+# Sync temp dirs
+tmp-sync/
+
 # Playwright session cookies — never commit
 posts-emdr-memory/browser/*.json
 
