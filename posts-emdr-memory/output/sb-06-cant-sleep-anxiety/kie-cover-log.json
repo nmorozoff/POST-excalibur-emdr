@@ -1,0 +1,9 @@
+{
+  "taskId": "3b1069f27a15ef2b496967d18fa0e518",
+  "resultUrls": [
+    "https://tempfile.aiquickdraw.com/images/chatgpt/file_00000000e5dc81f8969d20f114233d5d.png"
+  ],
+  "reference_url": "https://morozovanatalia.ru/social-covers/refs/portrait-05.jpg",
+  "slot": 6,
+  "note": "portrait-06 CDN empty, used portrait-05 fallback"
+}
