@@ -525,7 +525,7 @@ checks_run:
 ---
 
 ## INC-20260803-1800-vps-git-pull-dirty-tree
-status: open
+status: fixed
 run_date: 2026-08-03
 role: vps
 topic: sb-05-tolerate-uncertainty
@@ -539,14 +539,31 @@ category: vps
 ### How the agent recovered this run
 - Cloud фазы 1–2 OK (Max, VK×2, Facebook).
 - Повторный webhook после fix `stash -u` + `reset --hard FETCH_HEAD` в ветке `cursor/short-blog-end-to-end-dcaa`.
+- sb-05 опубликован вручную 2026-08-03; VPS синхронизирован 2026-08-04.
 
 ### Durable fix needed before next run
-- Merge fix в `main`; на VPS: `systemctl restart posts-emdr-webhook` (или деплой нового `vps-webhook-server.py`).
+- Merge fix в `main`; на VPS: `systemctl restart posts-emdr-webhook`.
 - Повтор `POST /publish` с topic sb-05.
 
-### Suggested files to inspect/change
-- `scripts/vps-webhook-server.py`
-- `scripts/run-linux-browser-worker.sh`
+### Fixic resolution
+fixed_at: 2026-08-04
+fix_summary:
+- PR #12: webhook и cron worker делают `git stash -u` + `git fetch origin main` + `git reset --hard FETCH_HEAD`.
+- Добавлены скрипты: `trigger-vps-webhook.py`, `verify-vps-webhook-secret.py`, `is-topic-published.py`.
+- Cloud prompt обновлён: `git pull` перед чтением очереди + проверка `is-topic-published`.
+- VPS синхронизирован до `origin/main`, webhook перезапущен, dry-run 202 OK.
+files_changed:
+- scripts/vps-webhook-server.py
+- scripts/run-linux-browser-worker.sh
+- scripts/trigger-vps-webhook.py
+- scripts/verify-vps-webhook-secret.py
+- scripts/is-topic-published.py
+- scripts/publish-topic.py
+- posts-emdr-memory/profile/cloud-automation-prompt.md
+checks_run:
+- python3 -m py_compile scripts/trigger-vps-webhook.py scripts/verify-vps-webhook-secret.py scripts/is-topic-published.py scripts/publish-topic.py scripts/vps-webhook-server.py
+- python3 scripts/verify-vps-webhook-secret.py
+- python3 scripts/trigger-vps-webhook.py --topic sb-05-tolerate-uncertainty --dry-run
 
 ### Secrets
 - none recorded
