@@ -619,3 +619,56 @@ checks_run:
 ### Secrets
 - none recorded
 
+---
+
+## INC-20260804-1405-sb06-vps-phase3-stuck
+status: open
+run_date: 2026-08-04
+role: otchetik
+topic: sb-06-cant-sleep-anxiety
+severity: high
+category: vps
+
+### What went wrong
+- Webhook HTTP 202 принят, но через 12+ мин нет `browser-worker-finish.json`, `telegram-publish-log.json`, `b17-publish-log.json`.
+- Telegram и b17 не опубликованы; тема остаётся `in_progress` в очереди.
+
+### Durable fix needed before next run
+- Проверить VPS: `systemctl is-active posts-emdr-webhook`, cron `run-linux-browser-worker.sh`, логи worker.
+- Повторить phase 3 для sb-06 или ручная публикация TG+b17.
+
+### Suggested files to inspect/change
+- `scripts/vps-webhook-server.py`
+- `scripts/publish-browser-deferred.py`
+- `scripts/browser_worker_finish.py`
+- `scripts/trigger-vps-webhook.py`
+
+### Secrets
+- none recorded
+
+---
+
+## INC-20260804-1405-sb06-facebook-zernio-scheduled
+status: open
+run_date: 2026-08-04
+role: otchetik
+topic: sb-06-cant-sleep-anxiety
+severity: medium
+category: facebook
+
+### What went wrong
+- Zernio `zernio-publish-log.json`: `status: scheduled`, `platform_post_url: null` (Meta transient error, auto-retry ожидается).
+- `verify-publish-run.py` считает hard_fail — нет URL в реестре.
+
+### Durable fix needed before next run
+- Дождаться Zernio retry или проверить статус поста `6a71ee34db57b077c09c2340` в Meta.
+- Опционально: treat `scheduled` как partial в verify (не hard_fail).
+
+### Suggested files to inspect/change
+- `scripts/publish-zernio-post.py`
+- `scripts/verify-publish-run.py`
+- `posts-emdr-memory/profile/facebook-posts-registry.md`
+
+### Secrets
+- none recorded
+
