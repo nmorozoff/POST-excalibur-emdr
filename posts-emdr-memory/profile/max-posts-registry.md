@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-06-cant-sleep-anxiety | 2026-08-04 | Почему после тревожного дня трудно уснуть, хотя тело устало | https://max.ru/se13417616_biz/AZ_NBEdwWCU | https://morozovanatalia.ru/anxiety | тревога,бессонница,сон,EMDR,стресс,психология |
 | sb-05-tolerate-uncertainty | 2026-08-03 | Что происходит, если разрешить себе не знать, чем всё закончится | https://max.ru/se13417616_biz/AZ_HI8MTTQI | https://morozovanatalia.ru/anxiety | тревога,неопределённость,контроль,EMDR,стресс,психология |
 | sb-04-what-if-phrase | 2026-07-30 | Фраза «а вдруг» и как она запускает сценарий в голове | https://max.ru/se13417616_biz/AZ-yQhSdWYw | https://morozovanatalia.ru/anxiety | тревога,сценарий,а вдруг,EMDR,стресс,психология |
 | sb-03-body-before-mind | 2026-07-28 | Момент, когда тело узнаёт о тревоге раньше головы | https://max.ru/se13417616_biz/AZ-ocPU0c6Q | https://morozovanatalia.ru/anxiety | тревога,тело,нервная система,EMDR,стресс,психология |
