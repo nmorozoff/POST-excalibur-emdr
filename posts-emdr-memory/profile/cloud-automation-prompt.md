@@ -48,8 +48,10 @@ git push
 
 ШАГ 5 VPS WEBHOOK фаза 3
 Проверка секрета: python3 scripts/verify-vps-webhook-secret.py
+Проверка Telegram-каналов: убедиться, что в posts-emdr-memory/telegram.env.local и в Cloud Secrets TELEGRAM_CHANNEL_CHAT_IDS = @nmorozova_emdr,@natalia_morozova_psy. Канал @morozova_emdr снят с публикации.
 Запуск: python3 scripts/trigger-vps-webhook.py --topic {id}
 Ожидать HTTP 202. VPS публикует Telegram @nmorozova_emdr и @natalia_morozova_psy, b17, делает --finish.
+Если send-telegram-post.py упал с BLOCKER по каналам — остановиться, не публиковать, исправить telegram.env.local на VPS и в Cloud Secrets.
 
 ШАГ 6 ОТЧЁТИК
 Task(posts-emdr-otchetik) с topic_id.

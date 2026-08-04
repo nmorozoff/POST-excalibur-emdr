@@ -6,6 +6,57 @@ Durable incident memory. Контракт: `shared/pipeline-incident-fix-contrac
 
 ---
 
+## INC-20260804-1800-telegram-wrong-channel-morozova-emdr
+status: fixed
+run_date: 2026-08-04
+role: vps
+role: telegram
+topic: sb-06-cant-sleep-anxiety
+severity: high
+category: telegram
+
+### What went wrong
+- VPS опубликовал Telegram-пост в канал @morozova_emdr вместо согласованных @nmorozova_emdr и @natalia_morozova_psy.
+- posts-emdr-memory/telegram.env.local на VPS был перезаписан: TELEGRAM_CHANNEL_CHAT_IDS=@morozova_emdr.
+
+### How the agent recovered this run
+- Восстановлен корректный telegram.env.local на VPS: @nmorozova_emdr,@natalia_morozova_psy.
+- Добавлен hard guard в scripts/send-telegram-post.py: публикация блокируется, если список каналов не совпадает с согласованным или содержит @morozova_emdr.
+
+### Durable fix needed before next run
+- Зафиксировать в prompt и оркестраторе: @morozova_emdr снят с публикации; проверка env перед webhook.
+- Синхронизировать Cloud Secrets TELEGRAM_CHANNEL_CHAT_IDS с VPS.
+
+### Suggested files to inspect/change
+- scripts/send-telegram-post.py
+- posts-emdr-memory/profile/cloud-automation-prompt.md
+- posts-emdr-memory/cloud-secrets-checklist.txt
+- .cursor/rules/posts-emdr-orchestrator.mdc
+
+### Fixic resolution
+fixed_at: 2026-08-04
+fix_summary:
+- Telegram env на VPS восстановлен до @nmorozova_emdr,@natalia_morozova_psy.
+- send-telegram-post.py: hard guard на каналы; публикация в @morozova_emdr теперь невозможна.
+- Cloud prompt: шаг проверки TELEGRAM_CHANNEL_CHAT_IDS перед webhook.
+- cloud-secrets-checklist: зафиксирован правильный список каналов с предупреждением.
+files_changed:
+- scripts/send-telegram-post.py
+- posts-emdr-memory/profile/cloud-automation-prompt.md
+- posts-emdr-memory/cloud-secrets-checklist.txt
+- posts-emdr-memory/profile/tone-of-voice.md
+- posts-emdr-memory/profile/max-post-prompt.md
+- posts-emdr-memory/profile/crosslink-rules.md
+- posts-emdr-memory/profile/short-blog-cta-rules.md
+- posts-emdr-memory/profile/telegram-post-prompt.md
+- posts-emdr-memory/profile/vk-post-prompt.md
+- posts-emdr-memory/profile/b17-blog-post-prompt.md
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 -m py_compile scripts/send-telegram-post.py
+
+---
+
 ## INC-20260723-1430-telegram-photo-then-text
 status: fixed
 run_date: 2026-07-23

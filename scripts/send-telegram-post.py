@@ -433,6 +433,21 @@ def main() -> None:
                 "TELEGRAM_CHANNEL_CHAT_IDS (или TELEGRAM_CHANNEL_CHAT_ID) не задан. "
                 "Укажите @username каналов в telegram.env.local."
             )
+        banned = [ch for ch in chat_ids if ch.lstrip("@") == "morozova_emdr"]
+        if banned:
+            raise SystemExit(
+                "BLOCKER: канал @morozova_emdr снят с публикации. "
+                f"TELEGRAM_CHANNEL_CHAT_IDS={chat_ids}. "
+                "Исправьте telegram.env.local на VPS и в Cloud Secrets: @nmorozova_emdr,@natalia_morozova_psy"
+            )
+        if len(chat_ids) != 2 or any(
+            ch.lstrip("@") not in ("nmorozova_emdr", "natalia_morozova_psy") for ch in chat_ids
+        ):
+            raise SystemExit(
+                "BLOCKER: список Telegram-каналов не соответствует согласованному. "
+                f"Ожидается: @nmorozova_emdr,@natalia_morozova_psy. "
+                f"Получено: {chat_ids}. Исправьте telegram.env.local."
+            )
         if args.delivery == "photo_then_text":
             raise SystemExit(
                 "BLOCKER: --publish в каналы запрещён с --delivery photo_then_text "
