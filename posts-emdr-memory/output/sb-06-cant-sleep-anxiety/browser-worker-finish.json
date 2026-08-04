@@ -4,10 +4,9 @@
   "date": "2026-08-04",
   "b17_url": "https://www.b17.ru/blog/pochemu_posle_trevozhnogo_dnya_trudno_usnut_hotya_telo_ustalo/",
   "tenchat_url": null,
-  "site_url": "https://morozovanatalia.ru/anxiety",
+  "site_url": "https://morozovanatalia.ru/Почему после тревожного дня трудно уснуть, хотя тело устало",
   "queue": {
-    "exit_code": 0,
-    "stdout": "OK marked published: sb-06-cant-sleep-anxiety → short-blog-published.md",
-    "stderr": ""
+    "skipped": true,
+    "reason": "topic_not_in_queue"
   }
 }
