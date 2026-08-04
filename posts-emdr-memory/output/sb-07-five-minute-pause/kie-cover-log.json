@@ -1,0 +1,16 @@
+{
+  "taskId": "049cf7364329b0609868d5f027bf20c8",
+  "resultUrls": [
+    "https://tempfile.aiquickdraw.com/images/chatgpt/file_000000003ed881f7856685e3edf37ea8.png"
+  ],
+  "reference_rotation": {
+    "topic": "sb-07-five-minute-pause",
+    "slot": null,
+    "reference_path": "posts-emdr-memory/assets/reference/portrait-05.jpg",
+    "backend": "kie",
+    "aspect_ratio": "5:4",
+    "resolution": "1K"
+  },
+  "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-05.jpg",
+  "model": "gpt-image-2-image-to-image"
+}
