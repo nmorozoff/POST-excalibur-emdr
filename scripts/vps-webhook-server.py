@@ -129,6 +129,11 @@ class WebhookHandler(BaseHTTPRequestHandler):
         topic = (data.get("topic") or "").strip()
         env = os.environ.copy()
         env["POSTS_EMDR_ROOT"] = str(PROJECT_ROOT)
+
+        if data.get("dry_run") or data.get("auth_check"):
+            self._json(200, {"ok": True, "auth": "ok", "dry_run": True, "topic": topic or None})
+            return
+
         pull = _git_pull()
 
         if topic:

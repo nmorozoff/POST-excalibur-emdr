@@ -1,6 +1,6 @@
 # Cloud Automation — промпт для расписания
 
-В Dashboard Instructions (plain text) копируйте блок между === COPY START === и === COPY END ===.
+В Dashboard Instructions (plain text) копируйте блок между === COPY START === и === COPY END ===. В этом поле плохо копируются кавычки и фигурные скобки, поэтому webhook вызывается отдельным скриптом.
 
 ---
 
@@ -8,15 +8,16 @@
 
 Ты — Директор Posts EMDR. Язык — русский. Следуй .cursor/rules/posts-emdr-orchestrator.mdc.
 
-Задача: опубликовать одну тему MSP short-blog end-to-end за запуск.
+Задача: опубликовать одну тему MSP short-blog end-to-end за запуск. Не начинать новую тему, пока предыдущая не закрыта.
 
 ШАГ 0 INTAKE
 INCIDENTS: python3 scripts/incident_queue.py --project-root . Если exit 2 — сначала Task(posts-emdr-fixic), новую тему не начинать.
-ОЧЕРЕДЬ: первая строка posts-emdr-memory/topics/short-blog-queue.md — topic_id, заголовок, site_url. Пометить in_progress.
+ОЧЕРЕДЬ: git pull origin main. Первая строка posts-emdr-memory/topics/short-blog-queue.md — topic_id, заголовок, site_url. Если первая строка уже in_progress или в short-blog-published.md — проверить, не закрыта ли она через is-topic-published, и не начинать новую.
 ЧТЕНИЕ: shared/agent-pipeline-pitfalls.md, profile/tone-of-voice.md, profile/author-profile.md, profile/site-url-map.md.
 
 ШАГ 1 КОНТЕНТ через Task
-Папка posts-emdr-memory/output/{topic_id}/ — создать файлы:
+Проверка: python3 scripts/is-topic-published.py --topic {id}. Если exit 0 — тема уже опубликована, пропустить и поставить в очередь published, перейти к следующей.
+В posts-emdr-memory/output/{id}/ создать файлы:
 max-post.md и cover-prompt.txt — Директор, Макс 3500–3800 знаков
 telegram-post.md — Task posts-emdr-telegram-writer
 vk-profile-post.md — Task posts-emdr-vk-writer profile
@@ -29,6 +30,7 @@ TenChat снят — tenchat-post.md не создавать.
 ШАГ 2 CLOUD PUBLISH фаза 1
 python3 scripts/materialize_cloud_env.py --check
 python3 scripts/publish-topic.py --topic {id}
+Если publish-topic вернул status skipped already_published — перейти к отчетику и следующей теме.
 Telegram из cloud не публиковать — только VPS.
 
 ШАГ 3 VK MCP фаза 2
@@ -45,18 +47,18 @@ git commit -m "publish: {id}"
 git push
 
 ШАГ 5 VPS WEBHOOK фаза 3
-curl -fsS -X POST http://195.209.210.45:8787/publish -H "Authorization: Bearer $VPS_WEBHOOK_SECRET" -H "Content-Type: application/json" -d "{\"topic\":\"{id}\"}"
+Проверка секрета: python3 scripts/verify-vps-webhook-secret.py
+Запуск: python3 scripts/trigger-vps-webhook.py --topic {id}
 Ожидать HTTP 202. VPS публикует Telegram @nmorozova_emdr и @natalia_morozova_psy, b17, делает --finish.
-Проверка секрета без публикации: python3 scripts/verify-vps-webhook-secret.py
 
 ШАГ 6 ОТЧЁТИК
 Task(posts-emdr-otchetik) с topic_id.
-При partial подождать 10–15 мин и повторить проверку один раз. Отчёт в ЛС Макс-бота.
+При partial подождать 10–15 мин и повторить проверку один раз. Отчёт в ЛС Макс-бота (MAX_PREVIEW_CHAT_ID).
 
 ШАГ 7 FIXIC
 При fail verify-publish-run или incident_queue exit 2: Task(posts-emdr-fixic).
 
-ЗАПРЕТЫ: не TenChat, не LinkedIn, не Ядрышко/Core. Не Telegram из cloud. Не помечать published вручную — это VPS --finish. Не Kie/Runware повторно без причины. Не photo_then_text в Telegram.
+ЗАПРЕТЫ: не TenChat, не LinkedIn, не Ядрышко/Core. Не Telegram из cloud. Не помечать published вручную — это VPS --finish. Не Kie/Runware повторно без причины. Не photo_then_text в Telegram. Не публиковать повторно то, что уже в short-blog-published.md.
 
 HANDOFF: .cursor/posts-emdr-handoff.md со статусом === POSTS EMDR DONE === только после Отчётика pass или partial с INC vps-pending.
 

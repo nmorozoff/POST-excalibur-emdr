@@ -181,6 +181,7 @@ def run_publish(topic: str, *, submit: bool) -> dict:
                     "--topic",
                     topic,
                     "--publish",
+                    "--refresh-cover-url",
                 ],
                 cwd=PROJECT_ROOT,
                 capture_output=True,

@@ -185,6 +185,22 @@ def publish_topic(
             f"See posts-emdr-memory/CLOUD-SETUP.md\n{json.dumps(preflight, ensure_ascii=False, indent=2)}"
         )
 
+    if not dry_run:
+        dup_check = subprocess.run(
+            [sys.executable, str(SCRIPTS / "is-topic-published.py"), "--topic", topic, "--json"],
+            capture_output=True,
+            text=True,
+        )
+        if dup_check.returncode == 0:
+            dup_data = json.loads(dup_check.stdout or "{}")
+            print(json.dumps({
+                "topic": topic,
+                "status": "skipped",
+                "reason": "already_published_end_to_end",
+                "check": dup_data,
+            }, ensure_ascii=False, indent=2))
+            return {"topic": topic, "status": "skipped", "reason": "already_published"}
+
     log: dict = {"topic": topic, "dry_run": dry_run, "steps": {}}
 
     if not skip_cover:
