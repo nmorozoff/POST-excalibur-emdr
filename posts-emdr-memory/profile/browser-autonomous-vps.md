@@ -7,7 +7,7 @@
 ```
 Cloud automation
   → git push (артефакты + browser-local-handoff.md)
-  → webhook POST на VPS (мгновенно)  ИЛИ  cron каждые 10 мин
+  → webhook POST на VPS (мгновенно)  ИЛИ  cron 10:00 и 17:00 MSK
 VPS Playwright (headless)
   → b17 через residential proxy
   → TenChat напрямую (cookies)
@@ -92,7 +92,7 @@ python3 scripts/check-b17-ip-access.py   # ok после настройки prox
 ### Cron (fallback, если webhook не сработал)
 
 ```cron
-*/10 * * * * /home/ubuntu/POST-excalibur-emdr/scripts/run-linux-browser-worker.sh >> /var/log/posts-emdr-browser.log 2>&1
+0 10,17 * * * /home/ubuntu/POST-excalibur-emdr/scripts/run-linux-browser-worker.sh >> /var/log/posts-emdr-browser.log 2>&1
 0 4 * * * cd /home/ubuntu/POST-excalibur-emdr && .venv-browser/bin/python3 scripts/browser_ensure_sessions.py --refresh >> /var/log/posts-emdr-sessions.log 2>&1
 ```
 
@@ -122,7 +122,7 @@ curl -fsS -X POST "http://195.209.210.45:8787/publish" \
   -d '{"topic":"{topic_id}"}'
 ```
 
-Если webhook недоступен — cron подхватит за ≤10 мин после `git push`.
+Если webhook недоступен — cron подхватит в **10:00** или **17:00** MSK (ближайший слот).
 
 ## Почему Mac больше не нужен
 

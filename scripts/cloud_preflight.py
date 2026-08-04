@@ -21,7 +21,7 @@ from posts_emdr_env import (
 from browser_backend import browser_ready
 
 AUTO_PLATFORMS = ("max", "telegram", "vk", "facebook")
-BROWSER_PLATFORMS = ("b17", "tenchat")
+BROWSER_PLATFORMS = ("b17",)
 
 
 def _check_file(name: str, required_keys: list[str]) -> dict:

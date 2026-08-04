@@ -11,7 +11,7 @@ Steps:
   2. cloud_preflight
   3. kie cover (if missing) — gpt-image-2 via Kie.ai 5:4 1K
   4. Max → VK (FTP + MCP handoff) → Facebook
-  5. Telegram + b17 + TenChat → VPS (ASocks / Playwright), не Cloud
+  5. Telegram + b17 → VPS (ASocks / Playwright), не Cloud
 """
 
 from __future__ import annotations
@@ -130,15 +130,14 @@ def write_vk_mcp_handoff(topic: str, photo_url: str) -> Path:
 
 def write_browser_local_handoff(topic: str) -> Path:
     topic_dir = MEMORY / "output" / topic
-    body = f"""# VPS publish — Telegram + b17 + TenChat
+    body = f"""# VPS publish — Telegram + b17
 
 Тема: `{topic}`
 
 Cloud опубликовал Макс / VK(MCP) / Facebook. Осталось на **VPS**:
 
-1. Telegram ×3 (ASocks KZ → `api.telegram.org`)
+1. Telegram ×2 (@nmorozova_emdr, @natalia_morozova_psy) — ASocks KZ
 2. b17 (Playwright + residential RU)
-3. TenChat (Playwright)
 
 ## Триггер
 
@@ -283,15 +282,11 @@ def publish_topic(
         log["steps"]["b17"] = step_json(
             run([sys.executable, str(SCRIPTS / "publish-b17-blog.py"), "--topic", topic, *submit])
         )
-        log["steps"]["tenchat"] = step_json(
-            run([sys.executable, str(SCRIPTS / "publish-tenchat-post.py"), "--topic", topic, *submit])
-        )
 
     deferred: list[str] = ["telegram"]
     if not browser_ok:
-        deferred.extend(["b17", "tenchat"])
+        deferred.append("b17")
     if not dry_run:
-        # Всегда пишем VPS handoff: Telegram + (часто) b17/TenChat
         log["steps"]["browser_local_handoff"] = str(write_browser_local_handoff(topic))
     if log.get("steps", {}).get("vk_mode") == "mcp_handoff":
         deferred.append("vk_mcp")
@@ -344,7 +339,7 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--skip-cover", action="store_true")
     parser.add_argument("--skip-browser", action="store_true")
-    parser.add_argument("--submit", action="store_true", help="Auto-click Save/Publish on b17/TenChat")
+    parser.add_argument("--submit", action="store_true", help="Auto-click Save on b17")
     args = parser.parse_args()
 
     result = publish_topic(

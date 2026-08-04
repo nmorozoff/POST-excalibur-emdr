@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep b17 + TenChat cookies alive on VPS (no Mac, no GUI).
+"""Keep b17 cookies alive on VPS (no Mac, no GUI).
 
 Run before publish (cron/worker) or daily:
   python3 scripts/browser_ensure_sessions.py
@@ -14,7 +14,7 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from browser_playwright_utils import b17_proxy_configured, playwright_session, tenchat_proxy_prefix
+from browser_playwright_utils import b17_proxy_configured, playwright_session
 from posts_emdr_env import browser_backend_name, load_env, playwright_storage_state_path
 
 
@@ -55,12 +55,11 @@ def ensure_sessions(*, refresh: bool = False) -> dict:
     checks: dict[str, object] = {"storage_state": str(state), "sites": {}}
     b17_blocked_no_proxy = False
 
-    ten_px = tenchat_proxy_prefix()
+    ten_px = None
     with playwright_session(proxy_prefix="B17_") as (_pw, _browser, context):
         page = context.new_page()
         for key, url, proxy_prefix in (
             ("b17", "https://www.b17.ru/my_blog.php?mod=edit", "B17_"),
-            ("tenchat", "https://tenchat.ru/editor", ten_px or "B17_"),
         ):
             if key == "b17" and not b17_proxy_configured():
                 probe = __import__("check_b17_ip_access", fromlist=["check_b17_access"]).check_b17_access()
@@ -92,7 +91,7 @@ def ensure_sessions(*, refresh: bool = False) -> dict:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Refresh/verify Playwright sessions for b17+TenChat")
+    parser = argparse.ArgumentParser(description="Refresh/verify Playwright session for b17")
     parser.add_argument("--refresh", action="store_true", help="Longer page wait (session keeper)")
     args = parser.parse_args()
 

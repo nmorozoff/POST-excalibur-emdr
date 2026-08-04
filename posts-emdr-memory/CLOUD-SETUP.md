@@ -17,8 +17,8 @@
 | `MAX_BOT_TOKEN` | API Макс |
 | `MAX_CHAT_ID` | ID канала Макс |
 | `TELEGRAM_BOT_TOKEN` | Бот Telegram (нужен на VPS; в Cloud можно тоже для materialize) |
-| `TELEGRAM_CHANNEL_CHAT_IDS` | Каналы через запятую |
-| `TELEGRAM_CHANNEL_UTM_SOURCES` | `tg1,tg2,tg3` |
+| `TELEGRAM_CHANNEL_CHAT_IDS` | `@nmorozova_emdr,@natalia_morozova_psy` |
+| `TELEGRAM_CHANNEL_UTM_SOURCES` | `tg1,tg2` |
 | `ZERNIO_API_KEY` | Facebook |
 | `ZERNIO_FACEBOOK_ACCOUNT_ID` | ID страницы FB |
 | `RUNWARE_API_KEY` | Обложки (legacy, опционально) |
@@ -32,7 +32,9 @@
 
 После `publish-topic.py` агент читает `output/{topic}/vk-mcp-handoff.json` и вызывает `vk_create_post_with_photo` ×2.
 
-### Telegram + b17 + TenChat (фаза 3 — Linux VPS)
+### Telegram + b17 (фаза 3 — Linux VPS)
+
+**TenChat снят с пайплайна** (2026-08-03).
 
 **Не из cloud pod.** Telegram с Cloud/датацентра **не работает** (таймаут `api.telegram.org`).
 
@@ -54,7 +56,7 @@ python3 scripts/materialize_cloud_env.py --check
 
 ```bash
 python3 scripts/publish-topic.py --topic sb-05-tolerate-uncertainty
-# → Макс + FB + VK handoff; Telegram/b17/TenChat deferred
+# → Макс + FB + VK handoff; Telegram/b17 deferred
 # затем MCP VK ×2, git push, curl webhook
 ```
 

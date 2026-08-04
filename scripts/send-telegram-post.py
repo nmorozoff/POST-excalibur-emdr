@@ -232,6 +232,9 @@ def load_cover_public_url(
     if max_url:
         candidates.append(("max", max_url))
 
+    site_cover = f"https://morozovanatalia.ru/social-covers/{topic_dir.name}.jpg"
+    candidates.append(("morozovanatalia", site_cover))
+
     vk_meta = topic_dir / "vk-cover-public-url.json"
     if vk_meta.exists():
         vk_data = json.loads(vk_meta.read_text(encoding="utf-8"))
@@ -246,9 +249,6 @@ def load_cover_public_url(
     legacy_runware = topic_dir / "cover-runware.url"
     if legacy_runware.exists() and cover.name == "cover-runware.png":
         candidates.append(("runware", legacy_runware.read_text(encoding="utf-8").strip()))
-
-    site_cover = f"https://morozovanatalia.ru/social-covers/{topic_dir.name}.jpg"
-    candidates.append(("morozovanatalia", site_cover))
 
     for source, candidate in candidates:
         if candidate and url_is_reachable(candidate):

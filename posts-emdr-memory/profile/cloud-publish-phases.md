@@ -36,7 +36,9 @@ Gate: в ответе MCP — `📸 Загружено фото`.
 
 Обновить реестры: `vk-profile`, `vk-group`, `max`, `facebook`.
 
-## Фаза 3 — Telegram + b17 + TenChat (VPS)
+## Фаза 3 — Telegram + b17 (VPS)
+
+**TenChat снят с пайплайна** (2026-08-03).
 
 **Полная инструкция:** `profile/browser-autonomous-vps.md`
 
@@ -52,13 +54,13 @@ curl -fsS -X POST "http://195.209.210.45:8787/publish" \
   -d '{"topic":"{topic_id}"}'
 ```
 
-Или cron на VPS подхватит за ≤10 мин.
+Или cron на VPS подхватит в **10:00** или **17:00** MSK (fallback).
 
 VPS worker делает:
 1. `git pull`
-2. `asocks_sync_proxy.py --target telegram` → Telegram ×3 (`link_preview`)
-3. b17 (Playwright + RU proxy, HTTPS cover, verify list)
-4. TenChat (Playwright)
+2. `ensure_site_cover` → FTP обложка на `social-covers/{topic}.jpg`
+3. `asocks_sync_proxy.py --target telegram` → Telegram ×2 (`@nmorozova_emdr`, `@natalia_morozova_psy`, `link_preview`)
+4. b17 (Playwright + RU proxy, HTTPS cover, verify list)
 5. `--finish` (реестры + очередь) + `--git-push`
 
 **На VPS обязательно:**

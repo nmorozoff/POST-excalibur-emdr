@@ -461,7 +461,7 @@ files_changed:
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
 
 ## INC-20260803-1045-tenchat-session-blocks-vps
-status: open
+status: fixed
 run_date: 2026-08-03
 role: vps
 topic: sb-05-tolerate-uncertainty
@@ -479,14 +479,17 @@ category: tenchat
 - Cloud Max/VK/FB уже опубликованы; site cover залита.
 
 ### Durable fix needed before next run
-- Релогин TenChat на VPS (`tenchat-vnc-login.sh`).
-- Перезапуск systemd webhook после деплоя async-сервера.
-- Повтор `/publish` или cron для TG+b17+TenChat.
+- ~~Релогин TenChat~~ — платформа снята с пайплайна (2026-08-03).
+- Webhook async + git config VPS — сделано.
 
-### Suggested files to inspect/change
-- `scripts/vps-webhook-server.py`
-- `scripts/run-linux-browser-worker.sh`
-- `scripts/publish-browser-deferred.py`
+### Fixic resolution
+fixed_at: 2026-08-03
+fix_summary:
+- TenChat снят с пайплайна; finish/deferred/session gate больше не зависят от TenChat
+files_changed:
+- scripts/publish-browser-deferred.py
+- scripts/browser_worker_finish.py
+- .cursor/rules/posts-emdr-orchestrator.mdc
 - `posts-emdr-memory/profile/browser-autonomous-vps.md`
 
 ### Secrets

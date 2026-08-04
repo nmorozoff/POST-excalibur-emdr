@@ -1,0 +1,78 @@
+{
+  "topic": "sb-05-tolerate-uncertainty",
+  "overall": "pass",
+  "platforms": {
+    "max": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "url": "https://max.ru/se13417616_biz/AZ_HI8MTTQI"
+    },
+    "telegram": {
+      "ok": true,
+      "delivery": "link_preview_single_message",
+      "channels": [
+        "natalia_morozova_psy",
+        "nmorozova_emdr"
+      ],
+      "missing_channels": [],
+      "cover_source": "catbox",
+      "urls": [
+        "https://t.me/nmorozova_emdr/113",
+        "https://t.me/natalia_morozova_psy/2025"
+      ]
+    },
+    "vk_profile": {
+      "ok": true,
+      "registry": true
+    },
+    "vk_group": {
+      "ok": true,
+      "registry": true
+    },
+    "facebook": {
+      "ok": true,
+      "log": true,
+      "registry": true
+    },
+    "b17": {
+      "ok": true,
+      "log": false,
+      "registry": true,
+      "status": null
+    }
+  },
+  "covers": {
+    "local_cover": {
+      "ok": false,
+      "path": "/Users/natala/Documents/Проекты СURSOR/Посты EMDR/posts-emdr-memory/output/sb-05-tolerate-uncertainty/cover.png",
+      "note": "ok_on_site_only"
+    },
+    "site_cover": {
+      "url": "https://morozovanatalia.ru/social-covers/sb-05-tolerate-uncertainty.jpg",
+      "ok": true,
+      "status": 200,
+      "content_type": "image/jpeg"
+    }
+  },
+  "queue": {
+    "published": true,
+    "still_in_queue": false
+  },
+  "vps": {
+    "finish_json": false,
+    "handoff_done": false,
+    "status": null
+  },
+  "issues": [],
+  "links": {
+    "max": "https://max.ru/se13417616_biz/AZ_HI8MTTQI",
+    "telegram": [
+      "https://t.me/nmorozova_emdr/113",
+      "https://t.me/natalia_morozova_psy/2025"
+    ],
+    "vk_profile": "https://vk.com/wall218367867_652",
+    "vk_group": "https://vk.com/wall-224685309_153",
+    "facebook": "https://www.facebook.com/632301483303094_122181018242837712"
+  }
+}

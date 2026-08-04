@@ -9,8 +9,8 @@ alwaysApply: true
 
 ## Суть
 
-Локальный профиль **Excalibur Social**: тема из файла → контент для **Макс → Telegram → ВК×2 → Facebook (Zernio) → b17 → TenChat**.  
-**LinkedIn отменён** (блокировка аккаунта). **Кружок Макс** — вне scope MSP short-blog.
+Локальный профиль **Excalibur Social**: тема из файла → контент для **Макс → Telegram → ВК×2 → Facebook (Zernio) → b17**.  
+**TenChat снят с пайплайна** (2026-08-03). **LinkedIn отменён** (блокировка аккаунта). **Кружок Макс** — вне scope MSP short-blog.
 **НЕ** запускать Ядрышко/Core, SEO-scout, WordPress publish (если пользователь явно не попросил блог).
 
 ## Память
@@ -45,7 +45,7 @@ Handoff runtime: `.cursor/posts-emdr-handoff.md`
 
 См. `posts-emdr-memory/profile/cloud-publish-phases.md` и `CLOUD-SETUP.md`.
 
-**3 фазы:** (1) скрипты cloud: Макс/TG/FB + handoff, (2) **MCP mcp-kv** → VK, (3) **локально Mac** → b17/TenChat (Undetectable).
+**3 фазы:** (1) скрипты cloud: Макс/TG/FB + handoff, (2) **MCP mcp-kv** → VK, (3) **VPS** → Telegram + b17.
 
 `VK_ACCESS_TOKEN` не нужен. MCP mcp-kv — в Dashboard automation.
 
@@ -127,18 +127,7 @@ python scripts/publish-b17-blog.py --topic {id}
 
 Gate: форма заполнена, `b17-publish-prep.json`. Опционально `--submit` для автоклика «Сохранить».
 
-### Шаг 7 — TenChat
-
-Рерайт `tenchat-post.md` по `profile/tenchat-post-prompt.md` (**1800–2200** знаков).  
-Обложка через **скрепку** в редакторе.
-
-```bash
-python scripts/publish-tenchat-post.py --topic {id}
-```
-
-Gate: форма заполнена, `tenchat-publish-prep.json`. Опционально `--submit` для автоклика «Опубликовать».
-
-### Шаг 8 — Закрытие
+### Шаг 7 — Закрытие
 
 - Пометить тему `published` + дата в `short-blog-queue.md` / `short-blog-published.md`
 - `publish-log.md` в output
@@ -147,6 +136,19 @@ Gate: форма заполнена, `tenchat-publish-prep.json`. Опциона
 - Handoff: `=== POSTS EMDR DONE ===`
 
 **Cloud one-liner (после контента):** `python3 scripts/publish-topic.py --topic {id}`
+
+### Шаг 8 — Отчётик (QA + отчёт в Макс)
+
+После cloud + MCP VK + webhook VPS:
+
+1. **Task(`posts-emdr-otchetik`)** с `topic_id`
+2. Скрипты: `verify-publish-run.py --write` → `send-max-publish-report.py`
+3. При `partial` — подождать 10–15 мин, повторить проверку **один раз**
+4. При `fail` — записать INC в `pipeline-fix-queue.md`, эскалировать Fixic
+
+| Task | Роль |
+|------|------|
+| `posts-emdr-otchetik` | QA публикаций, обложки, отчёт в ЛС Макс, incidents |
 
 ### Шаг 9 — Fixic (post-run)
 
@@ -159,6 +161,7 @@ Gate: форма заполнена, `tenchat-publish-prep.json`. Опциона
 
 | Task | Роль |
 |------|------|
+| `posts-emdr-otchetik` | QA + отчёт в Макс |
 | `posts-emdr-fixic` | Post-run: incidents → правки skills/scripts/prompts/pitfalls |
 
 ## CTA (обязательно в каждом посте)
@@ -175,7 +178,7 @@ Gate: форма заполнена, `tenchat-publish-prep.json`. Опциона
 - НЕ Ядрышко/Core для старта
 - НЕ просить пользователя «скопируйте example в local» — агент создаёт `max.env.local`, `runware.env.local` сам
 - НЕ вызывать Runware API без согласованного пайплайна short-blog (обложка на каждый пост — автоматически)
-- НЕ генерировать обложку повторно на шагах TG/VK/FB/b17/TenChat
+- НЕ генерировать обложку повторно на шагах TG/VK/FB/b17
 - НЕ завершать fragment без `incident_report:` (см. `shared/subagent-end-of-task-contract.md`)
 - НЕ пропускать Fixic gate при open incidents в `pipeline-fix-queue.md`
 - НЕ публиковать без `cover.png` с этапа MAX

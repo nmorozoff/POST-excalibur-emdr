@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Minimal webhook: cloud automation → instant VPS phase 3 (Telegram+b17+TenChat).
+"""Minimal webhook: cloud automation → instant VPS phase 3 (Telegram+b17).
 
 Usage on VPS (systemd):
   EnvironmentFile=.../browser.env.local
@@ -101,6 +101,10 @@ class WebhookHandler(BaseHTTPRequestHandler):
             return
 
         topic = (data.get("topic") or "").strip()
+        if data.get("dry_run"):
+            self._json(200, {"ok": True, "auth": "ok", "dry_run": True})
+            return
+
         env = os.environ.copy()
         env["POSTS_EMDR_ROOT"] = str(PROJECT_ROOT)
         pull = _git_pull()

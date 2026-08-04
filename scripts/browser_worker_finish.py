@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""После успешной публикации b17+TenChat: реестры, закрытие handoff, очередь."""
+"""После успешной публикации Telegram+b17: реестры, закрытие handoff, очередь."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ def _extract_title(topic_dir: Path, platform: str) -> str:
     log = _read_json(topic_dir / f"{platform}-publish-log.json")
     if log.get("title"):
         return str(log["title"])
-    md = topic_dir / f"{platform}-blog-post.md" if platform == "b17" else topic_dir / "tenchat-post.md"
+    md = topic_dir / "b17-blog-post.md"
     if md.is_file():
         m = re.search(r"^## Заголовок\s*\n\n(.+?)\n", md.read_text(encoding="utf-8"), re.M)
         if m:
@@ -89,29 +89,24 @@ def finish_topic(topic_id: str, *, skip_queue: bool = False) -> dict:
 
     tg_status = _log_status(topic_dir, "telegram")
     b17_status = _log_status(topic_dir, "b17")
-    ten_status = _log_status(topic_dir, "tenchat")
     tg_ok = tg_status in {"sent", "published"} or not (topic_dir / "telegram-post.md").is_file()
-    if not tg_ok or b17_status != "published" or ten_status != "published":
+    if not tg_ok or b17_status != "published":
         raise SystemExit(
             f"Not ready to finish {topic_id}: telegram={tg_status}, "
-            f"b17={b17_status}, tenchat={ten_status} (need tg sent/published + b17/ten published)"
+            f"b17={b17_status} (need tg sent/published + b17 published)"
         )
 
     b17_log = _read_json(topic_dir / "b17-publish-log.json")
-    ten_log = _read_json(topic_dir / "tenchat-publish-log.json")
     d = date.today().isoformat()
     site_url = _site_url_for_topic(topic_id)
     title_b17 = _extract_title(topic_dir, "b17")
-    title_ten = _extract_title(topic_dir, "tenchat")
     b17_url = (
         b17_log.get("public_url")
         or b17_log.get("post_url")
         or b17_log.get("compose_url", "https://www.b17.ru/my_blog.php")
     )
-    ten_url = ten_log.get("post_url") or ten_log.get("compose_url", "https://tenchat.ru/")
 
     b17_registry = PROFILE / "b17-posts-registry.md"
-    ten_registry = PROFILE / "tenchat-posts-registry.md"
     tg_registry = PROFILE / "telegram-posts-registry.md"
 
     if not _registry_has_topic(b17_registry, topic_id):
@@ -119,22 +114,13 @@ def finish_topic(topic_id: str, *, skip_queue: bool = False) -> dict:
             b17_registry,
             f"| {topic_id} | {d} | {title_b17} | {b17_url} | {site_url} | b17,психология |",
         )
-    if not _registry_has_topic(ten_registry, topic_id):
-        _append_registry(
-            ten_registry,
-            f"| {topic_id} | {d} | {title_ten} | {ten_url} | {site_url} | tenchat,психология |",
-        )
 
-    # Telegram registry: one row per channel from publish log
     tg_log_path = topic_dir / "telegram-publish-log.json"
-    if tg_log_path.is_file() and not _registry_has_topic(tg_registry, topic_id):
+    if tg_log_path.is_file():
         tg_log = _read_json(tg_log_path)
         title_tg = title_b17
         tg_md = topic_dir / "telegram-post.md"
         if tg_md.is_file():
-            m = re.search(r"^# Пост Telegram[^\n]*\n", tg_md.read_text(encoding="utf-8"))
-            _ = m
-            # title from first <b>…</b>
             m2 = re.search(r"<b>([^<]+)</b>", tg_md.read_text(encoding="utf-8"))
             if m2:
                 title_tg = m2.group(1).strip()
@@ -144,11 +130,12 @@ def finish_topic(topic_id: str, *, skip_queue: bool = False) -> dict:
             if not chat or not mid:
                 continue
             url = f"https://t.me/{chat}/{mid}"
-            _append_registry(
-                tg_registry,
+            row = (
                 f"| {topic_id} | {d} | {title_tg} | @{chat} | {mid} | {url} | {site_url} | "
-                f"тревога,EMDR,стресс,психология |",
+                f"тревога,EMDR,стресс,психология |"
             )
+            if not _registry_has_topic(tg_registry, topic_id) or chat not in tg_registry.read_text():
+                _append_registry(tg_registry, row)
 
     handoff = topic_dir / "browser-local-handoff.md"
     if handoff.is_file():
@@ -180,7 +167,6 @@ def finish_topic(topic_id: str, *, skip_queue: bool = False) -> dict:
         "status": "browser_worker_finished",
         "date": d,
         "b17_url": b17_url,
-        "tenchat_url": ten_url,
         "site_url": site_url,
         "queue": queue_result,
     }
