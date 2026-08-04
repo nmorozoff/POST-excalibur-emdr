@@ -695,3 +695,35 @@ files_changed:
 checks_run:
 - python3 -m py_compile scripts/verify-publish-run.py scripts/publish-zernio-post.py
 
+---
+
+## INC-20260804-1742-sb07-vps-phase3-pending
+status: open
+run_date: 2026-08-04
+role: otchetik
+topic: sb-07-five-minute-pause
+severity: high
+category: vps
+
+### What went wrong
+- После cloud + MCP VK webhook принят, но через 10+ мин повторной проверки нет `browser-worker-finish.json`, `telegram-publish-log.json`, `b17-publish-log.json`.
+- Telegram не отправлен в @nmorozova_emdr и @natalia_morozova_psy; b17 не published; тема остаётся `in_progress` в очереди.
+
+### How the agent recovered this run
+- verify-publish-run.py ×2 (initial + retry через 10 мин) → overall partial; отчёт отправлен в ЛС Макс.
+
+### Durable fix needed before next run
+- Проверить VPS: `systemctl is-active posts-emdr-webhook`, cron `run-linux-browser-worker.sh`, логи worker.
+- Повторить phase 3 для sb-07 или ручная публикация TG+b17.
+
+### Suggested files to inspect/change
+- VPS: `/opt/posts-emdr/` webhook + browser worker logs
+- `scripts/run-linux-browser-worker.sh`
+- `posts-emdr-memory/output/sb-07-five-minute-pause/browser-local-handoff.md`
+
+### Secrets
+- none recorded
+
+### Fixic resolution
+- pending
+
