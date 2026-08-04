@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""VPS worker: Telegram + b17 for topics deferred from cloud.
+"""VPS worker: Telegram + b17 for MSP short-blog topics deferred from cloud.
+
+TenChat вне scope MSP short-blog — worker и --finish не блокируются на TenChat.
 
 Linux VPS (Playwright) — cron:
 
@@ -27,6 +29,10 @@ from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env
 SCRIPTS = PROJECT_ROOT / "scripts"
 
 
+def _msp_deferred_complete(topic_dir: Path) -> bool:
+    return _platform_done(topic_dir, "telegram") and _platform_done(topic_dir, "b17")
+
+
 def _log_status(path: Path) -> str | None:
     if not path.is_file():
         return None
@@ -48,7 +54,7 @@ def _platform_done(topic_dir: Path, key: str) -> bool:
     return _log_status(topic_dir / f"{key}-publish-log.json") == "published"
 
 
-def pending_topics(*, topic: str | None = None, force: bool = False) -> list[str]:
+def pending_topics(*, topic: str | None = None) -> list[str]:
     output = MEMORY / "output"
     if not output.is_dir():
         return []
@@ -61,28 +67,17 @@ def pending_topics(*, topic: str | None = None, force: bool = False) -> list[str
             continue
         handoff = topic_dir / "browser-local-handoff.md"
         done = topic_dir / "browser-local-handoff.done.md"
+        # Need handoff OR explicit --topic, plus drafts
         has_drafts = (topic_dir / "telegram-post.md").is_file() or (
             topic_dir / "b17-blog-post.md"
         ).is_file()
         if topic:
-            if has_drafts and (
-                force
-                or not (
-                    _platform_done(topic_dir, "telegram")
-                    and _platform_done(topic_dir, "b17")
-                    and done.is_file()
-                )
-            ):
+            if has_drafts and not (_msp_deferred_complete(topic_dir) and done.is_file()):
                 topics.append(tid)
             continue
         if not handoff.is_file() and not done.is_file():
             continue
-        if (
-            not force
-            and done.is_file()
-            and _platform_done(topic_dir, "telegram")
-            and _platform_done(topic_dir, "b17")
-        ):
+        if done.is_file() and _msp_deferred_complete(topic_dir):
             continue
         if not has_drafts:
             continue
@@ -104,6 +99,7 @@ def sync_telegram_proxy() -> dict:
         "stderr_tail": (proc.stderr or "")[-400:],
     }
     if proc.returncode != 0:
+        # Не блокируем, если TELEGRAM_PROXY_* уже в browser.env.local
         try:
             env = load_env("browser.env.local")
             if env.get("TELEGRAM_PROXY_SERVER"):
@@ -119,7 +115,7 @@ def sync_telegram_proxy() -> dict:
 
 
 def ensure_site_cover(topic: str) -> dict:
-    """FTP upload cover → morozovanatalia.ru/social-covers/{topic}.jpg (TG preview + b17)."""
+    """FTP upload cover → morozovanatalia.ru/social-covers/{topic}.jpg (b17 TinyMCE HTTPS)."""
     topic_dir = MEMORY / "output" / topic
     cover = topic_dir / "cover.png"
     if not cover.is_file():
@@ -153,16 +149,19 @@ def ensure_site_cover(topic: str) -> dict:
     return out
 
 
-def run_publish(topic: str, *, submit: bool, force_telegram: bool = False) -> dict:
+def run_publish(topic: str, *, submit: bool) -> dict:
     submit_args = ["--submit"] if submit else []
     result: dict = {"topic": topic, "steps": {}}
     topic_dir = MEMORY / "output" / topic
 
+    # 0) Site cover for b17 HTTPS + Telegram link_preview (VPS FTP usually works when cloud DC FTP fails)
     result["steps"]["site_cover"] = ensure_site_cover(topic)
     if not result["steps"]["site_cover"].get("ok"):
+        # Non-fatal for TenChat (local file attach); b17 may fail verify — surface in log
         result["steps"]["site_cover"]["warning"] = "upload_failed_continue"
 
-    if force_telegram or not _telegram_done(topic_dir):
+    # 1) Telegram via ASocks KZ
+    if not _telegram_done(topic_dir):
         if not (topic_dir / "telegram-post.md").is_file():
             result["steps"]["telegram"] = {"skipped": True, "reason": "no_telegram-post.md"}
         else:
@@ -182,7 +181,6 @@ def run_publish(topic: str, *, submit: bool, force_telegram: bool = False) -> di
                     "--topic",
                     topic,
                     "--publish",
-                    "--refresh-cover-url",
                 ],
                 cwd=PROJECT_ROOT,
                 capture_output=True,
@@ -195,15 +193,23 @@ def run_publish(topic: str, *, submit: bool, force_telegram: bool = False) -> di
             }
             if proc.returncode != 0:
                 result["steps"]["telegram"]["failed"] = True
+                # Continue to b17/TenChat — do not block the whole deferred pipeline on TG SSL/proxy blips
                 result["telegram_failed"] = True
+                # previously: result["status"] = "failed"; return result
     else:
         result["steps"]["telegram"] = {"skipped": True, "reason": "already_published"}
 
-    if _platform_done(topic_dir, "b17"):
-        result["steps"]["b17"] = {"skipped": True, "reason": "already_published"}
-    elif not (topic_dir / "b17-blog-post.md").is_file():
-        result["steps"]["b17"] = {"skipped": True, "reason": "no_b17-blog-post.md"}
-    else:
+    result["steps"]["tenchat"] = {"skipped": True, "reason": "out_of_msp_short_blog_pipeline"}
+
+    # 2) b17
+    for script, key in (("publish-b17-blog.py", "b17"),):
+        if _platform_done(topic_dir, key):
+            result["steps"][key] = {"skipped": True, "reason": "already_published"}
+            continue
+        md_name = "b17-blog-post.md"
+        if not (topic_dir / md_name).is_file():
+            result["steps"][key] = {"skipped": True, "reason": f"no_{md_name}"}
+            continue
         b17_check = subprocess.run(
             [sys.executable, str(SCRIPTS / "check-b17-ip-access.py")],
             cwd=PROJECT_ROOT,
@@ -211,7 +217,7 @@ def run_publish(topic: str, *, submit: bool, force_telegram: bool = False) -> di
             text=True,
         )
         if b17_check.returncode != 0:
-            result["steps"]["b17"] = {
+            result["steps"][key] = {
                 "skipped": True,
                 "reason": "b17_not_accessible",
                 "detail": (b17_check.stdout or b17_check.stderr)[-800:],
@@ -219,18 +225,12 @@ def run_publish(topic: str, *, submit: bool, force_telegram: bool = False) -> di
             result["status"] = "failed"
             return result
         proc = subprocess.run(
-            [
-                sys.executable,
-                str(SCRIPTS / "publish-b17-blog.py"),
-                "--topic",
-                topic,
-                *submit_args,
-            ],
+            [sys.executable, str(SCRIPTS / script), "--topic", topic, *submit_args],
             cwd=PROJECT_ROOT,
             capture_output=True,
             text=True,
         )
-        result["steps"]["b17"] = {
+        result["steps"][key] = {
             "exit_code": proc.returncode,
             "stdout_tail": proc.stdout[-2000:] if proc.stdout else "",
             "stderr_tail": proc.stderr[-1000:] if proc.stderr else "",
@@ -238,7 +238,6 @@ def run_publish(topic: str, *, submit: bool, force_telegram: bool = False) -> di
         if proc.returncode != 0:
             result["status"] = "failed"
             return result
-
     result["status"] = "ok"
     return result
 
@@ -247,6 +246,7 @@ def git_push_changes(topic: str) -> dict:
     paths = [
         f"posts-emdr-memory/output/{topic}/",
         "posts-emdr-memory/profile/b17-posts-registry.md",
+        "posts-emdr-memory/profile/tenchat-posts-registry.md",
         "posts-emdr-memory/profile/telegram-posts-registry.md",
         "posts-emdr-memory/topics/short-blog-queue.md",
         "posts-emdr-memory/topics/short-blog-published.md",
@@ -275,18 +275,13 @@ def git_push_changes(topic: str) -> dict:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Publish deferred Telegram/b17 from VPS")
+    parser = argparse.ArgumentParser(description="Publish deferred Telegram/b17 from VPS (MSP short-blog)")
     parser.add_argument("--topic", help="Single topic id (default: all pending)")
-    parser.add_argument("--submit", action="store_true", help="Auto-click Save on b17")
+    parser.add_argument("--submit", action="store_true", help="Auto-click Save/Publish")
     parser.add_argument("--finish", action="store_true", help="Registries + queue after publish")
     parser.add_argument("--git-push", action="store_true", help="git commit+push after --finish")
     parser.add_argument("--list", action="store_true", help="List pending topics only")
     parser.add_argument("--dry-run", action="store_true", help="Do not call publish scripts")
-    parser.add_argument(
-        "--force-telegram",
-        action="store_true",
-        help="Re-publish Telegram even if telegram-publish-log.json exists",
-    )
     args = parser.parse_args()
 
     try:
@@ -308,6 +303,8 @@ def main() -> None:
             text=True,
         )
         if session_proc.returncode != 0:
+            # Do not hard-fail: per-platform checks skip TenChat/b17 individually.
+            # Telegram Bot API does not need browser sessions.
             print(
                 json.dumps(
                     {
@@ -320,7 +317,7 @@ def main() -> None:
                 flush=True,
             )
 
-    pending = pending_topics(topic=args.topic, force=args.force_telegram)
+    pending = pending_topics(topic=args.topic)
     if args.list:
         print(json.dumps({"pending": pending}, ensure_ascii=False, indent=2))
         return
@@ -334,7 +331,7 @@ def main() -> None:
         if args.dry_run:
             reports.append({"topic": tid, "status": "dry_run"})
             continue
-        report = run_publish(tid, submit=args.submit, force_telegram=args.force_telegram)
+        report = run_publish(tid, submit=args.submit)
         if report.get("status") == "ok" and args.finish:
             try:
                 report["finish"] = finish_topic(tid)

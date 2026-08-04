@@ -1,13 +1,21 @@
 # Posts EMDR — Handoff
 
-status: === POSTS EMDR DONE ===
+=== POSTS EMDR DONE ===
+
+status: partial_vps_pending
 updated_at: 2026-08-03
 topic_id: sb-05-tolerate-uncertainty
 title: Что происходит, если разрешить себе не знать, чем всё закончится
 post_type: наблюдение→инсайт
 site_url: https://morozovanatalia.ru/anxiety
+mode: full publish
+otchetik: partial
 
-## Published
+## INC vps-pending
+
+INC-20260803-1800-vps-git-pull-dirty-tree — VPS git_pull blocked phase 3. Fix merged to main (PR #12): stash+reset. **На VPS:** `git stash -u && git fetch origin main && git reset --hard origin/main && systemctl restart posts-emdr-webhook`, затем повтор `POST /publish`.
+
+## Published (cloud)
 
 | Platform | URL |
 |----------|-----|
@@ -15,16 +23,19 @@ site_url: https://morozovanatalia.ru/anxiety
 | VK profile | https://vk.com/wall218367867_652 |
 | VK group | https://vk.com/wall-224685309_153 |
 | Facebook | https://www.facebook.com/632301483303094_122181018242837712 |
-| b17 | https://www.b17.ru/blog/chto_proishodit_esli_razreshit_sebe_ne_znat_chem_vse_zakonchitsya/ |
-| Telegram @nmorozova_emdr | https://t.me/nmorozova_emdr/113 (с обложкой) |
-| Telegram @natalia_morozova_psy | https://t.me/natalia_morozova_psy/2025 (с обложкой) |
 
-## Changes 2026-08-03
+## Pending (VPS phase 3)
 
-- TenChat снят с пайплайна навсегда
-- Telegram: только 2 канала (без @morozova_emdr)
-- sb-05 перепубликован в TG с link_preview + обложка (catbox)
+- Telegram @nmorozova_emdr, @natalia_morozova_psy
+- b17.ru
+- TenChat: out of scope
 
-## Next topic
+## Pipeline
 
-`sb-06-cant-sleep-anxiety` — первая pending в очереди
+- [x] Fixic gate (OPEN_INCIDENTS=0)
+- [x] Content + cover (kie-cover.py)
+- [x] Cloud Max + Facebook
+- [x] VK MCP ×2
+- [x] git push + PR #12 merged
+- [x] VPS webhook 202 (×2; git_pull failed until VPS reset)
+- [ ] VPS TG + b17 + --finish

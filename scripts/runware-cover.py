@@ -25,6 +25,7 @@ import re
 import sys
 import uuid
 from pathlib import Path
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 
@@ -98,10 +99,26 @@ def run_inference(
         },
         method="POST",
     )
-    with urlopen(req, timeout=180) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
+    try:
+        with urlopen(req, timeout=180) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        if "insufficientCredits" in body:
+            raise SystemExit(
+                "Runware insufficientCredits. MSP short-blog: use scripts/kie-cover.py (primary). "
+                "Legacy Runware only: top up https://my.runware.ai/wallet"
+            ) from exc
+        raise SystemExit(f"Runware HTTP {exc.code}: {body[:2000]}") from exc
 
     items = data.get("data") or data.get("results") or []
+    if not items and isinstance(data.get("errors"), list):
+        err_text = json.dumps(data["errors"], ensure_ascii=False)
+        if "insufficientCredits" in err_text:
+            raise SystemExit(
+                "Runware insufficientCredits. MSP short-blog: use scripts/kie-cover.py (primary). "
+                "Legacy Runware only: top up https://my.runware.ai/wallet"
+            )
     if not items:
         raise SystemExit(f"Empty Runware response: {json.dumps(data, ensure_ascii=False)[:2000]}")
 
