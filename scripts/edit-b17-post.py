@@ -12,9 +12,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import MEMORY, PROJECT_ROOT
+from posts_emdr_env import MEMORY, PROJECT_ROOT, normalize_typography, wordpress_media_upload
 from browser_backend import publish_b17
-from undetectable_browser import load_env_file, apply_undetectable_env
+from undetectable_browser import load_env_file, apply_undetectable_env, strip_urls_from_text
 
 ENV_FILE = PROJECT_ROOT / "posts-emdr-memory" / "b17.env.local"
 
@@ -39,6 +39,18 @@ def main() -> None:
     md_path = topic_dir / "b17-blog-post.md"
     cover = topic_dir / "cover.png"
     title, body = extract_title_and_body(md_path)
+    body = strip_urls_from_text(body)
+    body = normalize_typography(body)
+    body = re.sub(
+        r"Если тема откликается[^\n]*",
+        "Если тема откликается — напишите в личные сообщения здесь на b17.",
+        body,
+    )
+
+    if cover.exists():
+        wp_cover = wordpress_media_upload(cover, args.topic)
+        if wp_cover.get("error"):
+            print("WordPress upload warning:", wp_cover["error"], file=sys.stderr)
 
     env = load_env_file(ENV_FILE)
     apply_undetectable_env(env)
