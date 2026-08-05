@@ -1,29 +1,41 @@
 # Posts EMDR — Handoff
 
-status: === POSTS EMDR DONE ===
+status: READY_FOR_CLOUD_AUTOMATION
 updated_at: 2026-08-05
-topic_id: sb-08-anxiety-for-loved-ones
-title: Тревога за близких: любовь, которая выходит из берегов
-post_type: наблюдение→инсайт
+next_topic_id: sb-09-one-question-calms
+next_title: Один вопрос, который снижает тревогу лучше, чем «успокойся»
+post_type: микро-практика
 site_url: https://morozovanatalia.ru/anxiety
 mode: full publish
 
-## Result
+## Завтра — только запуск Cloud Automation
 
-- Cloud: max, VK×2, Facebook — OK
-- VPS phase 3: pending (INC-20260805-1240-sb08-vps-phase3-pending)
-- otchetik: partial, report sent to MAX_PREVIEW_CHAT_ID
+Контент **не** готовить заранее. Директор в automation:
 
-## Links
+1. INTAKE: `incident_queue` → 0; `git pull`; первая `pending` в `short-blog-queue.md` = sb-09
+2. КОНТЕНТ через Task (не вручную):
+   - max-post.md + cover-prompt.txt — Директор
+   - telegram-post.md — Task posts-emdr-telegram-writer
+   - vk-profile-post.md / vk-group-post.md — Task posts-emdr-vk-writer
+   - facebook-post.md — Task posts-emdr-facebook-writer
+   - **ok-post.md** — Task posts-emdr-ok-writer *(новая платформа)*
+   - b17-blog-post.md — рерайт по profile/b17-blog-post-prompt.md
+   - cover.png — `kie-cover.py`
+3. `publish-topic.py` → MCP VK ×2 → **MCP OK** → git push main → VPS webhook
+4. Task posts-emdr-otchetik (polling до pass/fail)
 
-| Platform | URL |
-|----------|-----|
-| Max | https://max.ru/se13417616_biz/AZ_R6SwWaV4 |
-| VK профиль | https://vk.com/wall218367867_656 |
-| VK группа | https://vk.com/wall-224685309_156 |
-| Facebook | https://www.facebook.com/632301483303094_122181226184837712 |
+## Готово на сегодня
 
-## Next
+- [x] OK в пайплайне (handoff, record-ok-publish, verify, orchestrator)
+- [x] OPEN_INCIDENTS=0
+- [x] sb-08 закрыт (pass)
+- [x] sb-09 в очереди `pending`, output/ пустой — контент с нуля в automation
+- [ ] `git push origin main` — обязательно до запуска automation
 
-- VPS: повторить trigger-vps-webhook для TG + b17 + --finish
-- Task(posts-emdr-fixic) при OPEN_INCIDENTS=1
+## Запреты на automation
+
+- Не публиковать в @morozova_emdr
+- Не TenChat / LinkedIn
+- Не дублировать TG (link_preview only)
+- Не помечать published вручную — VPS --finish
+- Не генерировать контент без Task (кроме max + b17 рерайт по промпту)
