@@ -4,8 +4,8 @@ posts-emdr-memory/*.env.local
 posts-emdr-memory/tenchat-sms-code.local
 posts-emdr-memory/_TEMP-cloud-secrets-export.txt
 
-# Generated covers (large binaries)
-posts-emdr-memory/output/**/cover.png
+# Keep generated covers in repo — VPS needs them for Telegram/b17/VK
+# posts-emdr-memory/output/**/cover.png
 
 # VPS runtime logs
 posts-emdr-memory/output/**/vps-webhook-run.log

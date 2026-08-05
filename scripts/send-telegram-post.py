@@ -35,6 +35,15 @@ def load_env() -> dict[str, str]:
     return _load("telegram.env.local", required=["TELEGRAM_BOT_TOKEN"])
 
 
+def _normalize(text: str) -> str:
+    import sys
+
+    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+    from posts_emdr_env import normalize_typography
+
+    return normalize_typography(text)
+
+
 def _urlopen(req: urllib.request.Request, *, timeout: int = 120, context=None):
     import sys
 
@@ -117,13 +126,6 @@ def extract_html(md_path: Path) -> str:
         )
     return body
 
-
-def normalize_typography(text: str) -> str:
-    """Strip em/en dashes from outgoing copy."""
-    text = text.replace("\u2014", ", ")
-    text = text.replace("\u2013", "-")
-    text = re.sub(r",\s+,", ", ", text)
-    return text.strip()
 
 
 def url_is_reachable(image_url: str) -> bool:
@@ -464,7 +466,7 @@ def main() -> None:
     post_file = topic_dir / "telegram-post.md"
     cover = resolve_cover(topic_dir)
 
-    html = normalize_typography(extract_html(post_file))
+    html = _normalize(extract_html(post_file))
     if len(html) > MESSAGE_LIMIT:
         raise SystemExit(
             f"Telegram text limit is {MESSAGE_LIMIT} chars, post has {len(html)}. "

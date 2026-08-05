@@ -11,6 +11,19 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MEMORY = PROJECT_ROOT / "posts-emdr-memory"
 
+
+def normalize_typography(text: str) -> str:
+    """Replace long dashes (em/en) with safe punctuation before publishing.
+
+    - em dash (—) → comma + space
+    - en dash (–) → hyphen
+    - collapse double commas from replacement
+    """
+    text = text.replace("\u2014", ", ")
+    text = text.replace("\u2013", "-")
+    text = re.sub(r",\s+,", ", ", text)
+    return text.strip()
+
 # Each .env.local file: list of keys (also read from os.environ in cloud).
 ENV_SPECS: dict[str, list[str]] = {
     "max.env.local": ["MAX_BOT_TOKEN", "MAX_CHAT_ID", "MAX_PREVIEW_CHAT_ID"],

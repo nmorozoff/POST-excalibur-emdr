@@ -97,7 +97,7 @@ def extract_post(md_path: Path) -> str:
     m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
     if not m:
         raise SystemExit(f"Cannot parse post from {md_path}")
-    return m.group(1).strip()
+    return normalize_typography(m.group(1).strip())
 
 
 def publish(

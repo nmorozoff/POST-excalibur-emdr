@@ -102,7 +102,7 @@ def extract_post_body(md_path: Path) -> str:
         )
     if not m:
         raise SystemExit(f"Cannot parse post body from {md_path}")
-    return m.group(1).strip()
+    return normalize_typography(m.group(1).strip())
 
 
 def split_post_text(post_text: str, *, limit: int = 3500) -> list[str]:

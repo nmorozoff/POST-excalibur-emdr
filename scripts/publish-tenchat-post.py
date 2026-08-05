@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_backend import default_tenchat_compose_url, publish_tenchat
-from posts_emdr_env import browser_backend_name
+from posts_emdr_env import browser_backend_name, normalize_typography
 from undetectable_browser import apply_undetectable_env, load_env_file
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
