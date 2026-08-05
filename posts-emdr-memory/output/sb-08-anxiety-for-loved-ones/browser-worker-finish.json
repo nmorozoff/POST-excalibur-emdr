@@ -1,0 +1,13 @@
+{
+  "topic": "sb-08-anxiety-for-loved-ones",
+  "status": "browser_worker_finished",
+  "date": "2026-08-05",
+  "b17_url": "https://www.b17.ru/blog/trevoga_za_blizkih_lyubov_kotoraya_vyhodit_iz_beregov/",
+  "tenchat_url": null,
+  "site_url": "https://morozovanatalia.ru/anxiety",
+  "queue": {
+    "exit_code": 0,
+    "stdout": "OK marked published: sb-08-anxiety-for-loved-ones → short-blog-published.md",
+    "stderr": ""
+  }
+}

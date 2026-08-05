@@ -11,6 +11,8 @@
 
 ## Опубликованные
 
+| sb-08-anxiety-for-loved-ones | 2026-08-05 | Тревога за близких: любовь, которая выходит из берегов | @natalia_morozova_psy | 2031 | https://t.me/natalia_morozova_psy/2031 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
+| sb-08-anxiety-for-loved-ones | 2026-08-05 | Тревога за близких: любовь, которая выходит из берегов | @nmorozova_emdr | 120 | https://t.me/nmorozova_emdr/120 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-07-five-minute-pause | 2026-08-05 | Пятиминутная пауза, в которой ничего не нужно решать | @natalia_morozova_psy | 2028 | https://t.me/natalia_morozova_psy/2028 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-07-five-minute-pause | 2026-08-05 | Пятиминутная пауза, в которой ничего не нужно решать | @nmorozova_emdr | 117 | https://t.me/nmorozova_emdr/117 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-06-cant-sleep-anxiety | 2026-08-04 | Почему после тревожного дня трудно уснуть, хотя тело устало | @morozova_emdr | 613 | https://t.me/morozova_emdr/613 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
