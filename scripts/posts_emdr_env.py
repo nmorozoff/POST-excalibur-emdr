@@ -122,6 +122,21 @@ def sanitize_post_text(text: str) -> str:
     text = normalize_typography(text)
     return text
 
+
+def extract_post_body_from_md(text: str) -> str:
+    """Extract ## Текст поста body, stopping before --- / ## Meta / next ## section."""
+    m = re.search(
+        r"## Текст поста\n\n(.*?)(?:\n\n---\n\n## |\Z)",
+        text,
+        re.S,
+    )
+    if not m:
+        m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
+    if not m:
+        raise ValueError("Cannot parse post body (need ## Текст поста)")
+    return normalize_typography(m.group(1).strip())
+
+
 # Each .env.local file: list of keys (also read from os.environ in cloud).
 ENV_SPECS: dict[str, list[str]] = {
     "max.env.local": ["MAX_BOT_TOKEN", "MAX_CHAT_ID", "MAX_PREVIEW_CHAT_ID"],

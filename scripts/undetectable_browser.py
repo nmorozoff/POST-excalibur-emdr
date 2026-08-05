@@ -554,6 +554,15 @@ def b17_cover_public_url(cover_path: Path, *, public_url: str | None = None) -> 
     if public_url and public_url.startswith("https://"):
         return public_url.strip()
     topic = cover_path.parent.name
+    prep = cover_path.parent / "vk-publish-prep.json"
+    if prep.is_file():
+        try:
+            data = json.loads(prep.read_text(encoding="utf-8"))
+            wp_url = data.get("cover_public_url")
+            if wp_url and isinstance(wp_url, str) and wp_url.startswith("https://"):
+                return wp_url.strip()
+        except (json.JSONDecodeError, OSError):
+            pass
     site = f"https://morozovanatalia.ru/social-covers/{topic}.jpg"
     return site
 

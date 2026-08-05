@@ -161,10 +161,7 @@ def fill_b17_compose_playwright(
                     if b17_cover_url:
                         filled_extra.append("cover:announcement_image_with_b17_url")
                     else:
-                        raise SystemExit(
-                            "b17 cover uploaded but b17-hosted URL not found in page. "
-                            "Cannot build inline image without b17 URL."
-                        )
+                        filled_extra.append("cover:announcement_image_url_not_found")
                 except Exception as exc:
                     filled_extra.append(f"cover:announcement_image_failed:{exc}")
 
