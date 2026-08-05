@@ -136,7 +136,7 @@ def fill_b17_compose_playwright(
                     page.wait_for_timeout(3000)
                     # Принудительно диспатчим change, чтобы JS b17 начал загрузку
                     page.evaluate(
-                        """() => {
+                        """(() => {
       const inp = document.querySelector('#input_file');
       if (inp) { inp.dispatchEvent(new Event('change', { bubbles: true })); }
     })();"""
