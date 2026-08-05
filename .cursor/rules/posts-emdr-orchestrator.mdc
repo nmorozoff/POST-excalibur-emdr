@@ -108,6 +108,8 @@ Task `posts-emdr-vk-writer` (режим **group**) → **отдельный** р
 
 После обоих VK-постов: `python scripts/send-vk-post.py --topic {id} --delete-cover`
 
+**Git push в main:** если cloud-окружение открыло PR вместо прямого push в main, обязательно слить PR до VPS webhook. VPS тянет только main.
+
 ### Шаг 5 — Facebook (Zernio)
 
 Task `posts-emdr-facebook-writer` → **рерайт**.  

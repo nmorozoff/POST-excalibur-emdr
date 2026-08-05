@@ -45,6 +45,8 @@ python3 scripts/send-vk-post.py --topic {id} --delete-cover
 git add posts-emdr-memory/output/{id}/ posts-emdr-memory/profile/*-posts-registry.md
 git commit -m "publish: {id}"
 git push
+Если git push ушёл на ветку cursor/* (не main), а не напрямую в main — создать/слить PR в main через `gh pr create` + `gh pr merge --squash --subject "publish: {id}"`. VPS тянет только main; webhook не запускать, пока контент не в main.
+Проверка: `git log origin/main --oneline -3` должен содержать commit "publish: {id}".
 
 ШАГ 5 VPS WEBHOOK фаза 3
 Проверка секрета: python3 scripts/verify-vps-webhook-secret.py
