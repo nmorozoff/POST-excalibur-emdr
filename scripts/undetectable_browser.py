@@ -438,6 +438,11 @@ def b17_apply_form_meta(
 })();""",
     )
 
+B17_COMPOSE_URL_DEFAULT = "https://www.b17.ru/my_blog.php?mod=edit"
+B17_TITLE_SELECTOR = "#form_name"
+TENCHAT_COMPOSE_URL_DEFAULT = "https://tenchat.ru/editor"
+
+
 def fill_b17_compose(
     *,
     base_url: str,
