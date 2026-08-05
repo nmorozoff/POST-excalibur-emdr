@@ -1,23 +1,26 @@
 {
   "topic": "sb-08-anxiety-for-loved-ones",
-  "overall": "partial",
+  "overall": "pass",
   "platforms": {
     "max": {
       "ok": true,
-      "log": true,
+      "log": false,
       "registry": true,
       "url": null
     },
     "telegram": {
-      "ok": false,
-      "delivery": null,
-      "channels": [],
-      "missing_channels": [
-        "nmorozova_emdr",
-        "natalia_morozova_psy"
+      "ok": true,
+      "delivery": "link_preview_single_message",
+      "channels": [
+        "natalia_morozova_psy",
+        "nmorozova_emdr"
       ],
-      "cover_source": null,
-      "urls": []
+      "missing_channels": [],
+      "cover_source": "catbox",
+      "urls": [
+        "https://t.me/nmorozova_emdr/120",
+        "https://t.me/natalia_morozova_psy/2031"
+      ]
     },
     "vk_profile": {
       "ok": true,
@@ -29,22 +32,23 @@
     },
     "facebook": {
       "ok": true,
+      "log": false,
+      "registry": true,
+      "status": null,
+      "pending_scheduled": null
+    },
+    "b17": {
+      "ok": true,
       "log": true,
       "registry": true,
       "status": "published",
-      "pending_scheduled": false
-    },
-    "b17": {
-      "ok": false,
-      "log": false,
-      "registry": false,
-      "status": null
+      "draft_saved": false
     }
   },
   "covers": {
     "local_cover": {
       "ok": true,
-      "path": "/workspace/posts-emdr-memory/output/sb-08-anxiety-for-loved-ones/cover.png"
+      "path": "/Users/natala/Documents/Проекты СURSOR/Посты EMDR/posts-emdr-memory/output/sb-08-anxiety-for-loved-ones/cover.png"
     },
     "site_cover": {
       "url": "https://morozovanatalia.ru/social-covers/sb-08-anxiety-for-loved-ones.jpg",
@@ -54,24 +58,24 @@
     }
   },
   "queue": {
-    "published": false,
-    "still_in_queue": true
+    "published": true,
+    "still_in_queue": false
   },
   "vps": {
-    "finish_json": false,
+    "finish_json": true,
     "handoff_done": false,
-    "status": null
+    "status": "browser_worker_finished"
   },
-  "issues": [
-    "Telegram: не отправлен (или VPS ещё не отработал)",
-    "b17: не published (VPS мог ещё не отработать)",
-    "Тема всё ещё in_progress в очереди",
-    "VPS phase 3: нет finish (webhook/cron ещё не завершил)"
-  ],
+  "issues": [],
   "links": {
     "max": "https://max.ru/se13417616_biz/AZ_R6SwWaV4",
+    "telegram": [
+      "https://t.me/nmorozova_emdr/120",
+      "https://t.me/natalia_morozova_psy/2031"
+    ],
     "vk_profile": "https://vk.com/wall218367867_656",
     "vk_group": "https://vk.com/wall-224685309_156",
-    "facebook": "https://www.facebook.com/632301483303094_122181226184837712"
+    "facebook": "https://www.facebook.com/632301483303094_122181226184837712",
+    "b17": "https://www.b17.ru/blog/trevoga_za_blizkih_lyubov_kotoraya_vyhodit_iz_beregov/"
   }
 }

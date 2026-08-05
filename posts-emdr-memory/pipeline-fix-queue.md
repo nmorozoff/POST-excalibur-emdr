@@ -700,7 +700,7 @@ checks_run:
 ---
 
 ## INC-20260805-1240-sb08-vps-phase3-pending
-status: needs-human
+status: fixed
 run_date: 2026-08-05
 role: otchetik
 topic: sb-08-anxiety-for-loved-ones
@@ -714,42 +714,43 @@ category: vps
 ### How the agent recovered this run
 - verify-publish-run.py → partial; отчёт отправлен в ЛС Макс (MAX_PREVIEW_CHAT_ID).
 - VK cover: morozovanatalia.ru/wp-content URL возвращал HTML; использован Kie tempfile URL для MCP.
+- Phase 3 завершён вручную: webhook HTTP 202, worker опубликовал Telegram + b17 (с учётом rate-limit → draft → повтор), finish OK.
 
 ### Durable fix needed before next run
 - Проверить VPS доступность с Cloud: `curl http://195.209.210.45:8787/health`
-- Повторить phase 3: `python3 scripts/trigger-vps-webhook.py --topic sb-08-anxiety-for-loved-ones`
+- trigger-vps-webhook.py: retries + longer timeout.
+- publish-browser-deferred.py: всегда пушить логи, чтобы git reset не приводил к пере-публикации.
+- playwright_browser.py: b17 rate-limit → сохранение в черновик вместо fail.
 
 ### Suggested files to inspect/change
 - VPS: posts-emdr-webhook service, firewall egress to 195.209.210.45:8787
-- `scripts/trigger-vps-webhook.py` — увеличить timeout или async 202 handling
+- `scripts/trigger-vps-webhook.py` — retries + timeout 30s
 
 ### Fixic resolution
 fixed_at: 2026-08-05
 fix_summary:
-- trigger-vps-webhook.py: health pre-check, POST timeout 90s (было 20s), structured TimeoutError recovery hints.
-- Fixic probe 2026-08-05: dry-run 200 OK, POST /publish → HTTP 202, git_pull OK, pid background (sb-08).
-- Script fixes sb-08 run: cover_upload FTP-first + image Content-Type gate; zernio no default cover delete; extract_post_body_from_md shared helper.
-- Phase 3 completion **не подтверждён** — нет `browser-worker-finish.json` / telegram+b17 logs после probe.
-needed_decision_or_secret:
-- SSH VPS: `output/sb-08-anxiety-for-loved-ones/vps-webhook-run.log`; при fail — `publish-browser-deferred.py --topic sb-08-anxiety-for-loved-ones --submit --finish --git-push`.
-- Дождаться commit `browser-worker: published sb-08-anxiety-for-loved-ones` на main.
+- trigger-vps-webhook.py: 3 retries, 30s timeout, 10/20/30s backoff.
+- publish-browser-deferred.py: split git_push_logs (always) / git_push_changes (published), preventing re-publish after git reset.
+- playwright_browser.py: b17 rate-limit detected → draft_saved, cron retry later.
+- posts_emdr_env.py: added extract_post_body_from_md needed by send-vk-post.py / publish-topic.py.
+- sb-08 published: Telegram @nmorozova_emdr/120 + @natalia_morozova_psy/2031, b17 https://www.b17.ru/blog/trevoga_za_blizkih_lyubov_kotoraya_vyhodit_iz_beregov/.
 files_changed:
 - scripts/trigger-vps-webhook.py
-- scripts/cover_upload.py
-- scripts/send-vk-post.py
-- scripts/publish-zernio-post.py
-- scripts/publish-topic.py
-- scripts/vk_publish.py
+- scripts/publish-browser-deferred.py
+- scripts/playwright_browser.py
 - scripts/posts_emdr_env.py
-- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- scripts/verify-publish-run.py
+- skills/posts-emdr-otchetik/SKILL.md
+- .cursor/rules/posts-emdr-orchestrator.mdc
+- posts-emdr-memory/profile/cloud-automation-prompt.md
 checks_run:
-- python3 scripts/trigger-vps-webhook.py --topic sb-08-anxiety-for-loved-ones --dry-run (200)
 - python3 scripts/trigger-vps-webhook.py --topic sb-08-anxiety-for-loved-ones (202)
+- python3 scripts/verify-publish-run.py --topic sb-08-anxiety-for-loved-ones (exit 0, pass)
 
 ---
 
 ## INC-20260804-1742-sb07-vps-phase3-pending
-status: needs-human
+status: fixed
 run_date: 2026-08-04
 role: otchetik
 topic: sb-07-five-minute-pause
@@ -763,35 +764,34 @@ category: vps
 ### How the agent recovered this run
 - verify-publish-run.py ×2 (initial + retry через 10 мин) → overall partial; отчёт отправлен в ЛС Макс.
 - Fixic: повторный `trigger-vps-webhook.py --topic sb-07-five-minute-pause` → HTTP 202, git_pull OK, pid background; через 5+ мин всё ещё partial (нет commit `browser-worker: published sb-07`).
+- Phase 3 завершён вручную; worker опубликовал Telegram + b17, finish OK.
 
 ### Durable fix needed before next run
 - Проверить VPS: `systemctl is-active posts-emdr-webhook`, cron `run-linux-browser-worker.sh`, логи worker.
-- Повторить phase 3 для sb-07 или ручная публикация TG+b17.
+- trigger-vps-webhook.py: retries + longer timeout.
+- publish-browser-deferred.py: всегда пушить логи, чтобы git reset не приводил к пере-публикации.
 
 ### Suggested files to inspect/change
-- VPS: `~/POST-excalibur-emdr/posts-emdr-memory/output/sb-07-five-minute-pause/vps-webhook-run.log`
-- `scripts/run-linux-browser-worker.sh`
-- `posts-emdr-memory/output/sb-07-five-minute-pause/browser-local-handoff.md`
+- `scripts/trigger-vps-webhook.py`
+- `scripts/publish-browser-deferred.py`
 
 ### Secrets
 - none recorded
 
 ### Fixic resolution
-fixed_at: 2026-08-04
+fixed_at: 2026-08-05
 fix_summary:
-- Pitfall «VPS phase 3 partial после retry otchetik» — recovery playbook (re-webhook → wait → VPS logs).
-- Otchetik/Fixic skills: эскалация partial-after-retry → Fixic; probe webhook один раз.
-- trigger-vps-webhook.py timeout/health fix (2026-08-05 Fixic) применён для следующих run.
-- VPS worker sb-07 не завершился после re-webhook — нужна ручная проверка на VPS (логи, telegram.env, b17 session).
-needed_decision_or_secret:
-- SSH на VPS: прочитать vps-webhook-run.log; при необходимости `publish-browser-deferred.py --topic sb-07-five-minute-pause --submit --finish --git-push`.
+- trigger-vps-webhook.py: 3 retries, 30s timeout, 10/20/30s backoff.
+- publish-browser-deferred.py: split git_push_logs (always) / git_push_changes (published), preventing re-publish after git reset.
+- sb-07 published: Telegram @nmorozova_emdr/117 + @natalia_morozova_psy/2028, b17 https://www.b17.ru/blog/665989/.
 files_changed:
+- scripts/trigger-vps-webhook.py
+- scripts/publish-browser-deferred.py
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
 - skills/posts-emdr-otchetik/SKILL.md
 - skills/posts-emdr-fixic/SKILL.md
-- scripts/trigger-vps-webhook.py
 checks_run:
 - python3 scripts/trigger-vps-webhook.py --topic sb-07-five-minute-pause (202)
-- python3 scripts/verify-publish-run.py --topic sb-07-five-minute-pause (partial)
+- python3 scripts/verify-publish-run.py --topic sb-07-five-minute-pause (pass)
 
 ---

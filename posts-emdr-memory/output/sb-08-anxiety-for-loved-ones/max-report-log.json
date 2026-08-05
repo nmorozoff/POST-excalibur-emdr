@@ -1,0 +1,58 @@
+{
+  "status": "sent",
+  "topic": "sb-08-anxiety-for-loved-ones",
+  "chat_id": 381063723,
+  "overall": "pass",
+  "result": {
+    "message": {
+      "recipient": {
+        "chat_id": 381063723,
+        "chat_type": "dialog",
+        "user_id": 12014678
+      },
+      "timestamp": 1785935671872,
+      "body": {
+        "mid": "mid.0000000016b6922b019fd20fb240663c",
+        "seq": 117043080191829564,
+        "text": "✅ Posts EMDR — sb-08-anxiety-for-loved-ones\nСтатус: pass\n\nСсылки:\n• max: https://max.ru/se13417616_biz/AZ_R6SwWaV4\n• telegram: https://t.me/nmorozova_emdr/120\n• telegram: https://t.me/natalia_morozova_psy/2031\n• vk_profile: https://vk.com/wall218367867_656\n• vk_group: https://vk.com/wall-224685309_156\n• facebook: https://www.facebook.com/632301483303094_122181226184837712\n• b17: https://www.b17.ru/blog/trevoga_za_blizkih_lyubov_kotoraya_vyhodit_iz_beregov/",
+        "attachments": [
+          {
+            "payload": {
+              "url": "https://max.ru/se13417616_biz/AZ_R6SwWaV4",
+              "token": "f9LHodD0cOKhcIIwQsaM7y191_PcsPLoYcQLvFBeSt69zeb-Fhv1uJ2o9Zzpg17o7vkc1DD68gnQGtHxm0le"
+            },
+            "title": "Психолог | EMDR терапевт | Морозова Наталья",
+            "description": "За 2-4 сессии избавляю от фобий, страхов, ОКР, панических атак, ПТСР.\nЗапись на сайте www.morozovanatalia.ru?utm_source=max",
+            "image_url": "https://i.oneme.ru/i?r=BTGBPUwtwgYUeoFhO7rESmr8F-FUAo2Gmb8WAZBxonjEAbJ_HqH97r8QHtUvv1mBLU4",
+            "type": "share"
+          }
+        ],
+        "markup": [
+          {
+            "from": 2,
+            "length": 41,
+            "type": "strong"
+          },
+          {
+            "from": 52,
+            "length": 4,
+            "type": "strong"
+          },
+          {
+            "from": 58,
+            "length": 7,
+            "type": "strong"
+          }
+        ]
+      },
+      "sender": {
+        "user_id": 369215101,
+        "first_name": "КАРУСЕЛЬКА",
+        "username": "id771605638595_bot",
+        "is_bot": true,
+        "last_activity_time": 1785935671897,
+        "name": "КАРУСЕЛЬКА"
+      }
+    }
+  }
+}
