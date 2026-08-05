@@ -243,6 +243,32 @@ def run_publish(topic: str, *, submit: bool) -> dict:
     return result
 
 
+def git_push_logs(topic: str) -> dict:
+    """Push output/{topic}/ logs so next run / cloud Otchetik sees them."""
+    path = f"posts-emdr-memory/output/{topic}/"
+    subprocess.run(["git", "add", path], cwd=PROJECT_ROOT, check=False)
+    msg = f"browser-worker: logs {topic}"
+    commit = subprocess.run(
+        ["git", "commit", "-m", msg],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+    )
+    if commit.returncode != 0 and "nothing to commit" not in (commit.stdout + commit.stderr):
+        return {"committed": False, "stderr": commit.stderr}
+    push = subprocess.run(
+        ["git", "push", "origin", "HEAD"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+    )
+    return {
+        "committed": commit.returncode == 0,
+        "pushed": push.returncode == 0,
+        "push_stderr": push.stderr[-500:] if push.stderr else "",
+    }
+
+
 def git_push_changes(topic: str) -> dict:
     paths = [
         f"posts-emdr-memory/output/{topic}/",
@@ -345,6 +371,9 @@ def main() -> None:
                     report["b17_draft_saved"] = True
             except (json.JSONDecodeError, OSError):
                 pass
+        if args.git_push:
+            # Always push logs so next run / cloud Otchetik sees them (prevent re-publish on git reset)
+            report["git_logs"] = git_push_logs(tid)
         if report.get("status") == "ok" and args.finish:
             try:
                 report["finish"] = finish_topic(tid)
