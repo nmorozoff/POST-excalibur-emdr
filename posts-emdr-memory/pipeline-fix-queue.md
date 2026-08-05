@@ -697,7 +697,32 @@ checks_run:
 
 ---
 
-## INC-20260804-1742-sb07-vps-phase3-pending
+---
+
+## INC-20260805-1240-sb08-vps-phase3-pending
+status: open
+run_date: 2026-08-05
+role: otchetik
+topic: sb-08-anxiety-for-loved-ones
+severity: high
+category: vps
+
+### What went wrong
+- Cloud phase 1+2 OK (Max, VK×2, Facebook). VPS webhook `trigger-vps-webhook.py` → TimeoutError (20s и 60s).
+- Telegram не отправлен; b17 не published; тема `in_progress` в очереди.
+
+### How the agent recovered this run
+- verify-publish-run.py → partial; отчёт отправлен в ЛС Макс (MAX_PREVIEW_CHAT_ID).
+- VK cover: morozovanatalia.ru/wp-content URL возвращал HTML; использован Kie tempfile URL для MCP.
+
+### Durable fix needed before next run
+- Проверить VPS доступность с Cloud: `curl http://195.209.210.45:8787/health`
+- Повторить phase 3: `python3 scripts/trigger-vps-webhook.py --topic sb-08-anxiety-for-loved-ones`
+
+### Suggested files to inspect/change
+- VPS: posts-emdr-webhook service, firewall egress to 195.209.210.45:8787
+- `scripts/trigger-vps-webhook.py` — увеличить timeout или async 202 handling
+
 status: needs-human
 run_date: 2026-08-04
 role: otchetik
@@ -741,4 +766,34 @@ files_changed:
 checks_run:
 - python3 scripts/trigger-vps-webhook.py --topic sb-07-five-minute-pause (202)
 - python3 scripts/verify-publish-run.py --topic sb-07-five-minute-pause (partial)
+
+---
+
+## INC-20260805-1240-sb08-vps-pending
+status: open
+run_date: 2026-08-05
+role: otchetik
+topic: sb-08-anxiety-for-loved-ones
+severity: medium
+category: vps
+
+### What went wrong
+- Cloud phase 1–2 OK (Max, VK profile/group, Facebook); VPS webhook trigger завершился TimeoutError — phase 3 не стартовал.
+- Telegram не отправлен в @nmorozova_emdr и @natalia_morozova_psy; b17 не published; тема остаётся `in_progress` в очереди.
+- verify-publish-run.py → overall partial (exit 3).
+
+### How the agent recovered this run
+- Отчёт partial отправлен в ЛС Макс (MAX_PREVIEW_CHAT_ID).
+
+### Durable fix needed before next run
+- Повторить VPS webhook: `python3 scripts/trigger-vps-webhook.py --topic sb-08-anxiety-for-loved-ones`.
+- Проверить VPS: `systemctl is-active posts-emdr-webhook`, cron `run-linux-browser-worker.sh`, логи worker.
+
+### Suggested files to inspect/change
+- `posts-emdr-memory/output/sb-08-anxiety-for-loved-ones/vps-webhook-run.log` (на VPS)
+- `scripts/trigger-vps-webhook.py`
+- `scripts/run-linux-browser-worker.sh`
+
+### Secrets
+- none recorded
 
