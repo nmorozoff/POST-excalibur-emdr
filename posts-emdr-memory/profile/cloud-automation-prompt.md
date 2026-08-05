@@ -56,6 +56,7 @@ git push
 ШАГ 6 ОТЧЁТИК
 Task(posts-emdr-otchetik) с topic_id.
 Отчётик ждёт финального результата: polling до pass/fail, до 6 попыток по ~10 мин (git pull перед каждой повторной проверкой; после 3 попыток — один re-trigger webhook при отсутствии finish). Только один финальный отчёт в ЛС Макс-бота (MAX_PREVIEW_CHAT_ID).
+Если единственная проблема — b17 draft_saved (rate-limit площадки), не эскалировать в Fixic; сообщить, что cron retry опубликует позже.
 
 ШАГ 7 FIXIC
 При fail verify-publish-run или incident_queue exit 2: Task(posts-emdr-fixic).

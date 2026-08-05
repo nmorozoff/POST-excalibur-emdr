@@ -98,7 +98,7 @@ python3 scripts/send-max-publish-report.py --topic {topic_id}
 |---------|----------|
 | pass | Fixic **не** обязателен (только если были старые open INC) |
 | fail | Записать INC; сообщить Директору: **Task(`posts-emdr-fixic`)** |
-| partial (after 6 tries) | INC `vps-phase3-pending` → **Task(`posts-emdr-fixic`)**; Fixic документирует recovery и может перезапустить webhook |
+| partial (after 6 tries) | Если единственная проблема — **b17 draft_saved** (rate-limit площадки): не эскалировать в Fixic; записать INC `b17-rate-limit-draft` и отметить, что cron retry опубликует позже. Иначе: INC `vps-phase3-pending` → **Task(`posts-emdr-fixic`)** |
 
 Отчётик **сам не чинит** скрипты — только incidents + отчёт. Чинит **Fixic**.
 
