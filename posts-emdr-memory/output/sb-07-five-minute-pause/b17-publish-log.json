@@ -10,13 +10,14 @@
   "compose_url": "https://www.b17.ru/my_blog.php?mod=edit",
   "post_url": "https://www.b17.ru/blog/665989/",
   "public_url": "https://www.b17.ru/blog/665989/",
-  "cover_url": "https://morozovanatalia.ru/social-covers/sb-07-five-minute-pause.jpg",
+  "cover_url": "https://www.b17.ru/foto/uploaded/upl_1785916346_1337388_2dc4v.jpg",
   "filled": [
     "title",
     "latname",
     "razdel",
     "author",
     "tinymce_body",
+    "cover:announcement_image_with_b17_url",
     "cover:https_tinymce",
     "draft_unchecked"
   ],
@@ -24,5 +25,5 @@
   "cover_inline": true,
   "auto_submit": true,
   "backend": "playwright",
-  "note": "Опубликовано автоматически (Сохранить)"
+  "note": "Обложка обновлена через edit-b17-post.py (b17-hosted URL)"
 }
