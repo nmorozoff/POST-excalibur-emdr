@@ -39,9 +39,9 @@ def _normalize(text: str) -> str:
     import sys
 
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-    from posts_emdr_env import normalize_typography
+    from posts_emdr_env import sanitize_post_text
 
-    return normalize_typography(text)
+    return sanitize_post_text(text)
 
 
 def _urlopen(req: urllib.request.Request, *, timeout: int = 120, context=None):

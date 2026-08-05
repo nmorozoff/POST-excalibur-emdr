@@ -55,7 +55,7 @@ git push
 
 ШАГ 6 ОТЧЁТИК
 Task(posts-emdr-otchetik) с topic_id.
-При partial подождать 10–15 мин и повторить проверку один раз. Отчёт в ЛС Макс-бота (MAX_PREVIEW_CHAT_ID).
+Отчётик ждёт финального результата: polling до pass/fail, до 6 попыток по ~10 мин (git pull перед каждой повторной проверкой; после 3 попыток — один re-trigger webhook при отсутствии finish). Только один финальный отчёт в ЛС Макс-бота (MAX_PREVIEW_CHAT_ID).
 
 ШАГ 7 FIXIC
 При fail verify-publish-run или incident_queue exit 2: Task(posts-emdr-fixic).

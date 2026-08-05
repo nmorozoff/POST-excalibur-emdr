@@ -26,6 +26,11 @@ from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from posts_emdr_env import sanitize_post_text
+
 API_BASE = "https://platform-api2.max.ru"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ENV_FILE = PROJECT_ROOT / "posts-emdr-memory" / "max.env.local"
@@ -107,7 +112,7 @@ def extract_post_body(md_path: Path) -> str:
         )
     if not m:
         raise SystemExit(f"Cannot parse post body from {md_path}")
-    return normalize_typography(m.group(1).strip())
+    return sanitize_post_text(m.group(1).strip())
 
 
 def split_post_text(post_text: str, *, limit: int = 3500) -> list[str]:

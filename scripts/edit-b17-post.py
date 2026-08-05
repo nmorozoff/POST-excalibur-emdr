@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import MEMORY, PROJECT_ROOT, normalize_typography, wordpress_media_upload
+from posts_emdr_env import MEMORY, PROJECT_ROOT, sanitize_post_text, wordpress_media_upload
 from browser_backend import publish_b17
 from undetectable_browser import load_env_file, apply_undetectable_env, strip_urls_from_text
 
@@ -40,7 +40,7 @@ def main() -> None:
     cover = topic_dir / "cover.png"
     title, body = extract_title_and_body(md_path)
     body = strip_urls_from_text(body)
-    body = normalize_typography(body)
+    body = sanitize_post_text(body)
     body = re.sub(
         r"Если тема откликается[^\n]*",
         "Если тема откликается — напишите в личные сообщения здесь на b17.",

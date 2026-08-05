@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import ssl
 import sys
 import tempfile
@@ -19,7 +20,7 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import PROJECT_ROOT, extract_post_body_from_md, load_env
+from posts_emdr_env import PROJECT_ROOT, load_env, sanitize_post_text
 
 VK_API = "https://api.vk.com/method"
 
@@ -92,10 +93,11 @@ def upload_wall_photo(
 
 
 def extract_post(md_path: Path) -> str:
-    try:
-        return extract_post_body_from_md(md_path.read_text(encoding="utf-8"))
-    except ValueError as exc:
-        raise SystemExit(str(exc)) from exc
+    text = md_path.read_text(encoding="utf-8")
+    m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
+    if not m:
+        raise SystemExit(f"Cannot parse post from {md_path}")
+    return sanitize_post_text(m.group(1).strip())
 
 
 def publish(

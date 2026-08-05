@@ -83,6 +83,23 @@ def wordpress_media_upload(cover_path: Path, topic: str | None = None) -> dict[s
     }
 
 
+def remove_znakomo(text: str) -> str:
+    """Remove the word 'Знакомо' and its variants from post text.
+
+    The user explicitly banned this word across all platforms.
+    """
+    # Pattern 1: 'Знакомо?' at the start of a paragraph followed by another paragraph
+    text = re.sub(r"\n[Зз]накомо[а-яё]?\?\s*\n", "\n\n", text)
+    # Pattern 2: 'Знакомо?' before a capitalized sentence (e.g. 'Знакомо? Это не лень...')
+    text = re.sub(r"[Зз]накомо[а-яё]?\?\s+(?=[А-ЯЁ])", "", text)
+    # Pattern 3: 'Знакомо?' anywhere else (end of sentence, inline, etc.)
+    text = re.sub(r"\s*[Зз]накомо[а-яё]?\?\s*", " ", text)
+    # Clean up artifacts
+    text = re.sub(r" +", " ", text)
+    text = re.sub(r"\n\n+", "\n\n", text)
+    return text.strip()
+
+
 def normalize_typography(text: str) -> str:
     """Replace long dashes (em/en) with safe punctuation before publishing.
 
@@ -99,19 +116,11 @@ def normalize_typography(text: str) -> str:
     return text.strip()
 
 
-def extract_post_body_from_md(text: str) -> str:
-    """Extract ## Текст поста body, stopping before --- / ## Мeta / next ## section."""
-    m = re.search(
-        r"## Текст поста\n\n(.*?)(?:\n\n---\n\n## |\Z)",
-        text,
-        re.S,
-    )
-    if not m:
-        m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
-    if not m:
-        raise ValueError("Cannot parse post body (need ## Текст поста)")
-    return normalize_typography(m.group(1).strip())
-
+def sanitize_post_text(text: str) -> str:
+    """Apply all text normalization rules before publishing."""
+    text = remove_znakomo(text)
+    text = normalize_typography(text)
+    return text
 
 # Each .env.local file: list of keys (also read from os.environ in cloud).
 ENV_SPECS: dict[str, list[str]] = {

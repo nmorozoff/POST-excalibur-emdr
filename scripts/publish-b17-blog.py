@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_backend import default_b17_compose_url, publish_b17
-from posts_emdr_env import browser_backend_name, normalize_typography, wordpress_media_upload
+from posts_emdr_env import browser_backend_name, sanitize_post_text, wordpress_media_upload
 from undetectable_browser import apply_undetectable_env, load_env_file, strip_urls_from_text
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -50,7 +50,7 @@ def main() -> None:
 
     title, body = extract_title_and_body(md_path)
     body = strip_urls_from_text(body)
-    body = normalize_typography(body)
+    body = sanitize_post_text(body)
     # b17: без URL в тексте; мягкий контакт только через ЛС на площадке
     body = re.sub(
         r"Если тема откликается[^\n]*",
