@@ -123,6 +123,7 @@ def fill_b17_compose_playwright(
             b17_apply_form_meta("", "", section_value="1", edit_mode=edit_mode)
             html_body = text_to_html_paragraphs(body)
             cover_src = None
+            filled_extra: list[str] = []
             if cover_path:
                 from undetectable_browser import b17_cover_public_url, prepare_cover_jpeg_for_browser
 
@@ -133,13 +134,19 @@ def fill_b17_compose_playwright(
                     jpeg_path = prepare_cover_jpeg_for_browser(cover_path)
                     page.set_input_files("#input_file", str(jpeg_path))
                     page.wait_for_timeout(3000)
-                    # Ждём, пока появится превью загруженной картинки
-                    page.wait_for_selector("img.foto, .foto img, #foto_preview img", timeout=15_000)
-                    filled.append("cover:announcement_image")
+                    # Принудительно диспатчим change, чтобы JS b17 начал загрузку
+                    page.evaluate(
+                        """() => {
+      const inp = document.querySelector('#input_file');
+      if (inp) { inp.dispatchEvent(new Event('change', { bubbles: true })); }
+    })();"""
+                    )
+                    page.wait_for_timeout(5000)
+                    filled_extra.append("cover:announcement_image")
                 except Exception as exc:
-                    filled.append(f"cover:announcement_image_failed:{exc}")
+                    filled_extra.append(f"cover:announcement_image_failed:{exc}")
             wait_for_tinymce_and_set("", "", html_body)
-            filled = ["title", "latname", "razdel", "author", "tinymce_body"]
+            filled = ["title", "latname", "razdel", "author", "tinymce_body"] + filled_extra
             if cover_path:
                 filled.append("cover:https_tinymce")
             if publish_not_draft:
