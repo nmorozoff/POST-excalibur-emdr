@@ -142,9 +142,9 @@ Gate: форма заполнена, `b17-publish-prep.json`. Опциональ
 После cloud + MCP VK + webhook VPS:
 
 1. **Task(`posts-emdr-otchetik`)** с `topic_id`
-2. Скрипты: `verify-publish-run.py --write` → `send-max-publish-report.py`
-3. При `partial` — подождать 10–15 мин, повторить проверку **один раз**
-4. При `fail` — записать INC в `pipeline-fix-queue.md`, эскалировать Fixic
+2. Отчётик **ждёт финального результата**: polling до `pass`/`fail`, до 6 попыток по ~10 мин (`git pull` перед каждой повторной проверкой; после 3 попыток — один re-trigger webhook при отсутствии finish).
+3. Только один финальный отчёт в Макс: `verify-publish-run.py --write` → `send-max-publish-report.py`
+4. При `fail` или `partial` после 6 попыток — записать INC в `pipeline-fix-queue.md`, эскалировать Fixic
 
 | Task | Роль |
 |------|------|

@@ -16,6 +16,7 @@ import argparse
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -60,17 +61,31 @@ def main() -> None:
             "Content-Type": "application/json",
         },
     )
-    try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            text = resp.read().decode("utf-8")
-            data = json.loads(text) if text else {}
-            print(json.dumps({"status": resp.status, **data}, ensure_ascii=False, indent=2))
-            if resp.status != 202 and not (args.dry_run and resp.status == 200):
+    last_err = None
+    for attempt in range(1, 4):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                text = resp.read().decode("utf-8")
+                data = json.loads(text) if text else {}
+                print(json.dumps({"status": resp.status, **data}, ensure_ascii=False, indent=2))
+                if resp.status == 202 or (args.dry_run and resp.status == 200):
+                    sys.exit(0)
                 sys.exit(2)
-    except urllib.error.HTTPError as e:
-        text = e.read().decode("utf-8", errors="replace")
-        print(json.dumps({"status": e.code, "error": text[:500]}, ensure_ascii=False, indent=2))
-        sys.exit(2)
+        except urllib.error.HTTPError as e:
+            text = e.read().decode("utf-8", errors="replace")
+            last_err = {"status": e.code, "error": text[:500]}
+            if e.code in (401, 403):
+                print(json.dumps(last_err, ensure_ascii=False, indent=2))
+                sys.exit(2)
+        except Exception as e:
+            last_err = {"error": str(e)[:500]}
+        if attempt < 3:
+            wait = 10 * attempt
+            print(json.dumps({"attempt": attempt, "wait_seconds": wait, **last_err}, ensure_ascii=False, indent=2))
+            time.sleep(wait)
+
+    print(json.dumps({"status": "timeout", "attempts": 3, **last_err}, ensure_ascii=False, indent=2))
+    sys.exit(2)
 
 
 if __name__ == "__main__":

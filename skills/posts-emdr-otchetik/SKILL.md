@@ -9,10 +9,9 @@ description: Отчётик — после прогона проверяет п�
 
 После полного прогона темы (cloud + MCP VK + VPS webhook), **перед** Fixic:
 
-1. Директор вызывает **Task(`posts-emdr-otchetik`)** с `topic_id`.
-2. Если VPS ещё мог не отработать — подождать 10–15 мин и повторить проверку **один раз**.
+Директор вызывает **Task(`posts-emdr-otchetik`)** с `topic_id`.
 
-Отчётик **не** заменяет Fixic — он QA + уведомление пользователя.
+Отчётик **ждёт финального результата** и шлёт **один** отчёт в конце. Промежуточных partial-отчётов в Макс не отправляется.
 
 ## Вход
 
@@ -23,7 +22,9 @@ description: Отчётик — после прогона проверяет п�
 
 ## Алгоритм
 
-### 1. Машинная проверка
+### 1. Пolling-цикл до финального результата
+
+Цель: получить либо `pass`, либо `fail`. `partial` — повод подождать, а не писать отчёт.
 
 ```bash
 python3 scripts/verify-publish-run.py --topic {topic_id} --write --json
@@ -34,9 +35,28 @@ Exit codes:
 - `3` — **partial** (cloud ok, VPS TG/b17 ещё могут догонять)
 - `2` — **fail**
 
+**Поведение:**
+
+| overall | действие |
+|---------|----------|
+| `pass` | → шаг 2 (incidents), шаг 3 (отчёт), выход |
+| `fail` | → шаг 2 (incidents), шаг 3 (отчёт), эскалация Fixic |
+| `partial` | → `git pull origin main`, подождать 10 мин, повторить проверку |
+
+Максимум **6 попыток** (общее ожидание до ~60 мин). После каждой проверки, кроме первой, делать `git pull`, чтобы подтянуть логи, которые VPS запушил через `--finish`.
+
+Если после 3-х попыток всё ещё `partial` и нет `finish` / `handoff_done` — **один раз** попробовать перезапустить VPS webhook:
+
+```bash
+python3 scripts/verify-vps-webhook-secret.py
+python3 scripts/trigger-vps-webhook.py --topic {topic_id}
+```
+
+Если trigger не проходит или снова partial — продолжать polling до 6 попыток.
+
 ### 2. Записать incidents (если есть проблемы)
 
-Для каждой проблемы из `report.issues` — блок в `pipeline-fix-queue.md`:
+Только после финальной проверки. Для каждой проблемы из `report.issues` — блок в `pipeline-fix-queue.md`:
 
 ```markdown
 ## INC-YYYYMMDD-HHMM-{slug}
@@ -67,19 +87,18 @@ python3 scripts/send-max-publish-report.py --topic {topic_id}
 
 Текст отчёта:
 - **pass** → ✅ ссылки на все платформы
-- **partial** → ⏳ что готово + что ждём от VPS
 - **fail** → ❌ список ошибок + «сам исправить не могу, нужна помощь»
+- **partial** (если после 6 попыток всё ещё partial) → ⏳ что готово + что ожидает + причина
 
 Если `send-max-publish-report` падает (нет `MAX_PREVIEW_CHAT_ID`) — записать `needs-human` в fragment.
 
 ### 4. Эскалация в Fixic
 
-| overall | Действие |
+| final overall | Действие |
 |---------|----------|
 | pass | Fixic **не** обязателен (только если были старые open INC) |
-| partial | Записать INC `vps-pending`; **не** вызывать Fixic до повторной проверки |
-| partial (после retry) | INC `vps-phase3-pending` → **Task(`posts-emdr-fixic`)**; Fixic документирует recovery (pitfalls), может один раз `trigger-vps-webhook.py` |
 | fail | Записать INC; сообщить Директору: **Task(`posts-emdr-fixic`)** |
+| partial (after 6 tries) | INC `vps-phase3-pending` → **Task(`posts-emdr-fixic`)**; Fixic документирует recovery и может перезапустить webhook |
 
 Отчётик **сам не чинит** скрипты — только incidents + отчёт. Чинит **Fixic**.
 
