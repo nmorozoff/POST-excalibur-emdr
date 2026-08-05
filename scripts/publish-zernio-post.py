@@ -19,6 +19,11 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from posts_emdr_env import sanitize_post_text
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ENV_FILE = PROJECT_ROOT / "posts-emdr-memory" / "zernio.env.local"
 API_URL = "https://zernio.com/api/v1/posts"
@@ -41,7 +46,7 @@ def extract_post(md_path: Path) -> str:
     m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
     if not m:
         raise SystemExit(f"Cannot parse post from {md_path}")
-    return normalize_typography(m.group(1).strip())
+    return sanitize_post_text(m.group(1).strip())
 
 
 def upload_cover(topic: str) -> str:

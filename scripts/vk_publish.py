@@ -20,7 +20,7 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import PROJECT_ROOT, load_env
+from posts_emdr_env import PROJECT_ROOT, load_env, sanitize_post_text
 
 VK_API = "https://api.vk.com/method"
 
@@ -97,7 +97,7 @@ def extract_post(md_path: Path) -> str:
     m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
     if not m:
         raise SystemExit(f"Cannot parse post from {md_path}")
-    return normalize_typography(m.group(1).strip())
+    return sanitize_post_text(m.group(1).strip())
 
 
 def publish(

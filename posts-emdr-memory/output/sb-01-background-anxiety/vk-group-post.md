@@ -1,6 +1,6 @@
 # Пост VK — группа
 
-**Тема:** sb-01-background-anxiety  
+**Тема:** sb-01-background-anxiety 
 **UTM:** `utm_source=vk_group`
 
 ---
