@@ -6,15 +6,15 @@
   "body_chars": 1624,
   "cover_local": "/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-08-anxiety-for-loved-ones/cover.png",
   "cover_wordpress": {
-    "url": "https://morozova-natalya.ru/wp-content/uploads/2026/08/sb-08-anxiety-for-loved-ones-7.jpg",
-    "id": "242",
-    "link": "https://morozova-natalya.ru/cover-sb-08-anxiety-for-loved-ones-3/"
+    "url": "https://morozova-natalya.ru/wp-content/uploads/2026/08/sb-08-anxiety-for-loved-ones-8.jpg",
+    "id": "243",
+    "link": "https://morozova-natalya.ru/cover-sb-08-anxiety-for-loved-ones-4/"
   },
   "utm_source": "b17",
-  "status": "draft_saved",
+  "status": "published",
   "compose_url": "https://www.b17.ru/my_blog.php?mod=edit",
-  "post_url": "https://www.b17.ru/my_blog.php?mod=edit",
-  "public_url": null,
+  "post_url": "https://www.b17.ru/blog/trevoga_za_blizkih_lyubov_kotoraya_vyhodit_iz_beregov/",
+  "public_url": "https://www.b17.ru/blog/trevoga_za_blizkih_lyubov_kotoraya_vyhodit_iz_beregov/",
   "cover_url": "https://morozovanatalia.ru/social-covers/sb-08-anxiety-for-loved-ones.jpg",
   "filled": [
     "title",
@@ -24,11 +24,11 @@
     "tinymce_body",
     "cover:announcement_image_url_not_found",
     "cover:https_tinymce",
-    "draft_kept_rate_limit"
+    "draft_unchecked"
   ],
   "fill_mode": "playwright-b17",
   "cover_inline": true,
-  "auto_submit": false,
+  "auto_submit": true,
   "backend": "playwright",
-  "note": "b17 rate limit: сохранено в черновик, нужен повторный запуск позже"
+  "note": "Опубликовано автоматически (Сохранить)"
 }
