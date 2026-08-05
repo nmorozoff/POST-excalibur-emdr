@@ -408,11 +408,11 @@ def b17_apply_form_meta(
             base_url,
             profile_id,
             """(() => {
-  const lat = document.querySelector('#latname');
-  if (lat) { lat.focus(); lat.click(); }
-  if (typeof name_to_latname === 'function') name_to_latname();
-  else document.querySelector('[onclick*="name_to_latname"]')?.click();
-})();""",
+      const lat = document.querySelector('#latname');
+      if (lat) { lat.focus(); lat.click(); }
+      if (typeof name_to_latname === 'function') name_to_latname();
+      else document.querySelector('[onclick*="name_to_latname"]')?.click();
+    })();""",
         )
         time.sleep(0.8)
     section_json = json.dumps(section_value, ensure_ascii=False)
@@ -437,6 +437,117 @@ def b17_apply_form_meta(
   author.dispatchEvent(new Event('change', { bubbles: true }));
 })();""",
     )
+
+
+def set_tenchat_body_html(base_url: str, profile_id: str, html: str) -> None:
+    html_json = json.dumps(html, ensure_ascii=False)
+    run_js(
+        base_url,
+        profile_id,
+        f"""(() => {{
+  if (document.querySelector('button.ql-code-block.ql-active')) {{
+    document.querySelector('button.ql-code-block')?.click();
+  }}
+  const editor =
+    document.querySelector('#tc-editor .ql-editor') ||
+    document.querySelector('#tc-editor [contenteditable="true"]') ||
+    document.querySelector('.ql-editor');
+  if (!editor) throw new Error('TenChat ql-editor not found');
+  editor.focus();
+  const container = editor.closest('.ql-container');
+  const quill = container?.__quill || editor.__quill;
+  if (quill && quill.clipboard) {{
+    quill.clipboard.dangerouslyPasteHTML(0, {html_json});
+  }} else {{
+    editor.innerHTML = {html_json};
+    editor.dispatchEvent(new InputEvent('input', {{ bubbles: true }}));
+  }}
+}})();""",
+    )
+
+
+def tenchat_add_topics(base_url: str, profile_id: str, topics: list[str]) -> list[str]:
+    added: list[str] = []
+    for topic in topics:
+        tenchat_click_button_by_text(base_url, profile_id, "Добавить тематику")
+        time.sleep(1.0)
+        set_field_value_js(base_url, profile_id, 'input[placeholder*="Поиск по тематикам"]', topic)
+        time.sleep(0.6)
+        tenchat_click_button_by_text(base_url, profile_id, topic)
+        added.append(topic)
+        time.sleep(0.6)
+    return added
+
+
+def click_selector(base_url: str, profile_id: str, selector: str) -> None:
+    result = api_request(
+        base_url,
+        "POST",
+        f"/browser/click/{profile_id}",
+        {"selector": selector},
+        timeout=30,
+    )
+    if result.get("code") != 0:
+        raise SystemExit(f"click failed for {selector}: {result}")
+
+
+def text_to_html_paragraphs(text: str) -> str:
+    import html as html_mod
+
+    parts = [p.strip() for p in text.split("\n\n") if p.strip()]
+    return "".join(f"<p>{html_mod.escape(p)}</p>" for p in parts)
+
+
+B17_COMPOSE_URL_DEFAULT = "https://www.b17.ru/my_blog.php?mod=edit"
+B17_TITLE_SELECTOR = "#form_name"
+TENCHAT_COMPOSE_URL_DEFAULT = "https://tenchat.ru/editor"
+TENCHAT_TITLE_SELECTOR = '#tc-editor .relative.px-5.py-4 [contenteditable="true"]'
+TENCHAT_CODE_BUTTON = "button.ql-code-block"
+TENCHAT_CODE_PRE = "pre.ql-code-block"
+
+
+def prepare_cover_jpeg_for_browser(cover_path: Path) -> Path:
+    """JPEG для загрузки через браузер (base64 в evaluate не тянет большой PNG)."""
+    out = Path(tempfile.gettempdir()) / f"browser-cover-{cover_path.stem}.jpg"
+    try:
+        subprocess.run(
+            [
+                "sips",
+                "-s",
+                "format",
+                "jpeg",
+                "-s",
+                "formatOptions",
+                "82",
+                "--resampleWidth",
+                "800",
+                str(cover_path),
+                "--out",
+                str(out),
+            ],
+            check=True,
+            capture_output=True,
+        )
+        return out
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        try:
+            from PIL import Image
+        except ImportError as exc:
+            raise SystemExit(
+                "Нужен sips (macOS) или Pillow: pip install Pillow"
+            ) from exc
+        img = Image.open(cover_path).convert("RGB")
+        width = 800
+        height = max(1, int(img.height * width / img.width))
+        img = img.resize((width, height), Image.Resampling.LANCZOS)
+        img.save(out, "JPEG", quality=82, optimize=True)
+        return out
+
+
+def prepare_b17_cover_jpeg(cover_path: Path) -> Path:
+    """Alias для prepare_cover_jpeg_for_browser."""
+    return prepare_cover_jpeg_for_browser(cover_path)
+
 
 def b17_cover_public_url(cover_path: Path, *, public_url: str | None = None) -> str:
     """HTTPS URL обложки для TinyMCE. data:image/base64 b17 отклоняет при «Сохранить»."""
@@ -528,13 +639,6 @@ def click_button_by_text(
     clicked = run_js(base_url, profile_id, js, timeout=60)
     time.sleep(pause_sec)
     return {"ok": True, "clicked": button_text, "label": clicked}
-
-
-
-
-B17_COMPOSE_URL_DEFAULT = "https://www.b17.ru/my_blog.php?mod=edit"
-B17_TITLE_SELECTOR = "#form_name"
-TENCHAT_COMPOSE_URL_DEFAULT = "https://tenchat.ru/editor"
 
 
 def fill_b17_compose(
