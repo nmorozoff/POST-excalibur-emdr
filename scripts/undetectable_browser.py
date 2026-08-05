@@ -438,6 +438,100 @@ def b17_apply_form_meta(
 })();""",
     )
 
+def b17_cover_public_url(cover_path: Path, *, public_url: str | None = None) -> str:
+    """HTTPS URL обложки для TinyMCE. data:image/base64 b17 отклоняет при «Сохранить»."""
+    if public_url and public_url.startswith("https://"):
+        return public_url.strip()
+    topic = cover_path.parent.name
+    site = f"https://morozovanatalia.ru/social-covers/{topic}.jpg"
+    return site
+
+
+def b17_inline_cover_html(cover_path: Path, *, public_url: str | None = None) -> str:
+    """Обложка в теле заметки (TinyMCE) через HTTPS URL, не base64 и не «анонс»."""
+    if not cover_path.exists() and not (public_url and public_url.startswith("https://")):
+        raise SystemExit(f"Cover not found: {cover_path}")
+    src = b17_cover_public_url(cover_path, public_url=public_url)
+    return (
+        f'<p><img src="{src}" alt="" '
+        'style="max-width:100%;height:auto;display:block;margin:0 auto 16px;" /></p>'
+    )
+
+
+def tenchat_attach_cover_image(base_url: str, profile_id: str, cover_path: Path) -> dict[str, Any]:
+    """Прикрепить cover через кнопку-скрепку (input[type=file] в меню)."""
+    if not cover_path.exists():
+        raise SystemExit(f"Cover not found: {cover_path}")
+    jpeg = prepare_cover_jpeg_for_browser(cover_path)
+    b64 = base64.b64encode(jpeg.read_bytes()).decode("ascii")
+    b64_json = json.dumps(b64, ensure_ascii=False)
+    fname = json.dumps(jpeg.name, ensure_ascii=False)
+    attach_js = f"""(() => {{
+  const btn = [...document.querySelectorAll('button')].find(b => b.querySelector('.i-fa6-solid\\\\:paperclip'));
+  if (!btn) throw new Error('TenChat paperclip button not found');
+  btn.click();
+  const deadline = Date.now() + 4000;
+  let input = null;
+  while (Date.now() < deadline) {{
+    input = document.querySelector('input[type=file]');
+    if (input) break;
+  }}
+  if (!input) throw new Error('TenChat file input not found after paperclip click');
+  const raw = atob({b64_json});
+  const bytes = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+  const file = new File([bytes], {fname}, {{ type: 'image/jpeg' }});
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  input.files = dt.files;
+  input.dispatchEvent(new Event('change', {{ bubbles: true }}));
+  input.dispatchEvent(new Event('input', {{ bubbles: true }}));
+}})();"""
+    run_js(base_url, profile_id, attach_js, timeout=90)
+    verify_js = """(() => {
+  const imgs = [...document.querySelectorAll('#tc-editor img, .ql-editor img, [class*="attachment"] img')];
+  if (!imgs.length) throw new Error('TenChat cover image not visible after attach');
+})();"""
+    run_js(base_url, profile_id, verify_js, timeout=30)
+    return {"ok": True, "file": jpeg.name, "source": str(cover_path), "method": "paperclip"}
+
+
+def click_button_by_text(
+    base_url: str,
+    profile_id: str,
+    button_text: str,
+    *,
+    pause_sec: float = 2.0,
+) -> dict[str, Any]:
+    """Click first visible button/input whose label contains button_text."""
+    label_json = json.dumps(button_text, ensure_ascii=False)
+    js = f"""(() => {{
+  const needle = {label_json}.toLowerCase();
+  const candidates = [...document.querySelectorAll(
+    'button, input[type="submit"], input[type="button"], a.btn, .btn, [role="button"]'
+  )];
+  const visible = (el) => {{
+    const st = window.getComputedStyle(el);
+    if (st.display === 'none' || st.visibility === 'hidden') return false;
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0;
+  }};
+  const el = candidates.find((node) => {{
+    if (!visible(node) || node.disabled) return false;
+    const text = (node.innerText || node.value || node.getAttribute('aria-label') || '').trim();
+    return text.toLowerCase().includes(needle);
+  }});
+  if (!el) throw new Error('Submit button not found: ' + {label_json});
+  el.click();
+  return (el.innerText || el.value || '').trim();
+}})();"""
+    clicked = run_js(base_url, profile_id, js, timeout=60)
+    time.sleep(pause_sec)
+    return {"ok": True, "clicked": button_text, "label": clicked}
+
+
+
+
 B17_COMPOSE_URL_DEFAULT = "https://www.b17.ru/my_blog.php?mod=edit"
 B17_TITLE_SELECTOR = "#form_name"
 TENCHAT_COMPOSE_URL_DEFAULT = "https://tenchat.ru/editor"
