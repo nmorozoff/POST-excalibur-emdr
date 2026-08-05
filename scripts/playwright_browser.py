@@ -100,6 +100,7 @@ def fill_b17_compose_playwright(
     cover_path: Path | None = None,
     auto_submit: bool = False,
     headless: bool = True,
+    edit_mode: bool = False,
 ) -> dict[str, Any]:
     state_path = storage_state or playwright_storage_state_path()
     with playwright_session(storage_state=state_path, headless=headless, proxy_prefix="B17_") as (
@@ -119,7 +120,7 @@ def fill_b17_compose_playwright(
                 )
             set_field_value_js("", "", B17_TITLE_SELECTOR, title)
             time.sleep(0.5)
-            b17_apply_form_meta("", "", section_value="1")
+            b17_apply_form_meta("", "", section_value="1", edit_mode=edit_mode)
             html_body = text_to_html_paragraphs(body)
             cover_src = None
             if cover_path:

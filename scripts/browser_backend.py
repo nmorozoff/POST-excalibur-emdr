@@ -65,6 +65,7 @@ def publish_b17(
     body: str,
     cover_path: Path | None,
     auto_submit: bool,
+    edit_mode: bool = False,
 ) -> dict[str, Any]:
     if browser_backend_name() == "playwright":
         from playwright_browser import fill_b17_compose_playwright
@@ -76,6 +77,7 @@ def publish_b17(
             cover_path=cover_path,
             auto_submit=auto_submit,
             headless=browser_headless(),
+            edit_mode=edit_mode,
         )
     profile_id = env.get("UNDETECTABLE_PROFILE_ID", "")
     if not profile_id:
@@ -88,6 +90,7 @@ def publish_b17(
         body=body,
         cover_path=cover_path,
         auto_submit=auto_submit,
+        edit_mode=edit_mode,
     )
 
 
