@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 from pathlib import Path
 
 from cover_upload import (
@@ -23,18 +22,19 @@ from cover_upload import (
     prepare_jpeg,
     public_cover_url,
     upload_cover,
-    verify_url,
+    verify_cover_url,
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def extract_post(md_path: Path) -> str:
-    text = md_path.read_text(encoding="utf-8")
-    m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
-    if not m:
-        raise SystemExit(f"Cannot parse post from {md_path}")
-    return m.group(1).strip()
+    import sys
+
+    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+    from posts_emdr_env import extract_post_body_from_md
+
+    return extract_post_body_from_md(md_path.read_text(encoding="utf-8"))
 
 
 def delete_topic_covers(topic_id: str, env: dict[str, str]) -> list[str]:
@@ -86,11 +86,15 @@ def main() -> None:
             env = load_upload_env()
             uploaded = upload_cover(jpeg, remote_name, env)
             public_url = uploaded["url"]
-            status = verify_url(public_url)
-            if status not in (200, 301, 302):
-                raise SystemExit(f"Cover URL not reachable: {public_url} (HTTP {status})")
+            verified = verify_cover_url(public_url)
+            if not verified["ok"]:
+                raise SystemExit(
+                    f"Cover URL does not serve image/jpeg: {public_url} "
+                    f"(HTTP {verified['http_status']})"
+                )
             result["cover_public_url"] = public_url
-            result["cover_http_status"] = status
+            result["cover_http_status"] = verified["http_status"]
+            result["cover_serves_image"] = verified["serves_image"]
             result["cover_upload_method"] = uploaded.get("method")
             meta = topic_dir / "vk-cover-public-url.json"
             meta.write_text(

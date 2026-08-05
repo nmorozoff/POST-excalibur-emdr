@@ -149,3 +149,46 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 4. Проверить `telegram.env.local` на VPS: только `@nmorozova_emdr` и `@natalia_morozova_psy` (не `@morozova_emdr`).
 
 **Gate:** commit `browser-worker: published {topic}` на `main` + `browser-worker-finish.json` в output.
+
+## Cloud → VPS webhook TimeoutError
+
+**Симптом (2026-08-05, sb-08):** `trigger-vps-webhook.py` → `TimeoutError` (20s) с Cloud pod; phase 3 не стартовал.
+
+**Причина:** короткий timeout клиента; transient недоступность VPS:8787 или медленный `git pull` в webhook.
+
+**Правильно:**
+- `trigger-vps-webhook.py`: GET `/health` (10s), POST `/publish` timeout **90s** (флаг `--timeout 120` при повторе).
+- При TimeoutError — один повтор через 10–15 мин; не публиковать TG/b17 из Cloud напрямую.
+- Recovery playbook: см. «VPS phase 3 partial после retry otchetik» выше.
+
+**Gate:** HTTP **202** + позже `browser-worker-finish.json` в output.
+
+## Обложка: wp-content URL отдаёт HTML, не image/jpeg
+
+**Симптом (2026-08-05, sb-08):** WordPress media URL (HTTP 200) → `Content-Type: text/html`; VK MCP `vk_create_post_with_photo` падает.
+
+**Причина:** WordPress upload возвращает `wp-content/uploads/…`, но hotlink/redirect отдаёт HTML-страницу ботам.
+
+**Правильно:**
+- `cover_upload.py`: **FTP → social-covers/{topic}.jpg** первым; WordPress — fallback только если `url_serves_image()` OK.
+- `send-vk-post.py --upload-cover`: gate `cover_serves_image: true` в `vk-publish-prep.json`.
+- Workaround run: Kie `cover.url` tempfile (не durable).
+
+**Не делать:** брать первый HTTP 200 без проверки Content-Type.
+
+## Zernio удаляет обложку до VK MCP
+
+**Симптом (2026-08-05, sb-08):** `publish-zernio-post.py` после Facebook вызывал `--delete-cover` → FTP social-covers удалён до фазы 2 MCP VK.
+
+**Правильно:**
+- Порядок cloud: VK upload → **MCP VK** → Facebook → `send-vk-post --delete-cover` после обоих VK-постов.
+- `publish-zernio-post.py`: **не** удалять cover по умолчанию; только явный `--delete-cover` (legacy VK API path).
+- `publish-topic.py`: Facebook после MCP handoff; cleanup — `send-vk-post.py --delete-cover`.
+
+## extract_post / normalize_typography
+
+**Симптом (2026-08-05):** `NameError: normalize_typography`; VK MCP message включал блок `## Мета`.
+
+**Правильно:**
+- Единая функция `posts_emdr_env.extract_post_body_from_md()` — стоп перед `---` / `## Мета`.
+- Использовать в `send-vk-post.py`, `vk_publish.py`, `publish-zernio-post.py`, `publish-topic.py`.

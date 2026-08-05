@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-08-anxiety-for-loved-ones | 2026-08-05 | Тревога за близких: любовь, которая выходит из берегов | https://max.ru/se13417616_biz/AZ_R6SwWaV4 | https://morozovanatalia.ru/anxiety | тревога,близкие,любовь,гиперконтроль,EMDR,стресс,психология |
 | sb-07-five-minute-pause | 2026-08-04 | Пятиминутная пауза, в которой ничего не нужно решать | https://max.ru/se13417616_biz/AZ_NyT26TP0 | https://morozovanatalia.ru/anxiety | тревога,пауза,отдых,EMDR,стресс,психология |
 | sb-06-cant-sleep-anxiety | 2026-08-04 | Почему после тревожного дня трудно уснуть, хотя тело устало | https://max.ru/se13417616_biz/AZ_NBEdwWCU | https://morozovanatalia.ru/anxiety | тревога,бессонница,сон,EMDR,стресс,психология |
 | sb-05-tolerate-uncertainty | 2026-08-03 | Что происходит, если разрешить себе не знать, чем всё закончится | https://max.ru/se13417616_biz/AZ_HI8MTTQI | https://morozovanatalia.ru/anxiety | тревога,неопределённость,контроль,EMDR,стресс,психология |

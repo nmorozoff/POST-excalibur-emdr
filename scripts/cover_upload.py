@@ -168,28 +168,40 @@ def _wordpress_upload(local: Path, remote_name: str, env: dict[str, str]) -> str
 
 
 def upload_cover(local: Path, remote_name: str, env: dict[str, str]) -> dict[str, Any]:
-    """Try upload strategies until one succeeds. WordPress is primary, FTP is fallback."""
+    """Try upload strategies until URL serves image/jpeg.
+
+    Prefer FTP → social-covers/{name} (stable for VK MCP). WordPress media is fallback
+    only if the returned URL passes image Content-Type probe (wp-content often returns HTML).
+    """
     errors: list[str] = []
-    strategies: list[tuple[str, Any]] = []
-    if _wordpress_creds(env):
-        strategies.append(("wordpress_media", lambda: _wordpress_upload(local, remote_name, env)))
-    strategies.extend([
+    strategies: list[tuple[str, Any]] = [
         ("curl_active", lambda: _curl_upload(local, env, remote_name, passive=False)),
         ("curl_pasv", lambda: _curl_upload(local, env, remote_name, passive=True)),
         ("ftplib_active", lambda: _ftplib_upload(local, env, remote_name, passive=False)),
         ("ftplib_pasv", lambda: _ftplib_upload(local, env, remote_name, passive=True)),
-    ])
+    ]
+    if _wordpress_creds(env):
+        strategies.append(("wordpress_media", lambda: _wordpress_upload(local, remote_name, env)))
 
     for name, fn in strategies:
         try:
             result = fn()
             if isinstance(result, str):
-                return {"url": result, "method": name, "path": f"social-covers/{remote_name}"}
-            return {
-                "url": public_cover_url(remote_name),
-                "method": name,
-                "path": f"social-covers/{remote_name}",
-            }
+                candidate_url = result
+            else:
+                candidate_url = public_cover_url(remote_name)
+            probe = verify_cover_url(candidate_url)
+            if probe["ok"]:
+                return {
+                    "url": candidate_url,
+                    "method": name,
+                    "path": f"social-covers/{remote_name}",
+                    "verify": probe,
+                }
+            errors.append(
+                f"{name}: URL reachable but not image/jpeg "
+                f"(status={probe['http_status']}, url={candidate_url[:80]})"
+            )
         except Exception as exc:
             errors.append(f"{name}: {exc}")
 
@@ -252,6 +264,32 @@ def verify_url(url: str) -> int:
         check=False,
     )
     return int((proc.stdout or "0").strip() or "0")
+
+
+def url_serves_image(url: str, *, timeout: int = 30) -> bool:
+    """True if URL responds with image/* (not HTML login/404 page with HTTP 200)."""
+    try:
+        req = urllib.request.Request(url, method="GET")
+        req.add_header("Range", "bytes=0-63")
+        req.add_header(
+            "User-Agent",
+            "Mozilla/5.0 (compatible; PostsEMDR-cover-verify/1.0)",
+        )
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            status = getattr(resp, "status", None) or resp.getcode()
+            ct = (resp.headers.get("Content-Type") or "").lower()
+            if status not in (200, 206):
+                return False
+            return "image" in ct or "octet-stream" in ct
+    except Exception:
+        return False
+
+
+def verify_cover_url(url: str) -> dict[str, Any]:
+    """HTTP status + whether Content-Type is image (for VK MCP / Zernio gates)."""
+    status = verify_url(url)
+    serves_image = url_serves_image(url) if status in (200, 301, 302) else False
+    return {"http_status": status, "serves_image": serves_image, "ok": serves_image}
 
 
 def probe_ftp(env: dict[str, str]) -> dict[str, Any]:

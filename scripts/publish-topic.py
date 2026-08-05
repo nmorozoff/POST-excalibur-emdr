@@ -92,13 +92,12 @@ def ensure_cover(topic: str) -> dict:
 
 
 def _extract_vk_post(md_path: Path) -> str:
-    import re
+    from posts_emdr_env import extract_post_body_from_md
 
-    text = md_path.read_text(encoding="utf-8")
-    m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
-    if not m:
-        raise SystemExit(f"Cannot parse post from {md_path}")
-    return m.group(1).strip()
+    try:
+        return extract_post_body_from_md(md_path.read_text(encoding="utf-8"))
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
 
 
 def write_vk_mcp_handoff(topic: str, photo_url: str) -> Path:
