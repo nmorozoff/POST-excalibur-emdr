@@ -1,20 +1,13 @@
 # Posts EMDR — Handoff
 
-status: === POSTS EMDR DONE ===
-updated_at: 2026-08-04
-topic_id: sb-07-five-minute-pause
-title: Пятиминутная пауза, в которой ничего не нужно решать
+status: IN_PROGRESS
+updated_at: 2026-08-05
+topic_id: sb-08-anxiety-for-loved-ones
+title: Тревога за близких как форма любви, которая выходит из берегов
 post_type: наблюдение→инсайт
 site_url: https://morozovanatalia.ru/anxiety
 mode: full publish
 
-## Result
+## Step
 
-- sb-06: remediation closed (TG correct channels, FB published)
-- sb-07 cloud: max, VK×2, Facebook — OK
-- sb-07 VPS phase 3: pending (INC-20260804-1742-sb07-vps-phase3-pending)
-- otchetik: partial, report sent to MAX_PREVIEW_CHAT_ID
-
-## Next
-
-Task(posts-emdr-fixic) — OPEN_INCIDENTS=1
+Шаг 1 — контент (max-post, cover, platform rewrites)
