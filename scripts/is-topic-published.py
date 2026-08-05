@@ -68,8 +68,14 @@ def check_topic(topic: str) -> dict:
     fb_log = _read_json(topic_dir / "zernio-publish-log.json")
     fb_ok = bool(fb_log and fb_log.get("status") in {"published", "ok", "sent"})
     fb_reg = _registry_has_topic(topic, PROFILE / "facebook-posts-registry.md")
+    ok_required = (topic_dir / "ok-post.md").is_file()
+    ok_log = _read_json(topic_dir / "ok-publish-log.json")
+    ok_ok = bool(ok_log and ok_log.get("status") in {"published", "ok", "sent"})
+    ok_reg = _registry_has_topic(topic, PROFILE / "ok-posts-registry.md")
 
     cloud_ok = max_ok and vk_prof and vk_group and (fb_ok or fb_reg)
+    if ok_required:
+        cloud_ok = cloud_ok and (ok_ok or ok_reg)
     result["cloud_ok"] = cloud_ok
     if not cloud_ok:
         if not max_ok:
@@ -80,6 +86,8 @@ def check_topic(topic: str) -> dict:
             result["reasons"].append("VK группа не в реестре")
         if not (fb_ok or fb_reg):
             result["reasons"].append("Facebook не опубликован")
+        if ok_required and not (ok_ok or ok_reg):
+            result["reasons"].append("OK не опубликован")
 
     tg_log = _read_json(topic_dir / "telegram-publish-log.json")
     tg_ok = tg_log and tg_log.get("status") == "sent"

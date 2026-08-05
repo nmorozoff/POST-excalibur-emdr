@@ -8,11 +8,13 @@
 3. TELEGRAM  ← рерайт поста; обложка = cover.png из MAX
 4. VK×2      ← профиль + группа; обложка = cover.png
 5. FACEBOOK  ← рерайт; обложка = cover.png; Zernio API
-6. B17       ← рерайт `b17-blog-post.md` + **обложка cover.png**; `publish-b17-blog.py`
-7. TENCHAT   ← рерайт `tenchat-post.md` + **обложка cover.png**; `publish-tenchat-post.py`
+6. OK        ← рерайт `ok-post.md`; обложка = cover.png; MCP `ok_create_post_with_photo` (группа)
+7. B17       ← рерайт `b17-blog-post.md` + **обложка cover.png**; `publish-b17-blog.py`
 ```
 
-Обложка: **одна** `cover.png`, генерируется **только на шаге MAX**, дальше переиспользуется везде — **включая b17 (анонс) и TenChat (медиа к посту)**. Одежда на обложке: ротация [`cover-outfit-rotation.md`](./cover-outfit-rotation.md).
+TenChat снят с пайплайна (2026-08-03). LinkedIn отменён.
+
+Обложка: **одна** `cover.png`, генерируется **только на шаге MAX**, дальше переиспользуется везде — **включая b17 (анонс) и OK/VK/FB**.
 
 ---
 
@@ -79,7 +81,21 @@
 
 ---
 
-## 5. b17.ru (блог)
+## 5. Одноклассники (группа)
+
+| Поле | Правило |
+|------|---------|
+| Площадка | Группа `70000034253679` |
+| Тон | Как Facebook — теплее, умеренно эмодзи |
+| Длина | ~3000–3800 знаков |
+| Ссылки | Перелинковка OK→OK: полный URL топика. Сайт/TG — только в конце |
+| CTA | Telegram + сайт с `utm_source=ok` |
+| Публикация | MCP `ok_create_post_with_photo` (фаза 2 Cloud) |
+| Промпт | `profile/ok-post-prompt.md` |
+
+---
+
+## 6. b17.ru (блог)
 
 | Поле | Правило |
 |------|---------|
@@ -95,7 +111,7 @@
 
 ---
 
-## 6. TenChat
+## ~~6. TenChat~~ (снят с пайплайна 2026-08-03)
 
 | Поле | Правило |
 |------|---------|
@@ -122,8 +138,8 @@ posts-emdr-memory/output/{topic_id}/
   vk-profile-post.md
   vk-group-post.md
   facebook-post.md
+  ok-post.md
   b17-blog-post.md
-  tenchat-post.md
   cover.png
   publish-log.md
 ```
@@ -138,6 +154,6 @@ posts-emdr-memory/output/{topic_id}/
 | Telegram текст/фото | MCP KV `telegram_send_*` (не Zernio) |
 | VK пост+фото | `send-vk-post.py` + MCP `vk_create_post_with_photo` (не Zernio) |
 | Facebook | `scripts/publish-zernio-post.py` (Zernio API, не MCP KV) |
+| OK группа | MCP `ok_create_post_with_photo` + `record-ok-publish.py` |
 | b17 блог | `scripts/publish-b17-blog.py` + Undetectable; **обложка в тексте** TinyMCE |
-| TenChat | `scripts/publish-tenchat-post.py` + Undetectable; **обложка** `cover.png` через **скрепку** |
 | Обложка MAX (генерация) | Runware `scripts/runware-cover.py` |

@@ -26,6 +26,7 @@ REGISTRY_FILES = {
     "vk-profile": PROFILE / "vk-profile-posts-registry.md",
     "vk-group": PROFILE / "vk-group-posts-registry.md",
     "facebook": PROFILE / "facebook-posts-registry.md",
+    "ok": PROFILE / "ok-posts-registry.md",
     "b17": PROFILE / "b17-posts-registry.md",
     "tenchat": PROFILE / "tenchat-posts-registry.md",
 }
@@ -68,6 +69,12 @@ def _build_row(args: argparse.Namespace) -> str:
             f"| {args.topic_id} | {d} | {args.title} | {platform_post_id} | {args.url} | "
             f"{args.site_url} | {tags} |"
         )
+    if args.platform == "ok":
+        mediatopic_id = args.mediatopic_id or "?"
+        return (
+            f"| {args.topic_id} | {d} | {args.title} | {mediatopic_id} | {args.url} | "
+            f"{args.site_url} | {tags} |"
+        )
     if args.platform == "b17":
         return f"| {args.topic_id} | {d} | {args.title} | {args.url} | {args.site_url} | {tags} |"
     if args.platform == "tenchat":
@@ -88,6 +95,7 @@ def main() -> None:
     p.add_argument("--message-id", help="Telegram message_id")
     p.add_argument("--channel", help="Telegram @channel")
     p.add_argument("--platform-post-id", help="Facebook post id")
+    p.add_argument("--mediatopic-id", help="OK mediatopic id")
     args = p.parse_args()
 
     path = REGISTRY_FILES[args.platform]

@@ -10,7 +10,7 @@ Steps:
   1. materialize_cloud_env (from Cursor Secrets)
   2. cloud_preflight
   3. kie cover (if missing) — gpt-image-2 via Kie.ai 5:4 1K
-  4. Max → VK (FTP + MCP handoff) → Facebook
+  4. Max → VK (FTP + MCP handoff) → Facebook → OK handoff
   5. Telegram + b17 → VPS (ASocks / Playwright), не Cloud
 """
 
@@ -29,6 +29,7 @@ from posts_emdr_env import (
     PROJECT_ROOT,
     has_vk_access_token,
     materialize_env_files,
+    ok_group_gid,
     reference_image_path,
     vk_group_id,
 )
@@ -127,13 +128,37 @@ def write_vk_mcp_handoff(topic: str, photo_url: str) -> Path:
     return path
 
 
+def write_ok_mcp_handoff(topic: str, image_url: str) -> Path | None:
+    topic_dir = MEMORY / "output" / topic
+    ok_md = topic_dir / "ok-post.md"
+    if not ok_md.is_file():
+        return None
+    handoff = {
+        "topic": topic,
+        "method": "mcp-kv",
+        "tool": "ok_create_post_with_photo",
+        "image_url": image_url,
+        "gid": ok_group_gid(),
+        "onBehalfOfGroup": True,
+        "text": _extract_vk_post(ok_md),
+        "instructions": "posts-emdr-memory/profile/cloud-publish-phases.md",
+        "record_after_publish": (
+            f"python3 scripts/record-ok-publish.py --topic {topic} "
+            "--url <post_url> --mediatopic-id <id> --title <title> --site-url <site> --tags <tags>"
+        ),
+    }
+    path = topic_dir / "ok-mcp-handoff.json"
+    path.write_text(json.dumps(handoff, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return path
+
+
 def write_browser_local_handoff(topic: str) -> Path:
     topic_dir = MEMORY / "output" / topic
     body = f"""# VPS publish — Telegram + b17
 
 Тема: `{topic}`
 
-Cloud опубликовал Макс / VK(MCP) / Facebook. Осталось на **VPS**:
+Cloud опубликовал Макс / VK(MCP) / Facebook / OK(MCP). Осталось на **VPS**:
 
 1. Telegram ×2 (@nmorozova_emdr, @natalia_morozova_psy) — ASocks KZ
 2. b17 (Playwright + residential RU)
@@ -290,6 +315,19 @@ def publish_topic(
         )
     )
 
+    if photo_url and (topic_dir := MEMORY / "output" / topic).joinpath("ok-post.md").is_file():
+        if dry_run:
+            log["steps"]["ok"] = {"dry_run": True, "note": "ok-post.md present"}
+        else:
+            ok_handoff = write_ok_mcp_handoff(topic, photo_url)
+            if ok_handoff:
+                log["steps"]["ok_mode"] = "mcp_handoff"
+                log["steps"]["ok_mcp_handoff"] = str(ok_handoff)
+    elif (MEMORY / "output" / topic / "ok-post.md").is_file() and not photo_url:
+        log["steps"]["ok"] = {"skipped": True, "reason": "no_cover_url"}
+    else:
+        log["steps"]["ok"] = {"skipped": True, "reason": "no ok-post.md"}
+
     browser_ok = browser_ready() and not skip_browser
     log["steps"]["browser_platforms"] = {"ready": browser_ok, "skipped": not browser_ok}
     if browser_ok and not dry_run:
@@ -305,6 +343,8 @@ def publish_topic(
         log["steps"]["browser_local_handoff"] = str(write_browser_local_handoff(topic))
     if log.get("steps", {}).get("vk_mode") == "mcp_handoff":
         deferred.append("vk_mcp")
+    if log.get("steps", {}).get("ok_mode") == "mcp_handoff":
+        deferred.append("ok_mcp")
 
     if not dry_run and browser_ok and "telegram" not in deferred:
         log["status"] = "published_all"

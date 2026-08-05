@@ -405,6 +405,13 @@ def vk_group_id() -> str:
         return "224685309"
 
 
+def ok_group_gid() -> str:
+    try:
+        return load_env("ok.env.local").get("OK_GROUP_GID", "70000034253679")
+    except SystemExit:
+        return "70000034253679"
+
+
 def is_cloud_runtime() -> bool:
     return bool(
         os.environ.get("CURSOR_CLOUD")

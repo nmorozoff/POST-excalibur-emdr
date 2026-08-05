@@ -9,7 +9,7 @@ alwaysApply: true
 
 ## Суть
 
-Локальный профиль **Excalibur Social**: тема из файла → контент для **Макс → Telegram → ВК×2 → Facebook (Zernio) → b17**.  
+Локальный профиль **Excalibur Social**: тема из файла → контент для **Макс → Telegram → ВК×2 → Facebook (Zernio) → Одноклассники (группа) → b17**.  
 **TenChat снят с пайплайна** (2026-08-03). **LinkedIn отменён** (блокировка аккаунта). **Кружок Макс** — вне scope MSP short-blog.
 **НЕ** запускать Ядрышко/Core, SEO-scout, WordPress publish (если пользователь явно не попросил блог).
 
@@ -45,13 +45,13 @@ Handoff runtime: `.cursor/posts-emdr-handoff.md`
 
 См. `posts-emdr-memory/profile/cloud-publish-phases.md` и `CLOUD-SETUP.md`.
 
-**3 фазы:** (1) скрипты cloud: Макс/TG/FB + handoff, (2) **MCP mcp-kv** → VK, (3) **VPS** → Telegram + b17.
+**3 фазы:** (1) скрипты cloud: Макс/FB + handoff, (2) **MCP mcp-kv** → VK + OK, (3) **VPS** → Telegram + b17.
 
 `VK_ACCESS_TOKEN` не нужен. MCP mcp-kv — в Dashboard automation.
 
 ```bash
 python3 scripts/publish-topic.py --topic {id}
-# затем MCP VK по vk-mcp-handoff.json
+# затем MCP VK по vk-mcp-handoff.json; MCP OK по ok-mcp-handoff.json
 ```
 
 ## Пайплайн (одна тема)
@@ -118,6 +118,16 @@ Task `posts-emdr-facebook-writer` → **рерайт**.
 При `publish: yes` → `python scripts/publish-zernio-post.py --topic {id}`.  
 **Не трогать** Макс / Telegram / VK.
 
+### Шаг 5b — Одноклассники (группа)
+
+Task `posts-emdr-ok-writer` → **рерайт** `ok-post.md`. Контракт: `profile/ok-post-prompt.md`.  
+Перелинковка: только `profile/ok-posts-registry.md`. Сайт/TG — полный URL в конце (`utm_source=ok`).
+
+При `publish: yes` → фаза 2 Cloud: MCP `ok_create_post_with_photo` по `ok-mcp-handoff.json`  
+(`gid: 70000034253679`, `onBehalfOfGroup: true`, `image_url` = обложка с сайта).  
+После MCP: `python scripts/record-ok-publish.py --topic {id} ...`  
+**Gate:** есть `ok-publish-log.json` или строка в `ok-posts-registry.md`.
+
 ### Шаг 6 — b17.ru
 
 Рерайт `b17-blog-post.md` по `profile/b17-blog-post-prompt.md` (**1000–1600** знаков, без ссылок в тексте).  
@@ -133,7 +143,7 @@ Gate: форма заполнена, `b17-publish-prep.json`. Опциональ
 
 - Пометить тему `published` + дата в `short-blog-queue.md` / `short-blog-published.md`
 - `publish-log.md` в output
-- Обновить реестры платформ (`max`, `telegram`, `vk-profile`, `vk-group`, `facebook`)
+- Обновить реестры платформ (`max`, `telegram`, `vk-profile`, `vk-group`, `facebook`, `ok`)
 - Fragment шага: `incident_report:` (`shared/subagent-end-of-task-contract.md`)
 - Handoff: `=== POSTS EMDR DONE ===`
 
@@ -141,7 +151,7 @@ Gate: форма заполнена, `b17-publish-prep.json`. Опциональ
 
 ### Шаг 8 — Отчётик (QA + отчёт в Макс)
 
-После cloud + MCP VK + webhook VPS:
+После cloud + MCP VK/OK + webhook VPS:
 
 1. **Task(`posts-emdr-otchetik`)** с `topic_id`
 2. Отчётик **ждёт финального результата**: polling до `pass`/`fail`, до 6 попыток по ~10 мин (`git pull` перед каждой повторной проверкой; после 3 попыток — один re-trigger webhook при отсутствии finish).
@@ -168,7 +178,7 @@ Gate: форма заполнена, `b17-publish-prep.json`. Опциональ
 
 ## CTA (обязательно в каждом посте)
 
-- **Перелинковка:** в теле поста — только на посты **той же** платформы. Макс→Макс, TG→TG, VK→VK, FB→FB. Сайт — не в середине.
+- **Перелинковка:** в теле поста — только на посты **той же** платформы. Макс→Макс, TG→TG, VK→VK, FB→FB, OK→OK. Сайт — не в середине.
 - **Ссылка на сайт и EMDR** — только в самом конце, **после** CTA-фразы «Если хотите обсудить это лично,…».
 - **Перед вопросом в конце:** «Если хотите обсудить это лично, напишите мне в ЛС [ТУТ]» → затем «Подробности о проведении сессии, стоимости и записи читайте ТУТ [ссылка на сайт]».
 - **ВК:** перелинковка `[wall_url|здесь]`; CTA — `в ЛС: https://t.me/natalyamorozovaa` и только после него `Подробности... читайте ТУТ: {url}` (полный URL, без markdown-анкора).

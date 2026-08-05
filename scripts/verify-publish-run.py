@@ -194,6 +194,40 @@ def verify_topic(topic: str) -> dict:
     elif not fb_ok:
         report["issues"].append("Facebook: нет publish-log или реестра")
 
+    # OK (группа) — обязателен только если есть ok-post.md
+    ok_md = topic_dir / "ok-post.md"
+    ok_log = _read_json(topic_dir / "ok-publish-log.json")
+    ok_reg = _registry_row(topic, PROFILE / "ok-posts-registry.md")
+    ok_status = (ok_log or {}).get("status")
+    ok_ok = bool((ok_log and ok_status in {"published", "ok", "sent"}) or ok_reg)
+    if ok_md.is_file():
+        report["platforms"]["ok"] = {
+            "ok": ok_ok,
+            "log": bool(ok_log),
+            "registry": ok_reg,
+            "status": ok_status,
+            "required": True,
+        }
+        ok_url = (ok_log or {}).get("url") or (ok_log or {}).get("post_url")
+        if ok_url:
+            report["links"]["ok"] = ok_url
+        elif ok_reg:
+            m = re.search(
+                rf"\| {re.escape(topic)} \| [^|]+ \| [^|]+ \| [^|]+ \| (https://ok\.ru/[^\s|]+)",
+                (PROFILE / "ok-posts-registry.md").read_text(encoding="utf-8"),
+            )
+            if m:
+                report["links"]["ok"] = m.group(1)
+        if not ok_ok:
+            report["issues"].append("OK: нет publish-log или реестра")
+    else:
+        report["platforms"]["ok"] = {
+            "ok": True,
+            "legacy": True,
+            "required": False,
+            "note": "no ok-post.md (тема до интеграции OK)",
+        }
+
     # b17
     b17_log = _read_json(topic_dir / "b17-publish-log.json")
     b17_status = (b17_log or {}).get("status")
@@ -243,6 +277,10 @@ def verify_topic(topic: str) -> dict:
         or not report["platforms"]["vk_profile"]["ok"]
         or not report["platforms"]["vk_group"]["ok"]
         or (not report["platforms"]["facebook"]["ok"] and not fb_pending)
+        or (
+            report["platforms"]["ok"].get("required")
+            and not report["platforms"]["ok"]["ok"]
+        )
     )
     vps_pending = not report["platforms"]["telegram"]["ok"] or not report["platforms"]["b17"]["ok"]
 

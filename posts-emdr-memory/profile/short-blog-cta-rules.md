@@ -56,6 +56,7 @@
 | Telegram | @natalyamorozovaa | ТУТ `utm_source=tg1` | + сайт `utm_source=tg1` |
 | VK | t.me/natalyamorozovaa | ТУТ полным URL | + сайт полным URL |
 | Facebook | t.me | ТУТ `utm_source=fb` | + сайт `utm_source=fb` |
+| Одноклассники | t.me (полный URL) | ТУТ `utm_source=ok` | + сайт `utm_source=ok` |
 | b17 | одна строка в конце, профессиональный тон | ТУТ | та же строка + «бесплатная встреча-знакомство» |
 
 TenChat снят с пайплайна — игнорировать.

@@ -23,6 +23,7 @@ telegram-post.md — Task posts-emdr-telegram-writer
 vk-profile-post.md — Task posts-emdr-vk-writer profile
 vk-group-post.md — Task posts-emdr-vk-writer group
 facebook-post.md — Task posts-emdr-facebook-writer
+ok-post.md — Task posts-emdr-ok-writer
 b17-blog-post.md — рерайт по profile/b17-blog-post-prompt.md
 TenChat снят — tenchat-post.md не создавать.
 ОБЛОЖКА: python3 scripts/kie-cover.py --topic {id}. Gate: есть cover.png.
@@ -39,7 +40,11 @@ VK ПРОФИЛЬ: MCP vk_create_post_with_photo, publish_location personal, fro
 VK ГРУППА: MCP vk_create_post_with_photo, publish_location group, from_group true, group_id 224685309.
 Gate оба раза: в ответе Загружено фото.
 python3 scripts/send-vk-post.py --topic {id} --delete-cover
-Обновить реестры max, vk-profile, vk-group, facebook.
+Обновить реестры max, vk-profile, vk-group, facebook, ok.
+
+ШАГ 3b OK MCP (если есть output/{id}/ok-mcp-handoff.json)
+MCP ok_create_post_with_photo: text и image_url из handoff, gid 70000034253679, onBehalfOfGroup true.
+python3 scripts/record-ok-publish.py --topic {id} --url ... --mediatopic-id ... --title ... --site-url ... --tags ...
 
 ШАГ 4 GIT PUSH
 git add posts-emdr-memory/output/{id}/ posts-emdr-memory/profile/*-posts-registry.md

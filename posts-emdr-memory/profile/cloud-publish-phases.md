@@ -4,7 +4,7 @@
 
 ## Фаза 1 — Cloud Agent (скрипты)
 
-**Платформы:** Макс, Facebook, обложка Runware, FTP для VK-превью.
+**Платформы:** Макс, Facebook, обложка Runware, FTP для VK-превью, handoff OK.
 
 **НЕ публикует:** Telegram (блокировка `api.telegram.org` с cloud/VPS DC → только ASocks KZ на VPS).
 
@@ -13,13 +13,15 @@ python3 scripts/materialize_cloud_env.py
 python3 scripts/publish-topic.py --topic {topic_id}
 ```
 
-`VK_ACCESS_TOKEN` **не нужен**. Скрипт заливает обложку на сайт и пишет `output/{topic}/vk-mcp-handoff.json` + `browser-local-handoff.md`.
+`VK_ACCESS_TOKEN` **не нужен**. Скрипт заливает обложку на сайт и пишет `output/{topic}/vk-mcp-handoff.json`, `ok-mcp-handoff.json` (если есть `ok-post.md`) + `browser-local-handoff.md`.
 
 ## Фаза 2 — Cloud Agent (MCP mcp-kv)
 
-**Платформа:** VK профиль + VK группа.
+**Платформы:** VK профиль + VK группа + **Одноклассники (группа)**.
 
 В automation **включить MCP** `user-mcp-kv` / mcp-kv.ru (Dashboard → Integrations & MCP).
+
+### VK
 
 Агент читает `vk-mcp-handoff.json` и вызывает **дважды** `vk_create_post_with_photo`:
 
@@ -34,7 +36,25 @@ python3 scripts/publish-topic.py --topic {topic_id}
 Gate: в ответе MCP — `📸 Загружено фото`.  
 После обоих постов: `python3 scripts/send-vk-post.py --topic {id} --delete-cover`
 
-Обновить реестры: `vk-profile`, `vk-group`, `max`, `facebook`.
+### OK (группа)
+
+Если есть `ok-mcp-handoff.json`:
+
+1. MCP `ok_create_post_with_photo`:
+   - `text` — из handoff
+   - `image_url` — из handoff
+   - `gid`: `70000034253679` (или `OK_GROUP_GID`)
+   - `onBehalfOfGroup`: `true`
+2. Записать лог и реестр:
+
+```bash
+python3 scripts/record-ok-publish.py --topic {id} \
+  --url "https://ok.ru/group/70000034253679/topic/..." \
+  --mediatopic-id "..." \
+  --title "..." --site-url "https://morozovanatalia.ru/..." --tags "..."
+```
+
+Обновить реестры: `vk-profile`, `vk-group`, `max`, `facebook`, **`ok`**.
 
 ## Фаза 3 — Telegram + b17 (VPS)
 
@@ -87,8 +107,9 @@ Mac — **не используем**.
 3. python3 scripts/publish-topic.py --topic {id}
    (Telegram НЕ публикуется здесь — deferred на VPS)
 4. MCP vk_create_post_with_photo ×2 по vk-mcp-handoff.json
-5. send-vk-post.py --delete-cover; обновить реестры max/vk/fb
-6. git add + commit + push output/{id}/ и реестры
-7. curl VPS webhook: POST /publish {"topic":"{id}"} с VPS_WEBHOOK_SECRET
-8. НЕ помечать published в очереди — это сделает VPS worker (--finish)
+5. MCP ok_create_post_with_photo по ok-mcp-handoff.json (если есть); record-ok-publish.py
+6. send-vk-post.py --delete-cover; обновить реестры max/vk/fb/ok
+7. git add + commit + push output/{id}/ и реестры
+8. curl VPS webhook: POST /publish {"topic":"{id}"} с VPS_WEBHOOK_SECRET
+9. НЕ помечать published в очереди — это сделает VPS worker (--finish)
 ```

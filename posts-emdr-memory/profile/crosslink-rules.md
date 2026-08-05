@@ -9,6 +9,7 @@
 | VK профиль | `profile/vk-profile-posts-registry.md` |
 | VK группа | `profile/vk-group-posts-registry.md` |
 | Facebook | `profile/facebook-posts-registry.md` |
+| Одноклассники (группа) | `profile/ok-posts-registry.md` |
 
 **Не смешивать URL между платформами.** В посте Telegram — ссылка на пост Telegram, в VK профиле — на пост VK профиля, в VK группе — на пост группы. **В теле поста не ссылаться на сайт** — на сайт отправляем только в самом конце, после CTA.
 
@@ -29,6 +30,7 @@ LinkedIn отменён. Канал @morozova_emdr снят с публикац�
 - VK профиль: `О ночных атаках мы уже говорили [https://vk.com/wall218367867_641|здесь].`
 - VK группа: `О ночных атаках писали [https://vk.com/wall-224685309_144|здесь].`
 - Facebook: `…здесь: fb_url` (внешний анкор тоже недоступен — полный URL)
+- OK: `…здесь: ok_topic_url` (полный URL на топик в группе)
 
 ## Ссылка на сайт — только в конце
 
@@ -42,6 +44,7 @@ LinkedIn отменён. Канал @morozova_emdr снят с публикац�
 - Для Telegram: `utm_source=tg1` (или `tg2` для второго канала)
 - Для VK: `utm_source=vk`
 - Для Facebook: `utm_source=fb`
+- Для Одноклассники: `utm_source=ok`
 
 ---
 
@@ -53,8 +56,9 @@ LinkedIn отменён. Канал @morozova_emdr снят с публикац�
 | Макс → VK профиль | больше «я», **рерайт**, тот же объём ~3000 |
 | Макс → VK группа | экспертнее, списки, **рерайт**, тот же объём |
 | Макс → Facebook | теплее, эмодзи умеренно, **рерайт** |
+| Макс → OK | как FB, плоский текст, **рерайт**, тот же объём |
 
-**Запрет:** копипаст текста Макс в TG/VK/FB.
+**Запрет:** копипаст текста Макс в TG/VK/FB/OK.
 
 ---
 
@@ -74,4 +78,4 @@ python scripts/update-post-registry.py --platform telegram --topic-id 02-airplan
   --channel @morozova_emdr --message-id 599 --tags "паника,авиафобия"
 ```
 
-Платформы: `max` | `telegram` | `vk-profile` | `vk-group` | `facebook`
+Платформы: `max` | `telegram` | `vk-profile` | `vk-group` | `facebook` | `ok`

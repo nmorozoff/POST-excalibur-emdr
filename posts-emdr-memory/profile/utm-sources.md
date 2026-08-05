@@ -13,6 +13,7 @@
 | VK (группа) | `vk_group` | `?utm_source=vk_group` |
 | LinkedIn | `linkedin` | `?utm_source=linkedin` |
 | Facebook | `fb` | `?utm_source=fb` |
+| Одноклассники (группа) | `ok` | `?utm_source=ok` |
 | TenChat | `tenchat` | `?utm_source=tenchat` |
 | b17 блог | `b17` | `?utm_source=b17` |
 
