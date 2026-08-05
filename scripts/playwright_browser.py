@@ -136,22 +136,24 @@ def fill_b17_compose_playwright(
     })();"""
                     )
                     page.wait_for_timeout(5000)
+                    # Запускаем нативный обработчик загрузки на b17
+                    page.evaluate("input_file_change()")
                     # Ждём появления загруженного изображения на b17 и читаем его URL
                     for _ in range(60):
                         try:
-                            # 1. Превью-изображение, которое b17 показывает после загрузки
-                            img = page.query_selector("img[src*='foto/uploaded/']")
+                            # 1. URL в блоке поворота изображения (самый надёжный)
+                            rotate_input = page.query_selector('input[name^="rotate_url"]')
+                            if rotate_input:
+                                val = rotate_input.get_attribute("value")
+                                if val and "/foto/uploaded/" in val:
+                                    b17_cover_url = "https://www.b17.ru" + val.split("?")[0]
+                                    break
+                            # 2. Любое изображение с /foto/uploaded/ (превью или ротация)
+                            img = page.query_selector("img[src*='/foto/uploaded/']")
                             if img:
                                 src = img.get_attribute("src")
-                                if src and src.startswith("https://www.b17.ru/foto/uploaded/"):
-                                    b17_cover_url = src
-                                    break
-                            # 2. Скрытое поле с ID загруженной фотографии
-                            hidden = page.query_selector('input[type="hidden"][name*="foto"]')
-                            if hidden:
-                                val = hidden.get_attribute("value")
-                                if val and val.startswith("upl_"):
-                                    b17_cover_url = f"https://www.b17.ru/foto/uploaded/{val}.jpg"
+                                if src and "/foto/uploaded/" in src:
+                                    b17_cover_url = "https://www.b17.ru" + src.split("?")[0]
                                     break
                         except Exception:
                             pass
