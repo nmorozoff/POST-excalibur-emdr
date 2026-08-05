@@ -51,6 +51,19 @@
 
 **Правильно:** уникальная строка с URL сайта темы в тексте Facebook; не копировать Макс дословно.
 
+## Zernio Facebook: status scheduled (Meta transient)
+
+**Симптом (2026-08-04, sb-06):** `zernio-publish-log.json` → `status: scheduled`, `platform_post_url: null` после POST; Meta transient error, Zernio auto-retry.
+
+**Причина:** Meta API временно не принял пост; Zernio ставит scheduled и ретраит.
+
+**Правильно:**
+- `publish-zernio-post.py`: polling GET `/api/v1/posts/{id}` до 10 мин; при scheduled — exit 3, лог без hard fail.
+- `verify-publish-run.py`: `scheduled` без реестра → **partial** (не hard_fail); повторить verify через 10–15 мин.
+- Не удалять cover с FTP, пока статус не `published`.
+
+**Не делать:** считать scheduled как терминальный fail в otchetik/verify.
+
 ## MCP user-mcp-kv: intermittent auth
 
 **Симптом:** VK publish падает с auth error.
@@ -121,3 +134,18 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 **Симптом:** `--finish` / deferred worker блокируются на `tenchat_not_ready` или `tenchat=published`.
 
 **Правильно:** MSP short-blog VPS worker — только Telegram + b17 (`publish-browser-deferred.py`, `browser_worker_finish.py`). TenChat — отдельно (Mac/ручной), не gate для очереди.
+
+## VPS phase 3 partial после retry otchetik
+
+**Симптом:** Отчётик ×2 (initial + 10–15 мин) → `overall: partial`; нет `browser-worker-finish.json`, `telegram-publish-log.json`, `b17-publish-log.json` в `output/{topic}/` (после `git pull`).
+
+**Возможные причины:** webhook не вызван после `git push`; background worker на VPS упал (Telegram env, ASocks, b17 session); cron не подхватил.
+
+**Правильно (recovery, один раз на тему):**
+
+1. `python3 scripts/trigger-vps-webhook.py --topic {id}` — ожидать HTTP **202** (не dry-run).
+2. Подождать 10–15 мин → `git pull origin main` → `python3 scripts/verify-publish-run.py --topic {id}`.
+3. Если всё ещё partial — на VPS: `systemctl is-active posts-emdr-webhook`, лог `output/{topic}/vps-webhook-run.log`, `journalctl -u posts-emdr-webhook`, ручной `publish-browser-deferred.py --topic {id} --submit --finish --git-push`.
+4. Проверить `telegram.env.local` на VPS: только `@nmorozova_emdr` и `@natalia_morozova_psy` (не `@morozova_emdr`).
+
+**Gate:** commit `browser-worker: published {topic}` на `main` + `browser-worker-finish.json` в output.

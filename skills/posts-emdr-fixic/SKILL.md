@@ -54,6 +54,8 @@ checks_run:
 
 Или `status: needs-human` с `needed_decision_or_secret`.
 
+**VPS phase 3 pending:** после otchetik retry — один probe `trigger-vps-webhook.py --topic {id}` (202 OK). Если через 10–15 мин всё ещё partial → `needs-human` + пункт в pitfalls (recovery playbook). Не публиковать из cloud напрямую (`send-telegram-post.py` / `publish-b17-blog.py`).
+
 ## Что править
 
 | Можно | Нельзя |

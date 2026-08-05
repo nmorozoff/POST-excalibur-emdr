@@ -14,6 +14,7 @@ import argparse
 import json
 import re
 import ssl
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -70,6 +71,46 @@ def delete_cover(topic: str) -> None:
     )
 
 
+def zernio_request(env: dict[str, str], method: str, url: str, body: bytes | None = None) -> dict:
+    headers = {"Authorization": f"Bearer {env['ZERNIO_API_KEY']}"}
+    if body is not None:
+        headers["Content-Type"] = "application/json"
+    req = urllib.request.Request(url, data=body, headers=headers, method=method)
+    ctx = ssl.create_default_context()
+    try:
+        with urllib.request.urlopen(req, timeout=120, context=ctx) as resp:
+            return json.loads(resp.read().decode())
+    except urllib.error.HTTPError as e:
+        err = e.read().decode()
+        raise SystemExit(f"Zernio API HTTP {e.code}: {err}") from e
+
+
+def fetch_zernio_post(env: dict[str, str], post_id: str) -> dict:
+    return zernio_request(env, "GET", f"{API_URL}/{post_id}")
+
+
+def wait_for_published(
+    env: dict[str, str],
+    post_id: str,
+    *,
+    max_wait: int = 600,
+    interval: int = 30,
+) -> dict:
+    deadline = time.time() + max_wait
+    last = fetch_zernio_post(env, post_id)
+    while time.time() < deadline:
+        post = last.get("post", last)
+        plat = (post.get("platforms") or [{}])[0]
+        status = post.get("status") or plat.get("status")
+        if status == "published" or plat.get("platformPostUrl"):
+            return last
+        if status not in {"scheduled", "publishing", "pending", None}:
+            return last
+        time.sleep(interval)
+        last = fetch_zernio_post(env, post_id)
+    return last
+
+
 def publish_facebook(env: dict[str, str], content: str, cover_url: str, dry_run: bool) -> dict:
     payload: dict = {
         "content": content,
@@ -84,22 +125,7 @@ def publish_facebook(env: dict[str, str], content: str, cover_url: str, dry_run:
         return {"dry_run": True, "payload": payload}
 
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    req = urllib.request.Request(
-        API_URL,
-        data=body,
-        headers={
-            "Authorization": f"Bearer {env['ZERNIO_API_KEY']}",
-            "Content-Type": "application/json",
-        },
-        method="POST",
-    )
-    ctx = ssl.create_default_context()
-    try:
-        with urllib.request.urlopen(req, timeout=120, context=ctx) as resp:
-            return json.loads(resp.read().decode())
-    except urllib.error.HTTPError as e:
-        err = e.read().decode()
-        raise SystemExit(f"Zernio API HTTP {e.code}: {err}") from e
+    return zernio_request(env, "POST", API_URL, body)
 
 
 def main() -> None:
@@ -128,26 +154,40 @@ def main() -> None:
         "dry_run": args.dry_run,
     }
 
+    exit_code = 0
     if not args.dry_run:
         post = result.get("post", {})
         plat = (post.get("platforms") or [{}])[0]
+        post_id = post.get("_id")
+        status = post.get("status") or plat.get("status")
+        if status == "scheduled" and post_id:
+            result = wait_for_published(env, post_id)
+            post = result.get("post", result)
+            plat = (post.get("platforms") or [{}])[0]
+            status = post.get("status") or plat.get("status")
         log.update(
             {
-                "zernio_post_id": post.get("_id"),
-                "status": post.get("status") or plat.get("status"),
+                "zernio_post_id": post.get("_id") or post_id,
+                "status": status,
                 "platform_post_id": plat.get("platformPostId"),
                 "platform_post_url": plat.get("platformPostUrl"),
                 "page": plat.get("accountId", {}).get("displayName") if isinstance(plat.get("accountId"), dict) else None,
             }
         )
-        if log.get("status") != "published":
+        if log.get("status") == "published":
+            if not args.skip_cover_cleanup:
+                delete_cover(args.topic)
+        elif log.get("status") == "scheduled":
+            log["note"] = "Meta transient error — Zernio auto-retry expected; verify-publish-run treats as partial"
+            exit_code = 3
+        else:
             raise SystemExit(f"Zernio gate failed: {json.dumps(result, ensure_ascii=False)}")
-        if not args.skip_cover_cleanup:
-            delete_cover(args.topic)
 
     log_path = topic_dir / "zernio-publish-log.json"
     log_path.write_text(json.dumps(log, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(log, ensure_ascii=False, indent=2))
+    if exit_code:
+        raise SystemExit(exit_code)
 
 
 if __name__ == "__main__":

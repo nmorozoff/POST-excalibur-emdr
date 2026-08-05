@@ -5,11 +5,13 @@
   "html_chars": 3847,
   "channels": [
     {
-      "chat_id": "@morozova_emdr",
-      "message_id": 613
+      "chat_id": "@nmorozova_emdr",
+      "message_id": 116
+    },
+    {
+      "chat_id": "@natalia_morozova_psy",
+      "message_id": 2027
     }
   ],
-  "cover_source": "catbox",
-  "chat_id": "@morozova_emdr",
-  "message_id": 613
+  "cover_source": "catbox"
 }

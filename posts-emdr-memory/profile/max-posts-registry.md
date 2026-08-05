@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-07-five-minute-pause | 2026-08-04 | Пятиминутная пауза, в которой ничего не нужно решать | https://max.ru/se13417616_biz/AZ_NyT26TP0 | https://morozovanatalia.ru/anxiety | тревога,пауза,отдых,EMDR,стресс,психология |
 | sb-06-cant-sleep-anxiety | 2026-08-04 | Почему после тревожного дня трудно уснуть, хотя тело устало | https://max.ru/se13417616_biz/AZ_NBEdwWCU | https://morozovanatalia.ru/anxiety | тревога,бессонница,сон,EMDR,стресс,психология |
 | sb-05-tolerate-uncertainty | 2026-08-03 | Что происходит, если разрешить себе не знать, чем всё закончится | https://max.ru/se13417616_biz/AZ_HI8MTTQI | https://morozovanatalia.ru/anxiety | тревога,неопределённость,контроль,EMDR,стресс,психология |
 | sb-04-what-if-phrase | 2026-07-30 | Фраза «а вдруг» и как она запускает сценарий в голове | https://max.ru/se13417616_biz/AZ-yQhSdWYw | https://morozovanatalia.ru/anxiety | тревога,сценарий,а вдруг,EMDR,стресс,психология |
