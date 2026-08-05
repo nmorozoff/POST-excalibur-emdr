@@ -68,6 +68,10 @@ def run_preflight(*, strict: bool = True) -> dict:
         "ftp.env.local",
         ["FTP_SERVER", "FTP_USERNAME", "FTP_PASSWORD"],
     )
+    checks["wordpress"] = _check_file(
+        "wordpress.env.local",
+        ["WORDPRESS_URL", "WORDPRESS_USER", "WORDPRESS_APP_PASSWORD"],
+    )
     if checks["ftp"]["ok"]:
         try:
             from cover_upload import load_upload_env, probe_ftp
@@ -79,7 +83,7 @@ def run_preflight(*, strict: bool = True) -> dict:
         except SystemExit as exc:
             checks["ftp"]["probe"] = {"ok": False, "error": str(exc)}
             checks["ftp"]["upload_ready"] = False
-    if not checks["ftp"]["ok"]:
+    if not checks["ftp"]["ok"] and not checks["wordpress"]["ok"]:
         legacy = Path("/Users/natala/Documents/Проекты СURSOR/sessya-morozova/.ftp-deploy.env")
         if legacy.is_file():
             checks["ftp"] = {"ok": True, "path": str(legacy), "source": "legacy_fallback"}
@@ -138,12 +142,16 @@ def run_preflight(*, strict: bool = True) -> dict:
         browser["base_url"] = undetectable_url or "http://127.0.0.1:25325"
     checks["browser"] = browser
 
-    script_platforms = ("max", "telegram", "zernio", "ftp")
+    script_platforms = ("max", "telegram", "zernio")
+    cover_storage_ok = checks["wordpress"]["ok"] or checks["ftp"]["ok"]
     cover_ok = checks["cover_api"]["ok"]
-    auto_ok = all(
-        checks[p]["ok"]
-        for p in script_platforms
-    ) and checks["telegram"].get("channels_configured") and checks["reference_image"]["ok"] and cover_ok
+    auto_ok = (
+        all(checks[p]["ok"] for p in script_platforms)
+        and checks["telegram"].get("channels_configured")
+        and checks["reference_image"]["ok"]
+        and cover_ok
+        and cover_storage_ok
+    )
 
     report = {
         "runtime": "cloud" if is_cloud_runtime() else "local",

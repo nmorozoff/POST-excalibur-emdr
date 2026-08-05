@@ -3,24 +3,98 @@
 
 from __future__ import annotations
 
+import base64
 import json
 import os
 import re
+import secrets
+import tempfile
+import urllib.request
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MEMORY = PROJECT_ROOT / "posts-emdr-memory"
 
 
+def wordpress_media_upload(cover_path: Path, topic: str | None = None) -> dict[str, str]:
+    """Upload cover to WordPress Media Library via REST API."""
+    try:
+        data = load_env("wordpress.env.local", required=["WORDPRESS_URL", "WORDPRESS_USER", "WORDPRESS_APP_PASSWORD"])
+    except SystemExit as exc:
+        return {"error": str(exc), "url": "", "id": ""}
+
+    base_url = data["WORDPRESS_URL"].rstrip("/")
+    user = data["WORDPRESS_USER"]
+    password = data["WORDPRESS_APP_PASSWORD"]
+    credentials = base64.b64encode(f"{user}:{password}".encode()).decode("ascii")
+
+    # Convert to JPEG if needed (WP accepts PNG, but JPEG is smaller and reliable)
+    from PIL import Image
+    jpeg_path = Path(tempfile.gettempdir()) / f"wp-cover-{cover_path.stem}.jpg"
+    img = Image.open(cover_path)
+    if img.mode in ("RGBA", "P"):
+        img = img.convert("RGB")
+    img.save(jpeg_path, "JPEG", quality=85, optimize=True)
+
+    filename = f"{cover_path.stem}.jpg" if topic is None else f"{topic}.jpg"
+    slug = topic or cover_path.stem
+
+    boundary = f"----WebKitFormBoundary{secrets.token_hex(8)}"
+    body_lines = [
+        f"--{boundary}",
+        f'Content-Disposition: form-data; name="file"; filename="{filename}"',
+        "Content-Type: image/jpeg",
+        "",
+        jpeg_path.read_bytes().decode("latin-1"),
+        f"--{boundary}",
+        'Content-Disposition: form-data; name="title"',
+        "",
+        f"Cover {slug}",
+        f"--{boundary}",
+        'Content-Disposition: form-data; name="alt_text"',
+        "",
+        f"Cover image for {slug}",
+        f"--{boundary}--",
+    ]
+    body = "\r\n".join(body_lines).encode("latin-1")
+
+    req = urllib.request.Request(
+        f"{base_url}/wp-json/wp/v2/media",
+        data=body,
+        headers={
+            "Authorization": f"Basic {credentials}",
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            result = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        err = e.read().decode("utf-8", errors="replace")[:500]
+        return {"error": f"HTTP {e.code}: {err}", "url": "", "id": ""}
+    except Exception as e:
+        return {"error": str(e), "url": "", "id": ""}
+
+    return {
+        "url": result.get("source_url", ""),
+        "id": str(result.get("id", "")),
+        "link": result.get("link", ""),
+    }
+
+
 def normalize_typography(text: str) -> str:
     """Replace long dashes (em/en) with safe punctuation before publishing.
 
-    - em dash (—) → comma + space
+    - em dash (—) → comma + single space (with surrounding spaces normalized)
     - en dash (–) → hyphen
-    - collapse double commas from replacement
+    - collapse double commas / hanging spaces from replacement
     """
-    text = text.replace("\u2014", ", ")
+    # Replace em dash with comma + space, absorbing surrounding spaces
+    text = re.sub(r"\s*\u2014\s*", ", ", text)
     text = text.replace("\u2013", "-")
+    # Cleanup any artifacts like " ,  " or ",  " → ", "
+    text = re.sub(r"\s*,\s+", ", ", text)
     text = re.sub(r",\s+,", ", ", text)
     return text.strip()
 
@@ -60,6 +134,8 @@ ENV_SPECS: dict[str, list[str]] = {
         "FTP_USERNAME",
         "FTP_PASSWORD",
         "FTP_SERVER_DIR",
+    ],
+    "wordpress.env.local": [
         "WORDPRESS_URL",
         "WORDPRESS_USER",
         "WORDPRESS_APP_PASSWORD",

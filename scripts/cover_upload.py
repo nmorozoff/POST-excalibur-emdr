@@ -168,18 +168,17 @@ def _wordpress_upload(local: Path, remote_name: str, env: dict[str, str]) -> str
 
 
 def upload_cover(local: Path, remote_name: str, env: dict[str, str]) -> dict[str, Any]:
-    """Try upload strategies until one succeeds. Returns metadata dict."""
+    """Try upload strategies until one succeeds. WordPress is primary, FTP is fallback."""
     errors: list[str] = []
-    strategies: list[tuple[str, Any]] = [
+    strategies: list[tuple[str, Any]] = []
+    if _wordpress_creds(env):
+        strategies.append(("wordpress_media", lambda: _wordpress_upload(local, remote_name, env)))
+    strategies.extend([
         ("curl_active", lambda: _curl_upload(local, env, remote_name, passive=False)),
         ("curl_pasv", lambda: _curl_upload(local, env, remote_name, passive=True)),
         ("ftplib_active", lambda: _ftplib_upload(local, env, remote_name, passive=False)),
         ("ftplib_pasv", lambda: _ftplib_upload(local, env, remote_name, passive=True)),
-    ]
-    if _wordpress_creds(env):
-        strategies.append(
-            ("wordpress_media", lambda: _wordpress_upload(local, remote_name, env)),
-        )
+    ])
 
     for name, fn in strategies:
         try:

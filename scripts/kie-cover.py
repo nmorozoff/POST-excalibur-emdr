@@ -30,16 +30,16 @@ MODEL = "gpt-image-2-image-to-image"
 
 
 def reference_public_https(reference: Path, slot: int | None) -> str:
-    """HTTPS URL портрета для Kie input_urls (refs/ на сайте, не Kie upload API)."""
+    """HTTPS URL портрета для Kie input_urls (WordPress или social-covers)."""
     name = reference.name
     if slot is not None:
         name = f"portrait-{slot:02d}.jpg"
     remote_name = f"refs/{name}"
     url = public_cover_url(remote_name)
 
-    def _reachable() -> bool:
+    def _reachable(test_url: str) -> bool:
         try:
-            req = urllib.request.Request(url, method="GET")
+            req = urllib.request.Request(test_url, method="GET")
             req.add_header("Range", "bytes=0-31")
             with urllib.request.urlopen(req, timeout=20) as resp:
                 ct = (resp.headers.get("Content-Type") or "").lower()
@@ -47,14 +47,15 @@ def reference_public_https(reference: Path, slot: int | None) -> str:
         except Exception:
             return False
 
-    if _reachable():
+    if _reachable(url):
         return url
 
     env = load_upload_env()
-    upload_cover(reference, remote_name, env)
-    if not _reachable():
-        raise SystemExit(f"Reference uploaded but not reachable: {url}")
-    return url
+    result = upload_cover(reference, remote_name, env)
+    uploaded_url = result.get("url") or url
+    if not _reachable(uploaded_url):
+        raise SystemExit(f"Reference uploaded but not reachable: {uploaded_url}")
+    return uploaded_url
 
 
 def main() -> None:

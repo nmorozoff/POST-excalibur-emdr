@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_backend import default_b17_compose_url, publish_b17
-from posts_emdr_env import browser_backend_name, normalize_typography
+from posts_emdr_env import browser_backend_name, normalize_typography, wordpress_media_upload
 from undetectable_browser import apply_undetectable_env, load_env_file, strip_urls_from_text
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -59,6 +59,12 @@ def main() -> None:
     )
     cover = topic_dir / "cover.png"
 
+    wp_cover = None
+    if cover.exists():
+        wp_cover = wordpress_media_upload(cover, args.topic)
+        if wp_cover.get("error"):
+            print("WordPress upload warning:", wp_cover["error"], file=sys.stderr)
+
     prep = {
         "topic": args.topic,
         "platform": "b17-blog",
@@ -66,6 +72,7 @@ def main() -> None:
         "body": body,
         "body_chars": len(body),
         "cover_local": str(cover) if cover.exists() else None,
+        "cover_wordpress": wp_cover,
         "utm_source": "b17",
     }
 

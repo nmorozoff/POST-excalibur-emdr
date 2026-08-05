@@ -118,18 +118,12 @@ def fill_b17_compose_playwright(
                     "b17 compose not ready (IP block or session expired). "
                     "Set B17_PROXY_SERVER in browser.env.local or refresh storage state."
                 )
-            set_field_value_js("", "", B17_TITLE_SELECTOR, title)
-            time.sleep(0.5)
-            b17_apply_form_meta("", "", section_value="1", edit_mode=edit_mode)
-            html_body = text_to_html_paragraphs(body)
-            cover_src = None
+            b17_cover_url: str | None = None
             filled_extra: list[str] = []
             if cover_path:
-                from undetectable_browser import b17_cover_public_url, prepare_cover_jpeg_for_browser
+                from undetectable_browser import prepare_cover_jpeg_for_browser
 
-                cover_src = b17_cover_public_url(cover_path)
-                html_body = b17_inline_cover_html(cover_path, public_url=cover_src) + html_body
-                # Загрузка обложки в поле "Картинка для анонса" (b17 использует её в ленте/шеринге)
+                # Загрузка обложки в b17 и захват её URL для вставки в тело поста
                 try:
                     jpeg_path = prepare_cover_jpeg_for_browser(cover_path)
                     page.set_input_files("#input_file", str(jpeg_path))
@@ -142,13 +136,53 @@ def fill_b17_compose_playwright(
     })();"""
                     )
                     page.wait_for_timeout(5000)
-                    filled_extra.append("cover:announcement_image")
+                    # Ждём появления загруженного изображения на b17 и читаем его URL
+                    for _ in range(60):
+                        try:
+                            # 1. Превью-изображение, которое b17 показывает после загрузки
+                            img = page.query_selector("img[src*='foto/uploaded/']")
+                            if img:
+                                src = img.get_attribute("src")
+                                if src and src.startswith("https://www.b17.ru/foto/uploaded/"):
+                                    b17_cover_url = src
+                                    break
+                            # 2. Скрытое поле с ID загруженной фотографии
+                            hidden = page.query_selector('input[type="hidden"][name*="foto"]')
+                            if hidden:
+                                val = hidden.get_attribute("value")
+                                if val and val.startswith("upl_"):
+                                    b17_cover_url = f"https://www.b17.ru/foto/uploaded/{val}.jpg"
+                                    break
+                        except Exception:
+                            pass
+                        time.sleep(1)
+                    if b17_cover_url:
+                        filled_extra.append("cover:announcement_image_with_b17_url")
+                    else:
+                        raise SystemExit(
+                            "b17 cover uploaded but b17-hosted URL not found in page. "
+                            "Cannot build inline image without b17 URL."
+                        )
                 except Exception as exc:
                     filled_extra.append(f"cover:announcement_image_failed:{exc}")
+
+            set_field_value_js("", "", B17_TITLE_SELECTOR, title)
+            time.sleep(0.5)
+            b17_apply_form_meta("", "", section_value="1", edit_mode=edit_mode)
+            html_body = text_to_html_paragraphs(body)
+            cover_src = None
+            if cover_path:
+                if b17_cover_url:
+                    cover_src = b17_cover_url
+                    html_body = b17_inline_cover_html(cover_path, public_url=b17_cover_url) + html_body
+                else:
+                    from undetectable_browser import b17_cover_public_url
+
+                    cover_src = b17_cover_public_url(cover_path)
+                    html_body = b17_inline_cover_html(cover_path, public_url=cover_src) + html_body
+                filled_extra.append("cover:https_tinymce")
             wait_for_tinymce_and_set("", "", html_body)
             filled = ["title", "latname", "razdel", "author", "tinymce_body"] + filled_extra
-            if cover_path:
-                filled.append("cover:https_tinymce")
             if publish_not_draft:
                 page.evaluate(
                     """(() => {
