@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import ssl
 import time
 import urllib.error
@@ -37,16 +36,10 @@ def load_env() -> dict[str, str]:
 
 
 def extract_post(md_path: Path) -> str:
-    import sys
-
-    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-    from posts_emdr_env import normalize_typography
-
-    text = md_path.read_text(encoding="utf-8")
-    m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
-    if not m:
-        raise SystemExit(f"Cannot parse post from {md_path}")
-    return normalize_typography(m.group(1).strip())
+    try:
+        return extract_post_body_from_md(md_path.read_text(encoding="utf-8"))
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
 
 
 def upload_cover(topic: str) -> str:
@@ -137,7 +130,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--topic", default="01-panic-night")
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--skip-cover-cleanup", action="store_true")
+    parser.add_argument(
+        "--delete-cover",
+        action="store_true",
+        help="Remove social-covers/{topic}.jpg after Facebook publish (default: keep for VK MCP)",
+    )
     args = parser.parse_args()
 
     topic_dir = PROJECT_ROOT / "posts-emdr-memory" / "output" / args.topic
@@ -180,7 +177,7 @@ def main() -> None:
             }
         )
         if log.get("status") == "published":
-            if not args.skip_cover_cleanup:
+            if args.delete_cover:
                 delete_cover(args.topic)
         elif log.get("status") == "scheduled":
             log["note"] = "Meta transient error — Zernio auto-retry expected; verify-publish-run treats as partial"

@@ -700,7 +700,7 @@ checks_run:
 ---
 
 ## INC-20260805-1240-sb08-vps-phase3-pending
-status: open
+status: needs-human
 run_date: 2026-08-05
 role: otchetik
 topic: sb-08-anxiety-for-loved-ones
@@ -723,6 +723,32 @@ category: vps
 - VPS: posts-emdr-webhook service, firewall egress to 195.209.210.45:8787
 - `scripts/trigger-vps-webhook.py` — увеличить timeout или async 202 handling
 
+### Fixic resolution
+fixed_at: 2026-08-05
+fix_summary:
+- trigger-vps-webhook.py: health pre-check, POST timeout 90s (было 20s), structured TimeoutError recovery hints.
+- Fixic probe 2026-08-05: dry-run 200 OK, POST /publish → HTTP 202, git_pull OK, pid background (sb-08).
+- Script fixes sb-08 run: cover_upload FTP-first + image Content-Type gate; zernio no default cover delete; extract_post_body_from_md shared helper.
+- Phase 3 completion **не подтверждён** — нет `browser-worker-finish.json` / telegram+b17 logs после probe.
+needed_decision_or_secret:
+- SSH VPS: `output/sb-08-anxiety-for-loved-ones/vps-webhook-run.log`; при fail — `publish-browser-deferred.py --topic sb-08-anxiety-for-loved-ones --submit --finish --git-push`.
+- Дождаться commit `browser-worker: published sb-08-anxiety-for-loved-ones` на main.
+files_changed:
+- scripts/trigger-vps-webhook.py
+- scripts/cover_upload.py
+- scripts/send-vk-post.py
+- scripts/publish-zernio-post.py
+- scripts/publish-topic.py
+- scripts/vk_publish.py
+- scripts/posts_emdr_env.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+checks_run:
+- python3 scripts/trigger-vps-webhook.py --topic sb-08-anxiety-for-loved-ones --dry-run (200)
+- python3 scripts/trigger-vps-webhook.py --topic sb-08-anxiety-for-loved-ones (202)
+
+---
+
+## INC-20260804-1742-sb07-vps-phase3-pending
 status: needs-human
 run_date: 2026-08-04
 role: otchetik
@@ -755,6 +781,7 @@ fixed_at: 2026-08-04
 fix_summary:
 - Pitfall «VPS phase 3 partial после retry otchetik» — recovery playbook (re-webhook → wait → VPS logs).
 - Otchetik/Fixic skills: эскалация partial-after-retry → Fixic; probe webhook один раз.
+- trigger-vps-webhook.py timeout/health fix (2026-08-05 Fixic) применён для следующих run.
 - VPS worker sb-07 не завершился после re-webhook — нужна ручная проверка на VPS (логи, telegram.env, b17 session).
 needed_decision_or_secret:
 - SSH на VPS: прочитать vps-webhook-run.log; при необходимости `publish-browser-deferred.py --topic sb-07-five-minute-pause --submit --finish --git-push`.
@@ -762,38 +789,9 @@ files_changed:
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
 - skills/posts-emdr-otchetik/SKILL.md
 - skills/posts-emdr-fixic/SKILL.md
-- posts-emdr-memory/pipeline-fix-queue.md
+- scripts/trigger-vps-webhook.py
 checks_run:
 - python3 scripts/trigger-vps-webhook.py --topic sb-07-five-minute-pause (202)
 - python3 scripts/verify-publish-run.py --topic sb-07-five-minute-pause (partial)
 
 ---
-
-## INC-20260805-1240-sb08-vps-pending
-status: open
-run_date: 2026-08-05
-role: otchetik
-topic: sb-08-anxiety-for-loved-ones
-severity: medium
-category: vps
-
-### What went wrong
-- Cloud phase 1–2 OK (Max, VK profile/group, Facebook); VPS webhook trigger завершился TimeoutError — phase 3 не стартовал.
-- Telegram не отправлен в @nmorozova_emdr и @natalia_morozova_psy; b17 не published; тема остаётся `in_progress` в очереди.
-- verify-publish-run.py → overall partial (exit 3).
-
-### How the agent recovered this run
-- Отчёт partial отправлен в ЛС Макс (MAX_PREVIEW_CHAT_ID).
-
-### Durable fix needed before next run
-- Повторить VPS webhook: `python3 scripts/trigger-vps-webhook.py --topic sb-08-anxiety-for-loved-ones`.
-- Проверить VPS: `systemctl is-active posts-emdr-webhook`, cron `run-linux-browser-worker.sh`, логи worker.
-
-### Suggested files to inspect/change
-- `posts-emdr-memory/output/sb-08-anxiety-for-loved-ones/vps-webhook-run.log` (на VPS)
-- `scripts/trigger-vps-webhook.py`
-- `scripts/run-linux-browser-worker.sh`
-
-### Secrets
-- none recorded
-
