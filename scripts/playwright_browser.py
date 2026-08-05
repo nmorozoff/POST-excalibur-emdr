@@ -124,10 +124,20 @@ def fill_b17_compose_playwright(
             html_body = text_to_html_paragraphs(body)
             cover_src = None
             if cover_path:
-                from undetectable_browser import b17_cover_public_url
+                from undetectable_browser import b17_cover_public_url, prepare_cover_jpeg_for_browser
 
                 cover_src = b17_cover_public_url(cover_path)
                 html_body = b17_inline_cover_html(cover_path, public_url=cover_src) + html_body
+                # Загрузка обложки в поле "Картинка для анонса" (b17 использует её в ленте/шеринге)
+                try:
+                    jpeg_path = prepare_cover_jpeg_for_browser(cover_path)
+                    page.set_input_files("#input_file", str(jpeg_path))
+                    page.wait_for_timeout(3000)
+                    # Ждём, пока появится превью загруженной картинки
+                    page.wait_for_selector("img.foto, .foto img, #foto_preview img", timeout=15_000)
+                    filled.append("cover:announcement_image")
+                except Exception as exc:
+                    filled.append(f"cover:announcement_image_failed:{exc}")
             wait_for_tinymce_and_set("", "", html_body)
             filled = ["title", "latname", "razdel", "author", "tinymce_body"]
             if cover_path:
