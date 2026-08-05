@@ -333,6 +333,18 @@ def main() -> None:
             reports.append({"topic": tid, "status": "dry_run"})
             continue
         report = run_publish(tid, submit=args.submit)
+        # Check b17 draft/rate-limit state: do not finish, keep topic pending for retry
+        b17_log_path = MEMORY / "output" / tid / "b17-publish-log.json"
+        b17_draft = False
+        if b17_log_path.is_file():
+            try:
+                b17_data = json.loads(b17_log_path.read_text(encoding="utf-8"))
+                b17_draft = b17_data.get("status") == "draft_saved"
+                if b17_draft:
+                    report["status"] = "draft"
+                    report["b17_draft_saved"] = True
+            except (json.JSONDecodeError, OSError):
+                pass
         if report.get("status") == "ok" and args.finish:
             try:
                 report["finish"] = finish_topic(tid)

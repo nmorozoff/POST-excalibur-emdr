@@ -206,7 +206,32 @@ def fill_b17_compose_playwright(
                     pass
                 time.sleep(4)
                 body_text = page.inner_text("body")
-                if "ошибка" in body_text.lower() and "сохран" in body_text.lower():
+                low = body_text.lower()
+                if "ошибка" in low and "сохран" in low:
+                    if "ограничение на частоту" in low or "размещения заметок" in low:
+                        # Rate limit: save as draft and retry later
+                        page.evaluate(
+                            """(() => {
+  const cb = document.querySelector('#chernovik');
+  if (cb) { cb.checked = true; cb.dispatchEvent(new Event('change', {bubbles:true})); }
+})();"""
+                        )
+                        click_button_by_text("", "", "Сохранить")
+                        time.sleep(4)
+                        return {
+                            "status": "draft_saved",
+                            "platform": "b17",
+                            "compose_url": compose_url,
+                            "post_url": post_url,
+                            "public_url": public_link,
+                            "cover_url": cover_src,
+                            "filled": filled + ["draft_kept_rate_limit"],
+                            "fill_mode": "playwright-b17",
+                            "cover_inline": bool(cover_path),
+                            "auto_submit": False,
+                            "backend": "playwright",
+                            "note": "b17 rate limit: сохранено в черновик, нужен повторный запуск позже",
+                        }
                     raise SystemExit(f"b17 save error: {body_text[:500]}")
                 # Verify in publications list
                 page.goto("https://www.b17.ru/my.php?mod=blog", wait_until="domcontentloaded", timeout=120_000)

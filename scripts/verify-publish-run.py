@@ -196,19 +196,25 @@ def verify_topic(topic: str) -> dict:
 
     # b17
     b17_log = _read_json(topic_dir / "b17-publish-log.json")
-    b17_ok = bool(b17_log and b17_log.get("status") == "published")
+    b17_status = (b17_log or {}).get("status")
+    b17_ok = bool(b17_log and b17_status == "published")
+    b17_draft = b17_status == "draft_saved"
     b17_reg = _registry_row(topic, PROFILE / "b17-posts-registry.md")
     report["platforms"]["b17"] = {
         "ok": b17_ok or b17_reg,
         "log": bool(b17_log),
         "registry": b17_reg,
-        "status": (b17_log or {}).get("status"),
+        "status": b17_status,
+        "draft_saved": b17_draft,
     }
     b17_url = (b17_log or {}).get("public_url") or (b17_log or {}).get("post_url")
     if b17_url:
         report["links"]["b17"] = b17_url
     if not report["platforms"]["b17"]["ok"]:
-        report["issues"].append("b17: не published (VPS мог ещё не отработать)")
+        if b17_draft:
+            report["issues"].append("b17: сохранено в черновик (rate limit), требуется повторный запуск")
+        else:
+            report["issues"].append("b17: не published (VPS мог ещё не отработать)")
 
     # Queue / VPS
     published = MEMORY / "topics" / "short-blog-published.md"
