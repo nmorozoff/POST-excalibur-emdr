@@ -2,6 +2,7 @@
 
 | topic_id | # MSP | дата | заголовок | site_url |
 |----------|-------|------|-----------|----------|
+| `sb-07-five-minute-pause` | 7 | 2026-08-05 | Пятиминутная пауза, в которой ничего не нужно решать | https://morozovanatalia.ru/anxiety |
 | `sb-06-cant-sleep-anxiety` | 6 | 2026-08-04 | Почему после тревожного дня трудно уснуть, хотя тело устало | in_progress | https://morozovanatalia.ru/anxiety |
 | `sb-05-tolerate-uncertainty` | 5 | 2026-08-03 | Что происходит, если разрешить себе не знать, чем всё закончится | https://morozovanatalia.ru/anxiety |
 | `sb-04-what-if-phrase` | 4 | 2026-08-01 | Фраза «а вдруг» и как она запускает сценарий в голове | https://morozovanatalia.ru/anxiety |

@@ -2,9 +2,9 @@
   "topic": "sb-07-five-minute-pause",
   "profile_chars": 3649,
   "group_chars": 3518,
-  "cover_local": "/workspace/posts-emdr-memory/output/sb-07-five-minute-pause/cover.png",
-  "deleted_remote_files": [
-    "sb-07-five-minute-pause.jpg",
-    "sb-07-five-minute-pause-v2.jpg"
-  ]
+  "cover_local": "/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-07-five-minute-pause/cover.png",
+  "cover_jpeg_bytes": 77612,
+  "cover_public_url": "https://morozovanatalia.ru/social-covers/sb-07-five-minute-pause.jpg",
+  "cover_http_status": 200,
+  "cover_upload_method": "curl_active"
 }
