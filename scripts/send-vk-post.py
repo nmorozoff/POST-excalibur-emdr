@@ -31,7 +31,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 def extract_post(md_path: Path) -> str:
     text = md_path.read_text(encoding="utf-8")
-    m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
+    m = re.search(
+        r"## Текст поста\n\n(.*?)(?:\n\n---\n\n## |\Z)",
+        text,
+        re.S,
+    )
+    if not m:
+        m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
     if not m:
         raise SystemExit(f"Cannot parse post from {md_path}")
     return m.group(1).strip()

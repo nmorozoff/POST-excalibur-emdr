@@ -37,6 +37,11 @@ def load_env() -> dict[str, str]:
 
 
 def extract_post(md_path: Path) -> str:
+    import sys
+
+    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+    from posts_emdr_env import normalize_typography
+
     text = md_path.read_text(encoding="utf-8")
     m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
     if not m:

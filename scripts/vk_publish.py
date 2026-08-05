@@ -20,7 +20,7 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import PROJECT_ROOT, load_env
+from posts_emdr_env import PROJECT_ROOT, load_env, normalize_typography
 
 VK_API = "https://api.vk.com/method"
 
@@ -93,6 +93,8 @@ def upload_wall_photo(
 
 
 def extract_post(md_path: Path) -> str:
+    from posts_emdr_env import normalize_typography
+
     text = md_path.read_text(encoding="utf-8")
     m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
     if not m:
