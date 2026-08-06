@@ -1,7 +1,8 @@
 # Posts EMDR — Handoff
 
-status: READY_FOR_CLOUD_AUTOMATION
+status: IN_PROGRESS
 updated_at: 2026-08-06
+topic_id: sb-10-phrase-when-anxiety
 next_topic_id: sb-10-phrase-when-anxiety
 next_title: Что я говорю себе, когда тревога зашкаливает
 post_type: микро-практика

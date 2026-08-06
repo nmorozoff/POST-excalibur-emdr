@@ -10,6 +10,7 @@
 
 ## Опубликованные
 
+| sb-10-phrase-when-anxiety | 2026-08-06 | Что я говорю себе, когда тревога зашкаливает | 658 | https://vk.com/wall218367867_658 | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,стресс,психология |
 | sb-09-one-question-calms | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | 657 | https://vk.com/wall218367867_657 | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,стресс,психология |
 | sb-08-anxiety-for-loved-ones | 2026-08-05 | Тревога за близких: любовь, которая выходит из берегов | 656 | https://vk.com/wall218367867_656 | https://morozovanatalia.ru/anxiety | тревога,близкие,любовь,гиперконтроль,EMDR,стресс,психология |
 | sb-07-five-minute-pause | 2026-08-04 | Пятиминутная пауза, в которой ничего не нужно решать | 655 | https://vk.com/wall218367867_655 | https://morozovanatalia.ru/anxiety | тревога,пауза,отдых,EMDR,стресс,психология |

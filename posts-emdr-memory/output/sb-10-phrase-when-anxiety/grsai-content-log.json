@@ -1,0 +1,89 @@
+{
+  "topic": "sb-10-phrase-when-anxiety",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-08-06T12:05:37.614455+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11489,
+        "completion_tokens": 7163,
+        "total_tokens": 18652
+      },
+      "chars": 5153
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11086,
+        "completion_tokens": 4913,
+        "total_tokens": 15999
+      },
+      "chars": 3527
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11508,
+        "completion_tokens": 7234,
+        "total_tokens": 18742
+      },
+      "chars": 5168
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11520,
+        "completion_tokens": 7935,
+        "total_tokens": 19455
+      },
+      "chars": 4732
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11527,
+        "completion_tokens": 5964,
+        "total_tokens": 17491
+      },
+      "chars": 5204
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 10463,
+        "completion_tokens": 6050,
+        "total_tokens": 16513
+      },
+      "chars": 5342
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 10964,
+        "completion_tokens": 3594,
+        "total_tokens": 14558
+      },
+      "chars": 3594
+    }
+  },
+  "cover_prompt": {
+    "chars": 1818,
+    "cover_meta": {
+      "line1": "Тревога",
+      "line2": "зашкаливает",
+      "line3": "Что сказать себе?",
+      "yellow": "зашкаливает"
+    }
+  }
+}
