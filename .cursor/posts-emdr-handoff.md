@@ -28,6 +28,12 @@ verify: pass
 | OK | https://ok.ru/group/70000034253679/topic/161356138639471 |
 | b17 | https://www.b17.ru/blog/odin_vopros_kotoryy_snizhaet_trevogu_luchshe_chem_uspokoysya/ |
 
+## Обложки (с sb-10)
+
+- Генератор: **Grsai** `gpt-image-2` через `publish-topic.py` в Cloud Agent
+- **Запрещено:** локальные тестовые прогоны `grsai-cover.py` / `kie-cover.py` / `runware-cover.py`
+- Ключ: `GRSAI_API_KEY` в Cloud Secrets (materialize → `grsai.env.local`)
+
 ## Следующая тема
 
-Первая `pending` в `topics/short-blog-queue.md`: sb-10-phrase-when-anxiety
+Первая `pending` в `topics/short-blog-queue.md`: **sb-10-phrase-when-anxiety**

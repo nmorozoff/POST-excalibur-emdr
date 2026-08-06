@@ -168,6 +168,13 @@ ENV_SPECS: dict[str, list[str]] = {
         "KIE_COVER_RESOLUTION",
         "KIE_REFERENCE_IMAGE",
     ],
+    "grsai.env.local": [
+        "GRSAI_API_KEY",
+        "GRSAI_API_BASE",
+        "GRSAI_COVER_ASPECT_RATIO",
+        "GRSAI_COVER_QUALITY",
+        "GRSAI_COVER_MODEL",
+    ],
     "ftp.env.local": [
         "FTP_SERVER",
         "FTP_USERNAME",
@@ -271,6 +278,11 @@ def load_env(
         bare = os.environ.get("RUNWARE_API_KEY", "").strip()
         if bare:
             data["RUNWARE_API_KEY"] = bare
+
+    if filename == "grsai.env.local" and not data.get("GRSAI_API_KEY"):
+        bare = os.environ.get("GRSAI_API_KEY", "").strip()
+        if bare:
+            data["GRSAI_API_KEY"] = bare
 
     if required:
         missing = [k for k in required if not data.get(k)]
@@ -410,6 +422,21 @@ def ok_group_gid() -> str:
         return load_env("ok.env.local").get("OK_GROUP_GID", "70000034253679")
     except SystemExit:
         return "70000034253679"
+
+
+def cover_generator_script() -> tuple[str, str]:
+    """Return (script_basename, task_log_basename) for social cover generation."""
+    try:
+        if load_env("grsai.env.local").get("GRSAI_API_KEY", "").strip():
+            return "grsai-cover.py", "grsai-cover-log.json"
+    except SystemExit:
+        pass
+    try:
+        if load_env("kie.env.local").get("KIE_API_KEY", "").strip():
+            return "kie-cover.py", "kie-cover-log.json"
+    except SystemExit:
+        pass
+    return "grsai-cover.py", "grsai-cover-log.json"
 
 
 def is_cloud_runtime() -> bool:

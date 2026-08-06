@@ -9,7 +9,7 @@ Usage:
 Steps:
   1. materialize_cloud_env (from Cursor Secrets)
   2. cloud_preflight
-  3. kie cover (if missing) — gpt-image-2 via Kie.ai 5:4 1K
+  3. grsai cover (if missing) — gpt-image-2 via Grsai 5:4 1280×1024
   4. Max → VK (FTP + MCP handoff) → Facebook → OK handoff
   5. Telegram + b17 → VPS (ASocks / Playwright), не Cloud
 """
@@ -27,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_backend import browser_ready
 from posts_emdr_env import (
     PROJECT_ROOT,
+    cover_generator_script,
     has_vk_access_token,
     materialize_env_files,
     ok_group_gid,
@@ -75,10 +76,11 @@ def ensure_cover(topic: str) -> dict:
     ref = reference_image_path(topic)
     if not ref.is_file():
         raise SystemExit(f"Reference image missing: {ref}")
+    cover_script, cover_log_name = cover_generator_script()
     proc = run(
         [
             sys.executable,
-            str(SCRIPTS / "kie-cover.py"),
+            str(SCRIPTS / cover_script),
             "--topic",
             topic,
             "--prompt-file",
@@ -86,10 +88,15 @@ def ensure_cover(topic: str) -> dict:
             "--output",
             str(cover),
             "--task-log",
-            str(topic_dir / "kie-cover-log.json"),
+            str(topic_dir / cover_log_name),
         ]
     )
-    return {"status": "generated", "path": str(cover), "detail": step_json(proc)}
+    return {
+        "status": "generated",
+        "path": str(cover),
+        "backend": cover_script.replace(".py", ""),
+        "detail": step_json(proc),
+    }
 
 
 def _extract_vk_post(md_path: Path) -> str:

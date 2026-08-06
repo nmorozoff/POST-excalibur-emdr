@@ -58,11 +58,20 @@ def run_preflight(*, strict: bool = True) -> dict:
         "zernio.env.local",
         ["ZERNIO_API_KEY", "ZERNIO_FACEBOOK_ACCOUNT_ID"],
     )
+    checks["grsai"] = _check_file("grsai.env.local", ["GRSAI_API_KEY"])
     checks["kie"] = _check_file("kie.env.local", ["KIE_API_KEY"])
     checks["runware"] = _check_file("runware.env.local", ["RUNWARE_API_KEY"])
+    if checks["grsai"]["ok"]:
+        preferred = "grsai"
+    elif checks["kie"]["ok"]:
+        preferred = "kie"
+    elif checks["runware"]["ok"]:
+        preferred = "runware"
+    else:
+        preferred = "missing"
     checks["cover_api"] = {
-        "ok": checks["kie"]["ok"] or checks["runware"]["ok"],
-        "preferred": "kie" if checks["kie"]["ok"] else ("runware" if checks["runware"]["ok"] else "missing"),
+        "ok": checks["grsai"]["ok"] or checks["kie"]["ok"] or checks["runware"]["ok"],
+        "preferred": preferred,
     }
     checks["ftp"] = _check_file(
         "ftp.env.local",

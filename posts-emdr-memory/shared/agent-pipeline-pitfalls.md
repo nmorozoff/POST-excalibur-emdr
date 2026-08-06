@@ -70,20 +70,23 @@
 
 **Правильно:** `mcp_auth` для `user-mcp-kv`, затем повторить вызов. Не логировать токены.
 
-## Обложки (Kie / Runware)
+## Обложки (Grsai / Kie / Runware)
 
-- **Основной генератор:** `scripts/kie-cover.py` — Kie `gpt-image-2-image-to-image`, **5:4, 1K**, ключ `KIE_API_KEY` (Carusel или Cloud Secrets).
+- **Основной генератор:** `scripts/grsai-cover.py` — Grsai `gpt-image-2`, **1280×1024 (5:4)**, `quality=low`, ключ `GRSAI_API_KEY` (`grsai.env.local` или Cloud Secrets).
+- **Fallback:** `scripts/kie-cover.py` (если нет `GRSAI_API_KEY`), затем `runware-cover.py` (legacy).
 - Ротация портрета: `assets/reference/portrait-NN.jpg` по `cover-reference-rotation.md` (sb-05 → portrait-05).
 - Одна `cover.png` на тему — только на шаге MAX.
 - Ротация одежды: `profile/cover-outfit-rotation.md` (без double-beige).
-- Не вызывать генерацию повторно на TG/VK/FB/b17/TenChat.
+- Не вызывать генерацию повторно на TG/VK/FB/b17/OK.
+- **Запрещено:** локальные тестовые прогоны `grsai-cover.py` / `kie-cover.py` / `runware-cover.py` — обложка только live в Cloud Agent (`publish-topic.py`).
+- **Запрещено:** класть `GRSAI_API_KEY` в `grsai.env.example` (файл в git).
 - **Запрещено:** MCP `nano_banana_2` с референсом = обложка прошлого поста (sb-04 cover → sb-05 выглядит как клон).
 - **Запрещено:** `portrait.jpg` как дефолт — это копия `portrait-01.jpg`; при сбое ротации всегда слот 1.
 
-## Runware (legacy)
+## Runware / Kie (legacy)
 
-- MSP short-blog: **только** `scripts/kie-cover.py` (`publish-topic.py` → `ensure_cover`).
-- `runware-cover.py` — legacy, только если нет `KIE_API_KEY`. При `insufficientCredits` — не fallback на nano_banana; использовать `kie-cover.py` или пополнить кошелёк Runware (human).
+- MSP short-blog: `publish-topic.py` → `ensure_cover` выбирает Grsai при наличии `GRSAI_API_KEY`.
+- `kie-cover.py` — fallback при отсутствии Grsai. `runware-cover.py` — только если нет Grsai/Kie.
 
 ## b17 / TenChat: публикация
 

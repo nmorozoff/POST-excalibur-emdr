@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MEMORY="$ROOT/posts-emdr-memory"
 
-for f in max.env.local runware.env.local telegram.env.local КУДА-ВСТАВИТЬ-КЛЮЧИ.md; do
+for f in max.env.local grsai.env.local runware.env.local telegram.env.local КУДА-ВСТАВИТЬ-КЛЮЧИ.md; do
   path="$MEMORY/$f"
   if [[ -f "$path" ]]; then
     if command -v cursor >/dev/null 2>&1; then
