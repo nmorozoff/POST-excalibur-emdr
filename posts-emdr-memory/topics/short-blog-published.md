@@ -2,10 +2,10 @@
 
 | topic_id | # MSP | дата | заголовок | site_url |
 |----------|-------|------|-----------|----------|
-| `sb-09-one-question-calms` | 9 | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | in_progress | https://morozovanatalia.ru/anxiety |
-| `sb-08-anxiety-for-loved-ones` | 8 | 2026-08-05 | Тревога за близких как форма любви, которая выходит из берегов | in_progress | https://morozovanatalia.ru/anxiety |
+| `sb-09-one-question-calms` | 9 | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | https://morozovanatalia.ru/anxiety |
+| `sb-08-anxiety-for-loved-ones` | 8 | 2026-08-05 | Тревога за близких: любовь, которая выходит из берегов | https://morozovanatalia.ru/anxiety |
 | `sb-07-five-minute-pause` | 7 | 2026-08-05 | Пятиминутная пауза, в которой ничего не нужно решать | https://morozovanatalia.ru/anxiety |
-| `sb-06-cant-sleep-anxiety` | 6 | 2026-08-04 | Почему после тревожного дня трудно уснуть, хотя тело устало | in_progress | https://morozovanatalia.ru/anxiety |
+| `sb-06-cant-sleep-anxiety` | 6 | 2026-08-04 | Почему после тревожного дня трудно уснуть, хотя тело устало | https://morozovanatalia.ru/anxiety |
 | `sb-05-tolerate-uncertainty` | 5 | 2026-08-03 | Что происходит, если разрешить себе не знать, чем всё закончится | https://morozovanatalia.ru/anxiety |
 | `sb-04-what-if-phrase` | 4 | 2026-08-01 | Фраза «а вдруг» и как она запускает сценарий в голове | https://morozovanatalia.ru/anxiety |
 | `sb-03-body-before-mind` | 3 | 2026-07-30 | Момент, когда тело узнаёт о тревоге раньше головы | https://morozovanatalia.ru/anxiety |

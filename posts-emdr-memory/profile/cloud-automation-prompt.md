@@ -26,7 +26,7 @@ facebook-post.md — Task posts-emdr-facebook-writer
 ok-post.md — Task posts-emdr-ok-writer
 b17-blog-post.md — рерайт по profile/b17-blog-post-prompt.md
 TenChat снят — tenchat-post.md не создавать.
-ОБЛОЖКА: только в Cloud publish — python3 scripts/publish-topic.py --topic {id} (внутри grsai-cover). НЕ запускать grsai-cover/kie/runware локально для тестов.
+ОБЛОЖКА: на шаге 1 только cover-prompt.txt (НЕ kie-cover, НЕ grsai-cover). cover.png генерируется в ШАГ 2 внутри publish-topic.py (Grsai gpt-image-2). Gate после publish-topic: есть cover.png и grsai-cover-log.json (или kie-cover-log.json fallback).
 
 ШАГ 2 CLOUD PUBLISH фаза 1
 python3 scripts/materialize_cloud_env.py --check
@@ -68,7 +68,7 @@ Task(posts-emdr-otchetik) с topic_id.
 ШАГ 7 FIXIC
 При fail verify-publish-run или incident_queue exit 2: Task(posts-emdr-fixic).
 
-ЗАПРЕТЫ: не TenChat, не LinkedIn, не Ядрышко/Core. Не Telegram из cloud. Не помечать published вручную — это VPS --finish. Не Kie/Runware/Grsai cover локально для тестов — только publish-topic в cloud. Не photo_then_text в Telegram. Не публиковать повторно то, что уже в short-blog-published.md.
+ЗАПРЕТЫ: не TenChat, не LinkedIn, не Ядрышко/Core. Не Telegram из cloud. Не помечать published вручную в short-blog-published.md — только VPS --finish (mark-short-blog-published.py). Не вставлять in_progress в таблицу published. Не kie-cover/grsai-cover/runware-cover на шаге 1 — только publish-topic. Не photo_then_text в Telegram. Не публиковать повторно то, что уже в short-blog-published.md.
 
 HANDOFF: .cursor/posts-emdr-handoff.md со статусом === POSTS EMDR DONE === только после Отчётика pass или partial с INC vps-pending.
 
