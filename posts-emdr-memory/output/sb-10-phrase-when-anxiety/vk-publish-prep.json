@@ -2,9 +2,10 @@
   "topic": "sb-10-phrase-when-anxiety",
   "profile_chars": 5084,
   "group_chars": 4778,
-  "cover_local": "/workspace/posts-emdr-memory/output/sb-10-phrase-when-anxiety/cover.png",
-  "deleted_remote_files": [
-    "sb-10-phrase-when-anxiety.jpg",
-    "sb-10-phrase-when-anxiety-v2.jpg"
-  ]
+  "cover_local": "/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-10-phrase-when-anxiety/cover.png",
+  "cover_jpeg_bytes": 70241,
+  "cover_public_url": "https://morozovanatalia.ru/social-covers/sb-10-phrase-when-anxiety.jpg",
+  "cover_http_status": 200,
+  "cover_serves_image": true,
+  "cover_upload_method": "curl_active"
 }
