@@ -2,9 +2,10 @@
   "topic": "sb-09-one-question-calms",
   "profile_chars": 3558,
   "group_chars": 3777,
-  "cover_local": "/workspace/posts-emdr-memory/output/sb-09-one-question-calms/cover.png",
-  "deleted_remote_files": [
-    "sb-09-one-question-calms.jpg",
-    "sb-09-one-question-calms-v2.jpg"
-  ]
+  "cover_local": "/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-09-one-question-calms/cover.png",
+  "cover_jpeg_bytes": 67155,
+  "cover_public_url": "https://morozovanatalia.ru/social-covers/sb-09-one-question-calms.jpg",
+  "cover_http_status": 200,
+  "cover_serves_image": true,
+  "cover_upload_method": "curl_active"
 }
