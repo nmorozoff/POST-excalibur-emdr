@@ -1,0 +1,86 @@
+{
+  "topic": "sb-10-phrase-when-anxiety",
+  "overall": "partial",
+  "platforms": {
+    "max": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "url": null
+    },
+    "telegram": {
+      "ok": false,
+      "delivery": null,
+      "channels": [],
+      "missing_channels": [
+        "nmorozova_emdr",
+        "natalia_morozova_psy"
+      ],
+      "cover_source": null,
+      "urls": []
+    },
+    "vk_profile": {
+      "ok": true,
+      "registry": true
+    },
+    "vk_group": {
+      "ok": true,
+      "registry": true
+    },
+    "facebook": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "pending_scheduled": false
+    },
+    "ok": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "required": true
+    },
+    "b17": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "draft_saved": false
+    }
+  },
+  "covers": {
+    "local_cover": {
+      "ok": true,
+      "path": "/workspace/posts-emdr-memory/output/sb-10-phrase-when-anxiety/cover.png"
+    },
+    "site_cover": {
+      "url": "https://morozovanatalia.ru/social-covers/sb-10-phrase-when-anxiety.jpg",
+      "ok": true,
+      "status": 200,
+      "content_type": "image/jpeg"
+    }
+  },
+  "queue": {
+    "published": false,
+    "still_in_queue": true
+  },
+  "vps": {
+    "finish_json": false,
+    "handoff_done": false,
+    "status": null
+  },
+  "issues": [
+    "Telegram: не отправлен (или VPS ещё не отработал)",
+    "Тема всё ещё in_progress в очереди",
+    "VPS phase 3: нет finish (webhook/cron ещё не завершил)"
+  ],
+  "links": {
+    "max": "https://max.ru/se13417616_biz/AZ_XBdn_Rvg",
+    "vk_profile": "https://vk.com/wall218367867_658",
+    "vk_group": "https://vk.com/wall-224685309_158",
+    "facebook": "https://www.facebook.com/632301483303094_122181324560837712",
+    "ok": "https://ok.ru/group/70000034253679/topic/161356610105455",
+    "b17": "https://www.b17.ru/blog/chto_ya_govoryu_sebe_kogda_trevoga_zashkalivaet/"
+  }
+}
