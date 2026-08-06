@@ -1,12 +1,13 @@
 # Posts EMDR — Handoff
 
-status: READY_FOR_CLOUD_AUTOMATION
-updated_at: 2026-08-05
-next_topic_id: sb-09-one-question-calms
-next_title: Один вопрос, который снижает тревогу лучше, чем «успокойся»
+status: IN_PROGRESS
+updated_at: 2026-08-06
+topic_id: sb-09-one-question-calms
+title: Один вопрос, который снижает тревогу лучше, чем «успокойся»
 post_type: микро-практика
 site_url: https://morozovanatalia.ru/anxiety
 mode: full publish
+phase: content_ready
 
 ## Завтра — только запуск Cloud Automation
 
