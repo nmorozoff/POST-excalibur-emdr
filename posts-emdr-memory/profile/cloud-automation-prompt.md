@@ -15,17 +15,14 @@ INCIDENTS: python3 scripts/incident_queue.py --project-root . Если exit 2 �
 ОЧЕРЕДЬ: git pull origin main. Первая строка posts-emdr-memory/topics/short-blog-queue.md — topic_id, заголовок, site_url. Если первая строка уже in_progress или в short-blog-published.md — проверить, не закрыта ли она через is-topic-published, и не начинать новую.
 ЧТЕНИЕ: shared/agent-pipeline-pitfalls.md, profile/tone-of-voice.md, profile/author-profile.md, profile/site-url-map.md.
 
-ШАГ 1 КОНТЕНТ через Task
+ШАГ 1 КОНТЕНТ через Grsai Chat
 Проверка: python3 scripts/is-topic-published.py --topic {id}. Если exit 0 — тема уже опубликована, пропустить и поставить в очередь published, перейти к следующей.
-В posts-emdr-memory/output/{id}/ создать файлы:
-max-post.md и cover-prompt.txt — Директор, Макс 3500–3800 знаков
-telegram-post.md — Task posts-emdr-telegram-writer
-vk-profile-post.md — Task posts-emdr-vk-writer profile
-vk-group-post.md — Task posts-emdr-vk-writer group
-facebook-post.md — Task posts-emdr-facebook-writer
-ok-post.md — Task posts-emdr-ok-writer
-b17-blog-post.md — рерайт по profile/b17-blog-post-prompt.md
+Генерация всех текстов одной командой (модель gemini-3.1-pro, ключ GRSAI_API_KEY — тот же, что для обложек):
+python3 scripts/grsai-generate-topic.py --topic {id}
+Повторный запуск без --force пропускает уже созданные файлы (нет двойной генерации после долгого ответа/таймаута). Таймаут запроса: GRSAI_CHAT_TIMEOUT_SEC=900 (15 мин).
+Gate: в output/{id}/ есть max-post.md, cover-prompt.txt, telegram-post.md, vk-profile-post.md, vk-group-post.md, facebook-post.md, ok-post.md, b17-blog-post.md, grsai-content-log.json.
 TenChat снят — tenchat-post.md не создавать.
+Fallback при сбое API: Task-писатели (telegram/vk/facebook/ok) + max вручную — только если grsai-generate-topic упал дважды.
 ОБЛОЖКА: на шаге 1 только cover-prompt.txt (НЕ kie-cover, НЕ grsai-cover). cover.png генерируется в ШАГ 2 внутри publish-topic.py (Grsai gpt-image-2). Gate после publish-topic: есть cover.png и grsai-cover-log.json (или kie-cover-log.json fallback).
 
 ШАГ 2 CLOUD PUBLISH фаза 1

@@ -174,6 +174,8 @@ ENV_SPECS: dict[str, list[str]] = {
         "GRSAI_COVER_ASPECT_RATIO",
         "GRSAI_COVER_QUALITY",
         "GRSAI_COVER_MODEL",
+        "GRSAI_CHAT_MODEL",
+        "GRSAI_CHAT_TIMEOUT_SEC",
     ],
     "ftp.env.local": [
         "FTP_SERVER",

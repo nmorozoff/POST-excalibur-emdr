@@ -63,22 +63,29 @@ python3 scripts/publish-topic.py --topic {id}
 - Выбрать `post_type` по `profile/post-types.md` (или из колонки таблицы)
 - Записать в handoff: topic_id, заголовок, post_type, site_url
 
-### Шаг 1 — Макс (пост + обложка)
+### Шаг 1 — Контент (Grsai Chat + cover-prompt)
 
-**Кружок не генерируем** (вне scope MSP short-blog).  
-**Единственный шаг генерации обложки.** `cover.png` потом идёт во все соцсети без повторного Runware.
+**Кружок не генерируем** (вне scope MSP short-blog).
 
-Выход:
-- `output/{id}/max-post.md`
-- `output/{id}/cover-prompt.txt` + `output/{id}/cover.png` (Runware 5:4, 1280×1024, **low** — согласовано, без отдельного запроса)
-- `python scripts/send-max-draft.py --topic {id} --publish`
+**Тексты** — Grsai Chat API (`gemini-3.1-pro`, тот же `GRSAI_API_KEY`, что обложки):
 
-Gate: есть пост, **cover.png**.
+```bash
+python3 scripts/grsai-generate-topic.py --topic {id}
+```
+
+Выход в `output/{id}/`: `max-post.md`, `cover-prompt.txt`, `telegram-post.md`, `vk-profile-post.md`, `vk-group-post.md`, `facebook-post.md`, `ok-post.md`, `b17-blog-post.md`, `grsai-content-log.json`.
+
+Fallback при сбое API: Task-писатели + max вручную.
+
+**Обложка PNG** — только в `publish-topic.py` (Grsai `gpt-image-2`, 5:4 1280×1024, **low**). На шаге 1 — только `cover-prompt.txt`, не вызывать `grsai-cover`/`kie-cover` отдельно.
+
+После контента + `cover.png` (шаг 2): `python scripts/send-max-draft.py --topic {id} --publish`
+
+Gate шага 1: все md-файлы + `cover-prompt.txt`. Gate обложки: `cover.png` после publish-topic.
 
 ### Шаг 2 — Telegram
 
-Task `posts-emdr-telegram-writer` → **рерайт** (не копипаст Макс).  
-Перед написанием: `profile/telegram-posts-registry.md` + `profile/crosslink-rules.md` — перелинковка **только на посты Telegram**.
+Текст: `telegram-post.md` из шага 1 (Grsai). Gate: рерайт, не копипаст Макс; перелинковка только TG (`telegram-posts-registry.md`).
 
 При `publish: yes` → **только** одно сообщение в канале (обложка + текст):
 
@@ -92,7 +99,7 @@ Gate после publish: в `telegram-publish-log.json` должно быть `"
 
 ### Шаг 3 — ВК профиль
 
-Task `posts-emdr-vk-writer` (режим **profile**) → рерайт `vk-profile-post.md`. Контракт: `profile/vk-post-prompt.md`.  
+Текст: `vk-profile-post.md` из шага 1. Контракт: `profile/vk-post-prompt.md`.  
 Перелинковка: только `vk-profile-posts-registry.md`. VK→VK: `[https://vk.com/wall…|здесь]`. Сайт/TG: полный URL.
 
 **Обложка** (один раз на оба VK-шага): `python scripts/send-vk-post.py --topic {id} --upload-cover`
@@ -101,7 +108,7 @@ Task `posts-emdr-vk-writer` (режим **profile**) → рерайт `vk-profil
 
 ### Шаг 4 — ВК группа
 
-Task `posts-emdr-vk-writer` (режим **group**) → **отдельный** рерайт `vk-group-post.md` (не копипаст профиля).  
+Текст: `vk-group-post.md` из шага 1 (отдельный рерайт, не копипаст профиля).  
 Перелинковка: только `vk-group-posts-registry.md`. `group_id: "224685309"`, `from_group: true`.
 
 При `publish: yes` → MCP `vk_create_post_with_photo`, `publish_location: group`. **Gate:** `📸 Загружено фото`.
@@ -112,15 +119,14 @@ Task `posts-emdr-vk-writer` (режим **group**) → **отдельный** р
 
 ### Шаг 5 — Facebook (Zernio)
 
-Task `posts-emdr-facebook-writer` → **рерайт**.  
-Перелинковка: `profile/facebook-posts-registry.md`.
+Текст: `facebook-post.md` из шага 1. Перелинковка: `profile/facebook-posts-registry.md`.
 
 При `publish: yes` → `python scripts/publish-zernio-post.py --topic {id}`.  
 **Не трогать** Макс / Telegram / VK.
 
 ### Шаг 5b — Одноклассники (группа)
 
-Task `posts-emdr-ok-writer` → **рерайт** `ok-post.md`. Контракт: `profile/ok-post-prompt.md`.  
+Текст: `ok-post.md` из шага 1. Контракт: `profile/ok-post-prompt.md`.  
 Перелинковка: только `profile/ok-posts-registry.md`. Сайт/TG — полный URL в конце (`utm_source=ok`).
 
 При `publish: yes` → фаза 2 Cloud: MCP `ok_create_post_with_photo` по `ok-mcp-handoff.json`  

@@ -59,6 +59,11 @@ def run_preflight(*, strict: bool = True) -> dict:
         ["ZERNIO_API_KEY", "ZERNIO_FACEBOOK_ACCOUNT_ID"],
     )
     checks["grsai"] = _check_file("grsai.env.local", ["GRSAI_API_KEY"])
+    grsai_data = load_env("grsai.env.local") if checks["grsai"]["ok"] else {}
+    checks["grsai_chat"] = {
+        "ok": checks["grsai"]["ok"],
+        "model": grsai_data.get("GRSAI_CHAT_MODEL", "gemini-3.1-pro"),
+    }
     checks["kie"] = _check_file("kie.env.local", ["KIE_API_KEY"])
     checks["runware"] = _check_file("runware.env.local", ["RUNWARE_API_KEY"])
     if checks["grsai"]["ok"]:
