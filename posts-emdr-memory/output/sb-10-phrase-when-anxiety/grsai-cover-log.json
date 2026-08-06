@@ -1,0 +1,37 @@
+{
+  "taskId": "1-0f6abc50-c384-4fed-ae25-a0d2fa2e5721",
+  "imageURL": "https://file4.aitohumanize.com/file/f165bc94ad2e48e88d6fc11dd3544820.png",
+  "reference_rotation": {
+    "topic": "sb-10-phrase-when-anxiety",
+    "slot": 2,
+    "reference_path": "/workspace/posts-emdr-memory/assets/reference/portrait-02.jpg",
+    "backend": "grsai",
+    "aspect_ratio": "1280x1024",
+    "quality": "low",
+    "model": "gpt-image-2"
+  },
+  "reference_upload_url": "wp-content/uploads/2026/08/refsportrait-02.jpg",
+  "model": "gpt-image-2",
+  "backend": "grsai",
+  "raw": {
+    "callback_url": "-1",
+    "end_time": 1786018708,
+    "error": "",
+    "failure_reason": "",
+    "height": 0,
+    "id": "1-0f6abc50-c384-4fed-ae25-a0d2fa2e5721",
+    "progress": 100,
+    "results": [
+      {
+        "height": 0,
+        "url": "https://file4.aitohumanize.com/file/f165bc94ad2e48e88d6fc11dd3544820.png",
+        "width": 0
+      }
+    ],
+    "start_time": 1786018634,
+    "status": "succeeded",
+    "task_id": "",
+    "url": "",
+    "width": 0
+  }
+}
