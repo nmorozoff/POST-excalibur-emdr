@@ -1,0 +1,13 @@
+{
+  "topic": "sb-09-one-question-calms",
+  "status": "browser_worker_finished",
+  "date": "2026-08-06",
+  "b17_url": "https://www.b17.ru/blog/odin_vopros_kotoryy_snizhaet_trevogu_luchshe_chem_uspokoysya/",
+  "tenchat_url": null,
+  "site_url": "https://morozovanatalia.ru/anxiety",
+  "queue": {
+    "exit_code": 0,
+    "stdout": "OK marked published: sb-09-one-question-calms → short-blog-published.md",
+    "stderr": ""
+  }
+}

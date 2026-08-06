@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-09-one-question-calms | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | https://www.b17.ru/blog/odin_vopros_kotoryy_snizhaet_trevogu_luchshe_chem_uspokoysya/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-08-anxiety-for-loved-ones | 2026-08-05 | Тревога за близких: любовь, которая выходит из берегов | https://www.b17.ru/blog/trevoga_za_blizkih_lyubov_kotoraya_vyhodit_iz_beregov/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-07-five-minute-pause | 2026-08-05 | Пятиминутная пауза, в которой ничего не нужно решать | https://www.b17.ru/blog/665989/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-06-cant-sleep-anxiety | 2026-08-04 | Почему после тревожного дня трудно уснуть, хотя тело устало | https://www.b17.ru/blog/pochemu_posle_trevozhnogo_dnya_trudno_usnut_hotya_telo_ustalo/ | https://morozovanatalia.ru/anxiety | b17,психология |

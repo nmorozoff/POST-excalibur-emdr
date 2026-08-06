@@ -11,6 +11,8 @@
 
 ## Опубликованные
 
+| sb-09-one-question-calms | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | @natalia_morozova_psy | 2034 | https://t.me/natalia_morozova_psy/2034 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
+| sb-09-one-question-calms | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | @nmorozova_emdr | 124 | https://t.me/nmorozova_emdr/124 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-08-anxiety-for-loved-ones | 2026-08-05 | Тревога за близких: любовь, которая выходит из берегов | @natalia_morozova_psy | 2031 | https://t.me/natalia_morozova_psy/2031 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-08-anxiety-for-loved-ones | 2026-08-05 | Тревога за близких: любовь, которая выходит из берегов | @nmorozova_emdr | 120 | https://t.me/nmorozova_emdr/120 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-07-five-minute-pause | 2026-08-05 | Пятиминутная пауза, в которой ничего не нужно решать | @natalia_morozova_psy | 2028 | https://t.me/natalia_morozova_psy/2028 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
