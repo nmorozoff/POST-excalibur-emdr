@@ -194,6 +194,259 @@ def postprocess_platform(platform: str, text: str) -> str:
     return text
 
 
+SECTION_TEXT_POSTA_RE = re.compile(r"^## Текст поста", re.M)
+TELEGRAM_HTML_SECTION_RE = re.compile(r"^## Текст поста \(HTML", re.M)
+
+MAX_BODY_MIN = 3000
+MAX_BODY_TARGET_MIN = 3500
+MAX_BODY_TARGET_MAX = 3800
+MAX_BODY_HARD_MAX = 4000
+
+
+def has_text_posta_section(text: str) -> bool:
+    return bool(SECTION_TEXT_POSTA_RE.search(text))
+
+
+def _has_cover_block(text: str) -> bool:
+    return bool(re.search(r"Line 1:", text))
+
+
+def _plain_body_from_raw(text: str) -> str:
+    """Extract main body when Grsai omitted ## Текст поста."""
+    text = text.strip()
+    if "<!-- END_POST -->" in text:
+        body, _, _ = text.partition("<!-- END_POST -->")
+        return body.strip()
+    if has_text_posta_section(text):
+        m = re.search(
+            r"## Текст поста[^\n]*\n\n(.*?)(?:\n\n---\n|\Z)",
+            text,
+            re.S,
+        )
+        if m:
+            return m.group(1).strip()
+    if "\n---\n" in text:
+        parts = [part.strip() for part in text.split("\n---\n") if part.strip()]
+        for part in reversed(parts):
+            if part.startswith("#") or part.startswith("**") or part.startswith("## Мета"):
+                continue
+            if part.startswith("## ") and "Текст поста" not in part:
+                continue
+            return part
+    lines = text.splitlines()
+    start = 0
+    if lines and lines[0].startswith("# "):
+        start = 1
+        while start < len(lines) and (
+            not lines[start].strip() or lines[start].startswith("**") or lines[start].startswith("- ")
+        ):
+            start += 1
+        if start < len(lines) and lines[start].strip() == "---":
+            start += 1
+    return "\n".join(lines[start:]).strip()
+
+
+def _ensure_meta_footer(text: str, body: str) -> str:
+    if re.search(r"^## Мета\s*$", text, re.M):
+        return text
+    return (
+        text.rstrip()
+        + "\n\n---\n\n## Мета\n\n"
+        + "| Поле | Значение |\n|------|----------|\n"
+        + f"| chars | ~{len(body)} |\n"
+        + "| auto_wrap | grsai-generate-topic |\n"
+    )
+
+
+def wrap_max_post(text: str, brief: dict[str, str]) -> str:
+    if has_text_posta_section(text) and _has_cover_block(text):
+        return text
+
+    body = _plain_body_from_raw(text)
+    title = brief["title"]
+    topic_id = brief["topic_id"]
+    post_num = brief["post_number"]
+    site_url = brief["site_url"]
+
+    if _has_cover_block(text):
+        pre = text.split("\n---\n", 1)[0].rstrip()
+        header_part = pre
+    else:
+        words = title.split()
+        line1 = words[0] if words else title[:24]
+        line2 = " ".join(words[1:3]) if len(words) > 1 else title[:36]
+        yellow = line2.split()[-1] if line2 else line1
+        line3 = " ".join(words[3:6]) if len(words) > 3 else ""
+        header_part = (
+            f"# Пост Макс — {topic_id}\n\n"
+            f"**Заголовок:** {title}\n"
+            f"**Обложка:**\n"
+            f"- Line 1: {line1}\n"
+            f"- Line 2: {line2} *(жёлтый: {yellow})*\n"
+            f"- Line 3: {line3 or '...'}\n"
+            f"**Сайт:** {site_url}\n"
+            f"**Формат:** {brief.get('format', 'короткий пост MSP')} · #{post_num}"
+        )
+
+    result = f"{header_part}\n\n---\n\n## Текст поста\n\n{body.strip()}\n"
+    return _ensure_meta_footer(result, body)
+
+
+def wrap_rewrite_post(platform: str, text: str, brief: dict[str, str]) -> str:
+    if has_text_posta_section(text):
+        return text
+
+    body = _plain_body_from_raw(text)
+    title = brief["title"]
+    topic_id = brief["topic_id"]
+
+    if platform == "b17":
+        result = f"## Заголовок\n\n{title}\n\n## Текст поста\n\n{body.strip()}\n"
+        return _ensure_meta_footer(result, body)
+
+    headers = {
+        "vk-profile": (
+            f"# Пост VK — профиль\n\n**Тема:** {topic_id}\n**UTM:** `utm_source=vk`"
+        ),
+        "vk-group": (
+            f"# Пост VK — группа\n\n**Тема:** {topic_id}\n**UTM:** `utm_source=vk_group`"
+        ),
+        "facebook": (
+            f"# Пост Facebook — {topic_id}\n\n"
+            f"**Заголовок:** {title}\n"
+            f"**Формат:** рерайт\n"
+            f"**UTM:** `utm_source=fb`\n"
+            f"**Обложка:** `cover.png`"
+        ),
+        "ok": (
+            f"# Пост OK — {topic_id}\n\n"
+            f"**Заголовок:** {title}\n"
+            f"**UTM:** `utm_source=ok`"
+        ),
+    }
+    header = headers.get(platform, f"# Пост — {topic_id}")
+    result = f"{header}\n\n---\n\n## Текст поста\n\n{body.strip()}\n"
+    return _ensure_meta_footer(result, body)
+
+
+def wrap_telegram_post(text: str, brief: dict[str, str]) -> str:
+    if TELEGRAM_HTML_SECTION_RE.search(text):
+        return text
+
+    body = _plain_body_from_raw(text)
+    topic_id = brief["topic_id"]
+    result = (
+        f"# Пост Telegram — {topic_id}\n\n"
+        f"**UTM:** `utm_source=tg1`\n"
+        f"**Обложка:** `cover.png` (из шага Макс, не генерировать)\n"
+        f"**Delivery:** `link_preview`\n\n"
+        f"---\n\n"
+        f"## Текст поста (HTML для Telegram)\n\n"
+        f"{body.strip()}\n\n"
+        f"<!-- END_POST -->\n"
+    )
+    return _ensure_meta_footer(result, body)
+
+
+def truncate_max_body(text: str, *, hard_max: int = MAX_BODY_HARD_MAX) -> tuple[str, bool]:
+    if not has_text_posta_section(text):
+        return text, False
+    try:
+        from posts_emdr_env import extract_post_body_from_md
+
+        body = extract_post_body_from_md(text)
+    except ValueError:
+        return text, False
+    if len(body) <= hard_max:
+        return text, False
+
+    truncated = body[:hard_max]
+    cut = truncated.rfind("\n\n")
+    if cut >= MAX_BODY_TARGET_MIN:
+        truncated = truncated[:cut].rstrip()
+    else:
+        truncated = truncated.rstrip()
+
+    new_text, count = re.subn(
+        r"(## Текст поста\n\n)(.*?)(?=\n\n---\n|\Z)",
+        lambda m: m.group(1) + truncated + "\n",
+        text,
+        count=1,
+        flags=re.S,
+    )
+    return (new_text if count else text), bool(count)
+
+
+def validate_platform_output(platform: str, text: str) -> list[str]:
+    warnings: list[str] = []
+    if platform == "telegram":
+        if not TELEGRAM_HTML_SECTION_RE.search(text):
+            warnings.append("missing telegram HTML section")
+        if "<!-- END_POST -->" not in text:
+            warnings.append("missing END_POST marker")
+        return warnings
+
+    if not has_text_posta_section(text):
+        warnings.append("missing ## Текст поста")
+        return warnings
+
+    try:
+        from posts_emdr_env import extract_post_body_from_md
+
+        body = extract_post_body_from_md(text)
+    except ValueError as exc:
+        warnings.append(str(exc))
+        return warnings
+
+    if platform == "max":
+        blen = len(body)
+        if blen > MAX_BODY_HARD_MAX:
+            warnings.append(f"max body too long: {blen}>{MAX_BODY_HARD_MAX}")
+        elif blen < MAX_BODY_MIN:
+            warnings.append(f"max body short: {blen}<{MAX_BODY_MIN}")
+        elif not (MAX_BODY_TARGET_MIN <= blen <= MAX_BODY_TARGET_MAX):
+            warnings.append(
+                f"max body outside target {MAX_BODY_TARGET_MIN}-{MAX_BODY_TARGET_MAX}: {blen}"
+            )
+        if not _has_cover_block(text):
+            warnings.append("missing cover Line 1/2/3 in max header")
+    if platform == "b17" and not re.search(r"^## Заголовок\s*$", text, re.M):
+        warnings.append("missing ## Заголовок for b17")
+    return warnings
+
+
+def ensure_platform_contract(platform: str, text: str, brief: dict[str, str]) -> tuple[str, list[str]]:
+    fixes: list[str] = []
+    if platform == "max":
+        if not has_text_posta_section(text) or not _has_cover_block(text):
+            text = wrap_max_post(text, brief)
+            fixes.append("auto-wrapped max-post sections")
+        text, truncated = truncate_max_body(text)
+        if truncated:
+            fixes.append("truncated max body to hard max 4000")
+    elif platform == "telegram":
+        if not TELEGRAM_HTML_SECTION_RE.search(text):
+            text = wrap_telegram_post(text, brief)
+            fixes.append("auto-wrapped telegram HTML section")
+    elif platform == "b17":
+        if not has_text_posta_section(text) or not re.search(r"^## Заголовок\s*$", text, re.M):
+            text = wrap_rewrite_post(platform, text, brief)
+            fixes.append("auto-wrapped b17 sections")
+    elif not has_text_posta_section(text):
+        text = wrap_rewrite_post(platform, text, brief)
+        fixes.append(f"auto-wrapped {platform} sections")
+
+    remaining = validate_platform_output(platform, text)
+    if remaining:
+        fixes.extend(f"validation: {item}" for item in remaining)
+        blocking = [item for item in remaining if item.startswith("missing")]
+        if blocking:
+            raise SystemExit(
+                f"Grsai output contract failed for {platform} after auto-wrap: {blocking}"
+            )
+    return text, fixes
+
+
 def parse_cover_meta(max_post: str) -> dict[str, str]:
     header = max_post.split("\n---\n", 1)[0]
     line1 = re.search(r"Line 1:\s*(.+)", header)
@@ -345,10 +598,12 @@ def generate_platform(
         timeout_sec=timeout_sec,
     )
     text = postprocess_platform(platform, result.content)
+    text, contract_fixes = ensure_platform_contract(platform, text, brief)
     meta = {
         "model": result.model,
         "usage": result.usage,
         "chars": len(text),
+        "contract_fixes": contract_fixes,
     }
     return text, meta
 

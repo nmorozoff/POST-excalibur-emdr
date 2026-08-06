@@ -795,3 +795,88 @@ checks_run:
 - python3 scripts/verify-publish-run.py --topic sb-07-five-minute-pause (pass)
 
 ---
+
+## INC-20260806-1300-grsai-missing-post-sections
+status: fixed
+run_date: 2026-08-06
+role: director
+topic: sb-10-phrase-when-anxiety
+severity: medium
+category: content
+
+### What went wrong
+- `grsai-generate-topic.py` (gemini-3.1-pro) создал max-post.md, vk-profile/group, facebook-post.md, ok-post.md без обязательных секций `## Текст поста` / `## Мета`.
+- `send-max-draft.py` и `publish-zernio-post.py` упали на парсинге; потребовалась ручная правка формата и укорочение max-post до <4000 символов.
+
+### Durable fix needed before next run
+- Усилить промпт/пост-обработку в `grsai-generate-topic.py`: валидация gate после генерации, auto-wrap в контракт markdown.
+- Проверка длины max-post (3500–3800, hard max 4000).
+
+### Suggested files to inspect/change
+- scripts/grsai-generate-topic.py
+- posts-emdr-memory/profile/max-post-prompt.md
+
+### Secrets
+- none recorded
+
+### Fixic resolution
+fixed_at: 2026-08-06
+fix_summary:
+- grsai-generate-topic.py: ensure_platform_contract() — auto-wrap ## Текст поста / ## Мета для max, vk, facebook, ok, b17, telegram; validate + truncate max >4000.
+- contract_fixes пишутся в grsai-content-log.json.
+- Pitfall: Grsai missing post sections.
+files_changed:
+- scripts/grsai-generate-topic.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 -m py_compile scripts/grsai-generate-topic.py
+
+---
+
+## INC-20260806-1345-telegram-vps-not-published
+status: fixed
+run_date: 2026-08-06
+role: otchetik
+topic: sb-10-phrase-when-anxiety
+severity: high
+category: telegram
+
+### What went wrong
+- VPS webhook 202 принят, b17 опубликован (commit `06bdf20`), но `telegram-publish-log.json` не появился после 6× verify + re-trigger webhook.
+- Cloud Secrets `TELEGRAM_CHANNEL_CHAT_IDS` содержали снятый с пайплайна канал вместо согласованной пары (см. `profile/telegram-posts-registry.md`).
+- `send-telegram-post.py` hard guard мог заблокировать публикацию на VPS при неверном env.
+
+### Durable fix needed before next run
+- Синхронизировать Cloud Secrets и VPS `telegram.env.local` с `profile/telegram-posts-registry.md` (два канала, без снятого).
+- После исправления env: re-trigger webhook для sb-10 или ручной `send-telegram-post.py --publish` на VPS + `--finish`.
+
+### Suggested files to inspect/change
+- posts-emdr-memory/telegram.env.local (VPS + Cloud Secrets)
+- scripts/send-telegram-post.py
+- posts-emdr-memory/cloud-secrets-checklist.txt
+
+### Secrets
+- none recorded
+
+### Fixic resolution
+fixed_at: 2026-08-06
+fix_summary:
+- posts_emdr_env.py: validate_telegram_channels() + assert при materialize telegram.env.local (require_two).
+- cloud_preflight.py: channels_valid gate; ready_for_auto_publish требует валидную пару каналов.
+- send-telegram-post.py: общий assert_telegram_channels().
+- cloud-secrets-checklist.txt: явный список каналов + gate-комментарии.
+- Pitfall: Telegram Cloud Secrets wrong channels.
+needed_decision_or_secret:
+- Владелец: синхронизировать Cloud Secrets и VPS telegram.env.local; затем один re-trigger webhook для sb-10 (Fixic не публикует).
+files_changed:
+- scripts/posts_emdr_env.py
+- scripts/cloud_preflight.py
+- scripts/send-telegram-post.py
+- posts-emdr-memory/cloud-secrets-checklist.txt
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 -m py_compile scripts/posts_emdr_env.py scripts/cloud_preflight.py scripts/send-telegram-post.py
+
+---

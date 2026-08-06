@@ -17,6 +17,7 @@ from posts_emdr_env import (
     load_env,
     reference_image_path,
     playwright_storage_state_path,
+    validate_telegram_channels,
 )
 from browser_backend import browser_ready
 
@@ -46,6 +47,15 @@ def run_preflight(*, strict: bool = True) -> dict:
         tg.get("TELEGRAM_CHANNEL_CHAT_IDS") or tg.get("TELEGRAM_CHANNEL_CHAT_ID")
     )
     checks["telegram"]["channels_configured"] = has_channels
+    if has_channels:
+        channel_guard = validate_telegram_channels(tg, require_two=True)
+        checks["telegram"]["channels_valid"] = channel_guard["ok"]
+        checks["telegram"]["channels"] = channel_guard.get("channels")
+        if not channel_guard["ok"]:
+            checks["telegram"]["channel_guard_error"] = channel_guard["error"]
+            checks["telegram"]["ok"] = False
+    else:
+        checks["telegram"]["channels_valid"] = False
 
     checks["vk_token"] = _check_file("vk.env.local", ["VK_ACCESS_TOKEN"])
     checks["vk_group"] = _check_file("vk.env.local", ["VK_GROUP_ID"])
@@ -162,6 +172,7 @@ def run_preflight(*, strict: bool = True) -> dict:
     auto_ok = (
         all(checks[p]["ok"] for p in script_platforms)
         and checks["telegram"].get("channels_configured")
+        and checks["telegram"].get("channels_valid")
         and checks["reference_image"]["ok"]
         and cover_ok
         and cover_storage_ok

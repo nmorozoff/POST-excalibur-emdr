@@ -195,3 +195,30 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 **Правильно:**
 - Единая функция `posts_emdr_env.extract_post_body_from_md()` — стоп перед `---` / `## Мета`.
 - Использовать в `send-vk-post.py`, `vk_publish.py`, `publish-zernio-post.py`, `publish-topic.py`.
+
+## Grsai: нет секций `## Текст поста` / `## Мета`
+
+**Симптом (2026-08-06, sb-10):** `grsai-generate-topic.py` (gemini-3.1-pro) вернул max/vk/facebook/ok без обязательных markdown-секций; `send-max-draft.py` и `publish-zernio-post.py` упали на парсинге.
+
+**Причина:** модель иногда выводит «голый» текст без контракта файла.
+
+**Правильно:**
+- После генерации: `ensure_platform_contract()` в `grsai-generate-topic.py` — auto-wrap в `## Текст поста` + `## Мета`, gate `extract_post_body_from_md()`.
+- max-post: проверка длины 3500–3800 (hard max 4000, auto-truncate по абзацу).
+- telegram: обязательны `## Текст поста (HTML для Telegram)` и `<!-- END_POST -->`.
+- Лог: `grsai-content-log.json` → `platforms.*.contract_fixes`.
+
+**Не делать:** вручную править формат в output как постоянный workaround; не публиковать, если после auto-wrap gate всё ещё `missing ## Текст поста`.
+
+## Telegram Cloud Secrets: неверный список каналов
+
+**Симптом (2026-08-06, sb-10):** VPS webhook 202, b17 OK, но `telegram-publish-log.json` не появился; Cloud Secrets `TELEGRAM_CHANNEL_CHAT_IDS` содержали снятый канал вместо пары `@nmorozova_emdr` + `@natalia_morozova_psy`.
+
+**Причина:** `send-telegram-post.py` hard guard блокирует publish; worker молча не создаёт лог.
+
+**Правильно:**
+- Cloud Secrets и VPS `telegram.env.local`: только согласованная пара каналов + `TELEGRAM_CHANNEL_UTM_SOURCES=tg1,tg2` (см. `cloud-secrets-checklist.txt`, `profile/telegram-posts-registry.md`).
+- Gate до publish: `materialize_cloud_env.py` / `cloud_preflight.py` → `validate_telegram_channels(require_two=True)`.
+- После исправления env на VPS: один `trigger-vps-webhook.py --topic {id}` (не публиковать из Cloud).
+
+**Не делать:** включать `@morozova_emdr`; не дублировать секреты в pitfalls/queue.

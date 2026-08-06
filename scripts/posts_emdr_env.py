@@ -234,6 +234,74 @@ ENV_SPECS: dict[str, list[str]] = {
     "github.env.local": ["GITHUB_TOKEN"],
 }
 
+ALLOWED_TELEGRAM_CHANNELS = frozenset({"nmorozova_emdr", "natalia_morozova_psy"})
+BANNED_TELEGRAM_CHANNELS = frozenset({"morozova_emdr"})
+TELEGRAM_CHANNELS_CHECKLIST = "posts-emdr-memory/cloud-secrets-checklist.txt"
+
+
+def parse_telegram_channel_ids(env: dict[str, str]) -> list[str]:
+    raw = env.get("TELEGRAM_CHANNEL_CHAT_IDS", "").strip()
+    if raw:
+        ids = [item.strip() for item in raw.split(",") if item.strip()]
+        if ids:
+            return ids
+    single = env.get("TELEGRAM_CHANNEL_CHAT_ID") or env.get("TELEGRAM_CHAT_ID", "")
+    return [single] if single else []
+
+
+def validate_telegram_channels(
+    env: dict[str, str],
+    *,
+    require_two: bool = False,
+) -> dict[str, object]:
+    channels = parse_telegram_channel_ids(env)
+    normalized = [ch.lstrip("@") for ch in channels]
+    if not channels:
+        return {"ok": False, "channels": [], "error": "TELEGRAM_CHANNEL_CHAT_IDS not set"}
+    banned = [ch for ch in normalized if ch in BANNED_TELEGRAM_CHANNELS]
+    if banned:
+        return {
+            "ok": False,
+            "channels": channels,
+            "error": (
+                "канал @morozova_emdr снят с публикации; "
+                f"получено: {channels}"
+            ),
+        }
+    if require_two and len(channels) != 2:
+        return {
+            "ok": False,
+            "channels": channels,
+            "error": (
+                f"ожидается ровно 2 канала (см. {TELEGRAM_CHANNELS_CHECKLIST}), "
+                f"получено {len(channels)}: {channels}"
+            ),
+        }
+    if any(ch not in ALLOWED_TELEGRAM_CHANNELS for ch in normalized):
+        return {
+            "ok": False,
+            "channels": channels,
+            "error": (
+                f"ожидается список из cloud-secrets-checklist ({TELEGRAM_CHANNELS_CHECKLIST}), "
+                f"получено: {channels}"
+            ),
+        }
+    return {"ok": True, "channels": channels, "error": None}
+
+
+def assert_telegram_channels(
+    env: dict[str, str],
+    *,
+    context: str = "",
+    require_two: bool = False,
+) -> None:
+    result = validate_telegram_channels(env, require_two=require_two)
+    if result["ok"]:
+        return
+    prefix = f"{context}: " if context else ""
+    raise SystemExit(f"BLOCKER: {prefix}{result['error']}")
+
+
 DEFAULT_REFERENCE = MEMORY / "assets" / "reference" / "portrait.jpg"
 REFERENCE_DIR = MEMORY / "assets" / "reference"
 REFERENCE_MANIFEST = REFERENCE_DIR / "manifest.json"
@@ -329,6 +397,14 @@ def materialize_env_files(*, memory_dir: Path | None = None, force: bool = False
                 lines.append(f"{key}={val}")
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
         written.append(str(path.relative_to(PROJECT_ROOT)))
+        if filename == "telegram.env.local":
+            merged = _parse_env_file(path)
+            if merged.get("TELEGRAM_CHANNEL_CHAT_IDS") or merged.get("TELEGRAM_CHANNEL_CHAT_ID"):
+                assert_telegram_channels(
+                    merged,
+                    context="materialize telegram.env.local",
+                    require_two=True,
+                )
     return written
 
 
