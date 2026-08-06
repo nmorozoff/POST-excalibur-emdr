@@ -12,6 +12,7 @@
 
 ## Опубликованные
 
+| sb-09-one-question-calms | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | 157 | https://vk.com/wall-224685309_157 | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,стресс,психология |
 | sb-08-anxiety-for-loved-ones | 2026-08-05 | Тревога за близких: любовь, которая выходит из берегов | 156 | https://vk.com/wall-224685309_156 | https://morozovanatalia.ru/anxiety | тревога,близкие,любовь,гиперконтроль,EMDR,стресс,психология |
 | sb-07-five-minute-pause | 2026-08-04 | Пятиминутная пауза, в которой ничего не нужно решать | 155 | https://vk.com/wall-224685309_155 | https://morozovanatalia.ru/anxiety | тревога,пауза,отдых,EMDR,стресс,психология |
 | sb-06-cant-sleep-anxiety | 2026-08-04 | Почему после тревожного дня трудно уснуть, хотя тело устало | 154 | https://vk.com/wall-224685309_154 | https://morozovanatalia.ru/anxiety | тревога,бессонница,сон,EMDR,стресс,психология |
