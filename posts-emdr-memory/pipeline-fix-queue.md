@@ -797,7 +797,7 @@ checks_run:
 ---
 
 ## INC-20260806-1300-grsai-missing-post-sections
-status: open
+status: fixed
 run_date: 2026-08-06
 role: director
 topic: sb-10-phrase-when-anxiety
@@ -819,10 +819,23 @@ category: content
 ### Secrets
 - none recorded
 
+### Fixic resolution
+fixed_at: 2026-08-06
+fix_summary:
+- grsai-generate-topic.py: ensure_platform_contract() — auto-wrap ## Текст поста / ## Мета для max, vk, facebook, ok, b17, telegram; validate + truncate max >4000.
+- contract_fixes пишутся в grsai-content-log.json.
+- Pitfall: Grsai missing post sections.
+files_changed:
+- scripts/grsai-generate-topic.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 -m py_compile scripts/grsai-generate-topic.py
+
 ---
 
 ## INC-20260806-1345-telegram-vps-not-published
-status: open
+status: fixed
 run_date: 2026-08-06
 role: otchetik
 topic: sb-10-phrase-when-anxiety
@@ -845,5 +858,25 @@ category: telegram
 
 ### Secrets
 - none recorded
+
+### Fixic resolution
+fixed_at: 2026-08-06
+fix_summary:
+- posts_emdr_env.py: validate_telegram_channels() + assert при materialize telegram.env.local (require_two).
+- cloud_preflight.py: channels_valid gate; ready_for_auto_publish требует валидную пару каналов.
+- send-telegram-post.py: общий assert_telegram_channels().
+- cloud-secrets-checklist.txt: явный список каналов + gate-комментарии.
+- Pitfall: Telegram Cloud Secrets wrong channels.
+needed_decision_or_secret:
+- Владелец: синхронизировать Cloud Secrets и VPS telegram.env.local; затем один re-trigger webhook для sb-10 (Fixic не публикует).
+files_changed:
+- scripts/posts_emdr_env.py
+- scripts/cloud_preflight.py
+- scripts/send-telegram-post.py
+- posts-emdr-memory/cloud-secrets-checklist.txt
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 -m py_compile scripts/posts_emdr_env.py scripts/cloud_preflight.py scripts/send-telegram-post.py
 
 ---
