@@ -1,0 +1,89 @@
+{
+  "topic": "sb-09-one-question-calms",
+  "overall": "pass",
+  "platforms": {
+    "max": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "url": null
+    },
+    "telegram": {
+      "ok": true,
+      "delivery": "link_preview_single_message",
+      "channels": [
+        "nmorozova_emdr",
+        "natalia_morozova_psy"
+      ],
+      "missing_channels": [],
+      "cover_source": "catbox",
+      "urls": [
+        "https://t.me/nmorozova_emdr/124",
+        "https://t.me/natalia_morozova_psy/2034"
+      ]
+    },
+    "vk_profile": {
+      "ok": true,
+      "registry": true
+    },
+    "vk_group": {
+      "ok": true,
+      "registry": true
+    },
+    "facebook": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "pending_scheduled": false
+    },
+    "ok": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "required": true
+    },
+    "b17": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "draft_saved": false
+    }
+  },
+  "covers": {
+    "local_cover": {
+      "ok": true,
+      "path": "/workspace/posts-emdr-memory/output/sb-09-one-question-calms/cover.png"
+    },
+    "site_cover": {
+      "url": "https://morozovanatalia.ru/social-covers/sb-09-one-question-calms.jpg",
+      "ok": true,
+      "status": 200,
+      "content_type": "image/jpeg"
+    }
+  },
+  "queue": {
+    "published": true,
+    "still_in_queue": false
+  },
+  "vps": {
+    "finish_json": true,
+    "handoff_done": true,
+    "status": "browser_worker_finished"
+  },
+  "issues": [],
+  "links": {
+    "max": "https://max.ru/se13417616_biz/AZ_V64gbQFc",
+    "telegram": [
+      "https://t.me/nmorozova_emdr/124",
+      "https://t.me/natalia_morozova_psy/2034"
+    ],
+    "vk_profile": "https://vk.com/wall218367867_657",
+    "vk_group": "https://vk.com/wall-224685309_157",
+    "facebook": "https://www.facebook.com/632301483303094_122181302174837712",
+    "ok": "https://ok.ru/group/70000034253679/topic/161356138639471",
+    "b17": "https://www.b17.ru/blog/odin_vopros_kotoryy_snizhaet_trevogu_luchshe_chem_uspokoysya/"
+  }
+}

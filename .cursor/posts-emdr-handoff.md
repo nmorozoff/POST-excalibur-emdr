@@ -1,42 +1,33 @@
 # Posts EMDR — Handoff
 
-status: IN_PROGRESS
+status: === POSTS EMDR DONE ===
 updated_at: 2026-08-06
 topic_id: sb-09-one-question-calms
 title: Один вопрос, который снижает тревогу лучше, чем «успокойся»
 post_type: микро-практика
 site_url: https://morozovanatalia.ru/anxiety
 mode: full publish
-phase: content_ready
+verify: pass
 
-## Завтра — только запуск Cloud Automation
+## Результат sb-09
 
-Контент **не** готовить заранее. Директор в automation:
+- verify-publish-run: **pass**
+- Отчёт в ЛС Макс: sent
+- OPEN_INCIDENTS=0
 
-1. INTAKE: `incident_queue` → 0; `git pull`; первая `pending` в `short-blog-queue.md` = sb-09
-2. КОНТЕНТ через Task (не вручную):
-   - max-post.md + cover-prompt.txt — Директор
-   - telegram-post.md — Task posts-emdr-telegram-writer
-   - vk-profile-post.md / vk-group-post.md — Task posts-emdr-vk-writer
-   - facebook-post.md — Task posts-emdr-facebook-writer
-   - **ok-post.md** — Task posts-emdr-ok-writer *(новая платформа)*
-   - b17-blog-post.md — рерайт по profile/b17-blog-post-prompt.md
-   - cover.png — `kie-cover.py`
-3. `publish-topic.py` → MCP VK ×2 → **MCP OK** → git push main → VPS webhook
-4. Task posts-emdr-otchetik (polling до pass/fail)
+## Ссылки
 
-## Готово на сегодня
+| Платформа | URL |
+|-----------|-----|
+| Макс | https://max.ru/se13417616_biz/AZ_V64gbQFc |
+| Telegram @nmorozova_emdr | https://t.me/nmorozova_emdr/124 |
+| Telegram @natalia_morozova_psy | https://t.me/natalia_morozova_psy/2034 |
+| VK профиль | https://vk.com/wall218367867_657 |
+| VK группа | https://vk.com/wall-224685309_157 |
+| Facebook | https://www.facebook.com/632301483303094_122181302174837712 |
+| OK | https://ok.ru/group/70000034253679/topic/161356138639471 |
+| b17 | https://www.b17.ru/blog/odin_vopros_kotoryy_snizhaet_trevogu_luchshe_chem_uspokoysya/ |
 
-- [x] OK в пайплайне (handoff, record-ok-publish, verify, orchestrator)
-- [x] OPEN_INCIDENTS=0
-- [x] sb-08 закрыт (pass)
-- [x] sb-09 в очереди `pending`, output/ пустой — контент с нуля в automation
-- [ ] `git push origin main` — обязательно до запуска automation
+## Следующая тема
 
-## Запреты на automation
-
-- Не публиковать в @morozova_emdr
-- Не TenChat / LinkedIn
-- Не дублировать TG (link_preview only)
-- Не помечать published вручную — VPS --finish
-- Не генерировать контент без Task (кроме max + b17 рерайт по промпту)
+Первая `pending` в `topics/short-blog-queue.md`: sb-10-phrase-when-anxiety
