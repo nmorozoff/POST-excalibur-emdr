@@ -124,6 +124,9 @@ def extract_html(md_path: Path) -> str:
             flags=re.DOTALL,
         )
     if not m:
+        # Grsai sometimes returns bare HTML body + <!-- END_POST --> without markdown wrapper.
+        if "<!-- END_POST -->" in text and "<a href=" in text:
+            return text.split("<!-- END_POST -->", 1)[0].strip()
         raise SystemExit(
             f"Cannot parse HTML from {md_path} — need ## Текст поста (HTML...) or ## Текст поста"
         )

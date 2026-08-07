@@ -183,6 +183,14 @@ def postprocess_platform(platform: str, text: str) -> str:
     text = strip_code_fence(text)
     text = remove_znakomo(text)
     if platform == "telegram":
+        if "## Текст поста" not in text:
+            topic_line = ""
+            if "**topic" not in text.lower() and not text.startswith("# Пост Telegram"):
+                topic_line = "# Пост Telegram\n\n**Delivery:** `link_preview`\n\n---\n\n"
+            text = (
+                f"{topic_line}## Текст поста (HTML для Telegram)\n\n"
+                f"{text.rstrip()}\n"
+            )
         if "## Текст поста (HTML" not in text and "## Текст поста\n" in text:
             text = text.replace("## Текст поста\n", "## Текст поста (HTML для Telegram)\n", 1)
         if "<!-- END_POST -->" not in text:
