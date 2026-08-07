@@ -930,3 +930,32 @@ files_changed:
 - posts-emdr-memory/cloud-secrets-checklist.txt
 checks_run:
 - python3 -m py_compile scripts/posts_emdr_env.py scripts/publish-browser-deferred.py scripts/vps-webhook-server.py
+
+---
+
+## INC-20260807-1256-sb10-telegram-vps-recurrence
+status: open
+run_date: 2026-08-07
+role: otchetik
+topic: sb-10-phrase-when-anxiety
+severity: high
+category: vps
+
+### What went wrong
+- После Fixic fix (materialize telegram.env из systemd) и повторного webhook re-trigger (HTTP 202, pid 1777788): 6× verify всё ещё partial.
+- Нет `telegram-publish-log.json`, нет VPS `--finish`, тема `in_progress` в очереди.
+- Cloud OK: Max, VK×2, Facebook, OK, b17 (published). Единственный blocker — VPS phase 3 (Telegram).
+
+### Durable fix needed before next run
+- На VPS: проверить `systemctl is-active posts-emdr-webhook`, лог `vps-webhook-run.log`.
+- Убедиться что TELEGRAM_BOT_TOKEN + TELEGRAM_CHANNEL_CHAT_IDS в systemd EnvironmentFile (не только в Cloud Secrets).
+- После синхронизации: `python3 scripts/publish-browser-deferred.py --topic sb-10-phrase-when-anxiety --submit --finish --git-push` или re-trigger webhook.
+
+### Suggested files to inspect/change
+- VPS: `posts-emdr-memory/telegram.env.local`, `output/sb-10-phrase-when-anxiety/vps-webhook-run.log`
+- `scripts/publish-browser-deferred.py`
+- `scripts/vps-webhook-server.py`
+- systemd unit posts-emdr-webhook
+
+### Secrets
+- VPS telegram.env.local / systemd EnvironmentFile (owner sync)
