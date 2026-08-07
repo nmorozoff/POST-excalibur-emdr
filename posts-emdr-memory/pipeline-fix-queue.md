@@ -880,3 +880,36 @@ checks_run:
 - python3 -m py_compile scripts/posts_emdr_env.py scripts/cloud_preflight.py scripts/send-telegram-post.py
 
 ---
+
+## INC-20260807-1220-sb10-telegram-vps-pending
+status: open
+run_date: 2026-08-07
+role: otchetik
+topic: sb-10-phrase-when-anxiety
+severity: high
+category: telegram
+
+### What went wrong
+- Cloud phase 1+2 полностью OK (Max, VK×2 MCP, Facebook, OK MCP, b17 registry). VPS webhook принят (HTTP 202) дважды (12:02 и 12:12 UTC).
+- После 6× verify + re-trigger webhook: нет `telegram-publish-log.json`, нет VPS `--finish`, тема остаётся `in_progress`.
+- Cloud Secrets `TELEGRAM_CHANNEL_CHAT_IDS` валидны (см. `cloud-secrets-checklist.txt`); вероятная причина — VPS `telegram.env.local` не синхронизирован (recurrence INC-20260806-1345).
+
+### How the agent recovered this run
+- Пропущена повторная генерация контента и cloud publish (уже выполнены 2026-08-06).
+- verify-vps-webhook-secret.py OK; trigger-vps-webhook.py ×2 → 202.
+- Отчёт отправлен в ЛС Макс (`send-max-publish-report.py`).
+
+### Durable fix needed before next run
+- На VPS: обновить `posts-emdr-memory/telegram.env.local` по `cloud-secrets-checklist.txt` (два канала, без снятого @morozova_emdr).
+- После синхронизации env: `python3 scripts/publish-browser-deferred.py --topic sb-10-phrase-when-anxiety --submit --finish --git-push` или re-trigger webhook.
+- Рассмотреть materialize telegram.env на VPS при старте worker (из env vars systemd).
+
+### Suggested files to inspect/change
+- VPS: `posts-emdr-memory/telegram.env.local`, `output/sb-10-phrase-when-anxiety/vps-webhook-run.log`
+- `scripts/publish-browser-deferred.py` — materialize telegram env before publish
+- `scripts/vps-webhook-server.py`
+
+### Secrets
+- VPS telegram.env.local (owner sync)
+
+---
