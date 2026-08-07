@@ -23,7 +23,15 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-WORKER = PROJECT_ROOT / "scripts" / "run-linux-browser-worker.sh"
+SCRIPTS = PROJECT_ROOT / "scripts"
+WORKER = SCRIPTS / "run-linux-browser-worker.sh"
+
+sys.path.insert(0, str(SCRIPTS))
+from posts_emdr_env import materialize_telegram_env_from_os
+
+
+def _ensure_telegram_env() -> dict[str, object]:
+    return materialize_telegram_env_from_os()
 
 
 def _git_pull() -> dict:
@@ -135,6 +143,7 @@ class WebhookHandler(BaseHTTPRequestHandler):
             return
 
         pull = _git_pull()
+        telegram_env = _ensure_telegram_env()
 
         if topic:
             # cover may be gitignored — fetch from site/FTP
@@ -185,6 +194,7 @@ class WebhookHandler(BaseHTTPRequestHandler):
                 "pid": proc.pid,
                 "topic": topic or None,
                 "git_pull": pull,
+                "telegram_env": telegram_env,
                 "log": str(log_path),
                 "note": "publish running in background; poll output logs / git for completion",
             },
@@ -213,8 +223,19 @@ def main() -> None:
         raise SystemExit("Set VPS_WEBHOOK_SECRET in environment or browser.env.local")
 
     WebhookHandler.secret = secret
+    telegram_env = _ensure_telegram_env()
     server = HTTPServer((args.host, args.port), WebhookHandler)
-    print(json.dumps({"status": "listening", "host": args.host, "port": args.port}, indent=2))
+    print(
+        json.dumps(
+            {
+                "status": "listening",
+                "host": args.host,
+                "port": args.port,
+                "telegram_env": telegram_env,
+            },
+            indent=2,
+        )
+    )
     server.serve_forever()
 
 

@@ -24,7 +24,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_backend import browser_ready
 from browser_worker_finish import finish_topic
-from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env
+from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env, materialize_telegram_env_from_os
 
 SCRIPTS = PROJECT_ROOT / "scripts"
 
@@ -301,7 +301,19 @@ def git_push_changes(topic: str) -> dict:
     }
 
 
+def _ensure_telegram_env() -> None:
+    """Sync telegram.env.local from systemd env before VPS Telegram publish."""
+    result = materialize_telegram_env_from_os()
+    if result.get("written"):
+        print(
+            json.dumps({"telegram_env_materialized": result}, ensure_ascii=False),
+            flush=True,
+        )
+
+
 def main() -> None:
+    _ensure_telegram_env()
+
     parser = argparse.ArgumentParser(description="Publish deferred Telegram/b17 from VPS (MSP short-blog)")
     parser.add_argument("--topic", help="Single topic id (default: all pending)")
     parser.add_argument("--submit", action="store_true", help="Auto-click Save/Publish")

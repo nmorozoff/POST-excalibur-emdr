@@ -882,7 +882,8 @@ checks_run:
 ---
 
 ## INC-20260807-1220-sb10-telegram-vps-pending
-status: open
+status: fixed
+fixed_at: 2026-08-07
 run_date: 2026-08-07
 role: otchetik
 topic: sb-10-phrase-when-anxiety
@@ -912,4 +913,20 @@ category: telegram
 ### Secrets
 - VPS telegram.env.local (owner sync)
 
----
+### Fixic resolution
+fix_summary:
+- posts_emdr_env.py: materialize_telegram_env_from_os() — пишет telegram.env.local из TELEGRAM_* в os.environ (systemd), gate validate_telegram_channels(require_two=True).
+- publish-browser-deferred.py: _ensure_telegram_env() при старте worker.
+- vps-webhook-server.py: materialize при listen и перед каждым /publish.
+- Pitfall: VPS telegram.env.local drift (rsync/git exclude).
+- cloud-secrets-checklist.txt: комментарий про systemd EnvironmentFile на VPS.
+needed_decision_or_secret:
+- Владелец VPS: добавить TELEGRAM_BOT_TOKEN + TELEGRAM_CHANNEL_CHAT_IDS в systemd EnvironmentFile; затем один re-trigger webhook для sb-10 (Fixic не публикует).
+files_changed:
+- scripts/posts_emdr_env.py
+- scripts/publish-browser-deferred.py
+- scripts/vps-webhook-server.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/cloud-secrets-checklist.txt
+checks_run:
+- python3 -m py_compile scripts/posts_emdr_env.py scripts/publish-browser-deferred.py scripts/vps-webhook-server.py
