@@ -15,10 +15,9 @@
       "ok": true
     },
     "telegram": {
-      "exit_code": 1,
-      "stdout_tail": "",
-      "stderr_tail": "Cannot parse HTML from /home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-10-phrase-when-anxiety/telegram-post.md — need ## Текст поста (HTML...) or ## Текст поста\n",
-      "failed": true
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"status\": \"sent\",\n  \"mode\": \"publish\",\n  \"delivery\": \"link_preview_single_message\",\n  \"html_chars\": 3509,\n  \"channels\": [\n    {\n      \"chat_id\": \"@nmorozova_emdr\",\n      \"message_id\": 125\n    },\n    {\n      \"chat_id\": \"@natalia_morozova_psy\",\n      \"message_id\": 2035\n    }\n  ],\n  \"cover_source\": \"catbox\"\n}\n",
+      "stderr_tail": ""
     },
     "tenchat": {
       "skipped": true,
@@ -29,6 +28,5 @@
       "reason": "already_published"
     }
   },
-  "telegram_failed": true,
-  "status": "failed"
+  "status": "ok"
 }
