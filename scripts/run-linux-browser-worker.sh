@@ -25,6 +25,7 @@ if [[ -d .git ]]; then
   git fetch origin main 2>/dev/null && git reset --hard FETCH_HEAD 2>/dev/null || true
 fi
 
+python3 scripts/materialize_vps_env.py || true
 python3 scripts/browser_ensure_sessions.py --refresh || echo "WARN: session refresh failed (continue; per-platform checks apply)"
 python3 scripts/asocks_sync_proxy.py --target telegram || true
 python3 scripts/asocks_sync_proxy.py --target b17 || true

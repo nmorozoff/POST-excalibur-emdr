@@ -6,7 +6,10 @@ After=network.target
 Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu/POST-excalibur-emdr
-EnvironmentFile=/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/browser.env.local
+# Telegram secrets MUST be in process env (file and/or browser.env.local):
+EnvironmentFile=-/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/browser.env.local
+EnvironmentFile=-/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/telegram.env.local
+ExecStartPre=/home/ubuntu/POST-excalibur-emdr/.venv-browser/bin/python3 scripts/materialize_vps_env.py
 ExecStart=/home/ubuntu/POST-excalibur-emdr/.venv-browser/bin/python3 scripts/vps-webhook-server.py --port 8787
 Restart=on-failure
 

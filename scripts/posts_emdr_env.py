@@ -420,6 +420,13 @@ def materialize_telegram_env_from_os(
     return {"written": True, "path": rel, "keys": sorted(values.keys())}
 
 
+def materialize_vps_runtime_env(*, memory_dir: Path | None = None) -> dict[str, object]:
+    """VPS worker/webhook: sync secrets from systemd EnvironmentFile → *.env.local."""
+    written = materialize_env_files(memory_dir=memory_dir)
+    telegram = materialize_telegram_env_from_os(memory_dir=memory_dir)
+    return {"written": written, "telegram": telegram}
+
+
 def materialize_env_files(*, memory_dir: Path | None = None, force: bool = False) -> list[str]:
     """Write .env.local from os.environ — for Cloud Agent startup."""
     base = memory_dir or MEMORY

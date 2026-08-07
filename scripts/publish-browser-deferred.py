@@ -24,7 +24,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_backend import browser_ready
 from browser_worker_finish import finish_topic
-from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env, materialize_telegram_env_from_os
+from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env, materialize_vps_runtime_env
 
 SCRIPTS = PROJECT_ROOT / "scripts"
 
@@ -83,6 +83,20 @@ def pending_topics(*, topic: str | None = None) -> list[str]:
             continue
         topics.append(tid)
     return topics
+
+
+def needs_browser_for_topics(topics: list[str]) -> bool:
+    """Telegram Bot API does not need Playwright — only b17 does."""
+    for tid in topics:
+        topic_dir = MEMORY / "output" / tid
+        if (topic_dir / "b17-blog-post.md").is_file() and not _platform_done(topic_dir, "b17"):
+            return True
+    return False
+
+
+def write_worker_run_summary(topic: str, report: dict) -> None:
+    path = MEMORY / "output" / topic / "vps-worker-last-run.json"
+    path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def sync_telegram_proxy() -> dict:
@@ -167,13 +181,9 @@ def run_publish(topic: str, *, submit: bool) -> dict:
         else:
             result["steps"]["telegram_proxy"] = sync_telegram_proxy()
             if not result["steps"]["telegram_proxy"].get("ok"):
-                result["steps"]["telegram"] = {
-                    "skipped": True,
-                    "reason": "telegram_proxy_sync_failed",
-                    "detail": result["steps"]["telegram_proxy"],
-                }
-                result["status"] = "failed"
-                return result
+                result["steps"]["telegram_proxy"]["warning"] = (
+                    "sync_failed_continue_with_existing_proxy_or_direct"
+                )
             proc = subprocess.run(
                 [
                     sys.executable,
@@ -239,7 +249,10 @@ def run_publish(topic: str, *, submit: bool) -> dict:
         if proc.returncode != 0:
             result["status"] = "failed"
             return result
-    result["status"] = "ok"
+    if result.get("telegram_failed") and not _telegram_done(topic_dir):
+        result["status"] = "failed"
+    elif result.get("status") != "failed":
+        result["status"] = "ok"
     return result
 
 
@@ -301,19 +314,7 @@ def git_push_changes(topic: str) -> dict:
     }
 
 
-def _ensure_telegram_env() -> None:
-    """Sync telegram.env.local from systemd env before VPS Telegram publish."""
-    result = materialize_telegram_env_from_os()
-    if result.get("written"):
-        print(
-            json.dumps({"telegram_env_materialized": result}, ensure_ascii=False),
-            flush=True,
-        )
-
-
 def main() -> None:
-    _ensure_telegram_env()
-
     parser = argparse.ArgumentParser(description="Publish deferred Telegram/b17 from VPS (MSP short-blog)")
     parser.add_argument("--topic", help="Single topic id (default: all pending)")
     parser.add_argument("--submit", action="store_true", help="Auto-click Save/Publish")
@@ -323,18 +324,32 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true", help="Do not call publish scripts")
     args = parser.parse_args()
 
+    vps_env = materialize_vps_runtime_env()
+    print(json.dumps({"vps_env": vps_env}, ensure_ascii=False), flush=True)
+
     try:
         load_env("browser.env.local")
     except SystemExit:
         pass
 
-    if not browser_ready():
+    pending = pending_topics(topic=args.topic)
+
+    if args.list:
+        print(json.dumps({"pending": pending}, ensure_ascii=False, indent=2))
+        return
+
+    if not pending:
+        print(json.dumps({"pending": [], "status": "nothing_to_do"}, ensure_ascii=False, indent=2))
+        return
+
+    browser_required = needs_browser_for_topics(pending)
+    if not args.list and not args.dry_run and browser_required and not browser_ready():
         raise SystemExit(
-            "Browser backend недоступен. Linux: BROWSER_BACKEND=playwright + storage state. "
+            "Browser backend недоступен (нужен для b17). Linux: BROWSER_BACKEND=playwright + storage state. "
             "См. posts-emdr-memory/profile/browser-autonomous-vps.md"
         )
 
-    if not args.list and not args.dry_run:
+    if not args.list and not args.dry_run and browser_required:
         session_proc = subprocess.run(
             [sys.executable, str(SCRIPTS / "browser_ensure_sessions.py"), "--refresh"],
             cwd=PROJECT_ROOT,
@@ -356,21 +371,13 @@ def main() -> None:
                 flush=True,
             )
 
-    pending = pending_topics(topic=args.topic)
-    if args.list:
-        print(json.dumps({"pending": pending}, ensure_ascii=False, indent=2))
-        return
-
-    if not pending:
-        print(json.dumps({"pending": [], "status": "nothing_to_do"}, ensure_ascii=False, indent=2))
-        return
-
     reports = []
     for tid in pending:
         if args.dry_run:
             reports.append({"topic": tid, "status": "dry_run"})
             continue
         report = run_publish(tid, submit=args.submit)
+        write_worker_run_summary(tid, report)
         # Check b17 draft/rate-limit state: do not finish, keep topic pending for retry
         b17_log_path = MEMORY / "output" / tid / "b17-publish-log.json"
         b17_draft = False

@@ -30,8 +30,9 @@ def load_env() -> dict[str, str]:
     import sys
 
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-    from posts_emdr_env import load_env as _load
+    from posts_emdr_env import load_env as _load, materialize_telegram_env_from_os
 
+    materialize_telegram_env_from_os()
     return _load("telegram.env.local", required=["TELEGRAM_BOT_TOKEN"])
 
 
@@ -117,7 +118,15 @@ def extract_html(md_path: Path) -> str:
         flags=re.DOTALL,
     )
     if not m:
-        raise SystemExit(f"Cannot parse HTML from {md_path}")
+        m = re.search(
+            r"## Текст поста\n\n(.*?)(?=<!-- END_POST -->|\n---\s*\n## |\Z)",
+            text,
+            flags=re.DOTALL,
+        )
+    if not m:
+        raise SystemExit(
+            f"Cannot parse HTML from {md_path} — need ## Текст поста (HTML...) or ## Текст поста"
+        )
     body = m.group(1).strip()
     if re.search(r"^\s*##\s", body, flags=re.MULTILINE):
         raise SystemExit(

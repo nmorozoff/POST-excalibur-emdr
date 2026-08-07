@@ -138,6 +138,15 @@ class WebhookHandler(BaseHTTPRequestHandler):
         env = os.environ.copy()
         env["POSTS_EMDR_ROOT"] = str(PROJECT_ROOT)
 
+        # Sync telegram/browser secrets from systemd EnvironmentFile → *.env.local
+        subprocess.run(
+            [sys.executable, str(PROJECT_ROOT / "scripts" / "materialize_vps_env.py")],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+
         if data.get("dry_run") or data.get("auth_check"):
             self._json(200, {"ok": True, "auth": "ok", "dry_run": True, "topic": topic or None})
             return

@@ -132,6 +132,14 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Правильно:** принять задачу (202) и гонять publish в background; cron worker не должен падать на `browser_ensure_sessions` из‑за TenChat (`|| true` / soft gate).
 
+## VPS: Telegram не публикуется (browser gate / proxy / env)
+
+**Симптом:** webhook HTTP 202, но нет `telegram-publish-log.json`; в логе «Browser backend недоступен».
+
+**Причины:** Playwright gate при уже опубликованном b17; выход при сбое ASocks до send-telegram; устаревший `telegram.env.local` на VPS.
+
+**Правильно:** `materialize_vps_env.py` + systemd `EnvironmentFile` для telegram; Playwright только если b17 pending; proxy fail → всё равно send-telegram. Gate: `vps-worker-last-run.json`.
+
 ## TenChat вне MSP short-blog (VPS phase 3)
 
 **Симптом:** `--finish` / deferred worker блокируются на `tenchat_not_ready` или `tenchat=published`.

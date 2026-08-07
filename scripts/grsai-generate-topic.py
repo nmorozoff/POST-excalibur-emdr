@@ -182,15 +182,18 @@ def strip_code_fence(text: str) -> str:
 def postprocess_platform(platform: str, text: str) -> str:
     text = strip_code_fence(text)
     text = remove_znakomo(text)
-    if platform == "telegram" and "<!-- END_POST -->" not in text:
-        if "\n---\n" in text:
-            head, tail = text.split("\n---\n", 1)
-            if "## Мета" in tail or "## Meta" in tail:
-                text = head.rstrip() + "\n\n<!-- END_POST -->\n\n---\n" + tail
+    if platform == "telegram":
+        if "## Текст поста (HTML" not in text and "## Текст поста\n" in text:
+            text = text.replace("## Текст поста\n", "## Текст поста (HTML для Telegram)\n", 1)
+        if "<!-- END_POST -->" not in text:
+            if "\n---\n" in text:
+                head, tail = text.split("\n---\n", 1)
+                if "## Мета" in tail or "## Meta" in tail:
+                    text = head.rstrip() + "\n\n<!-- END_POST -->\n\n---\n" + tail
+                else:
+                    text = head.rstrip() + "\n\n<!-- END_POST -->"
             else:
-                text = head.rstrip() + "\n\n<!-- END_POST -->"
-        else:
-            text = text.rstrip() + "\n\n<!-- END_POST -->"
+                text = text.rstrip() + "\n\n<!-- END_POST -->"
     return text
 
 
