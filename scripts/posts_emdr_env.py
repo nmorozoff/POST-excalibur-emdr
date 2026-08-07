@@ -366,6 +366,60 @@ def load_env(
     return data
 
 
+TELEGRAM_ENV_TRIGGER_KEYS = ("TELEGRAM_BOT_TOKEN", "TELEGRAM_CHANNEL_CHAT_IDS")
+
+
+def materialize_telegram_env_from_os(
+    *,
+    memory_dir: Path | None = None,
+    force: bool = False,
+) -> dict[str, object]:
+    """Write telegram.env.local from os.environ (VPS systemd / EnvironmentFile).
+
+    No-op when neither TELEGRAM_BOT_TOKEN nor TELEGRAM_CHANNEL_CHAT_IDS is set in
+    os.environ — avoids overwriting a hand-maintained file on dev machines.
+    Validates channel list when TELEGRAM_CHANNEL_CHAT_IDS is present after merge.
+    """
+    if not any(os.environ.get(k, "").strip() for k in TELEGRAM_ENV_TRIGGER_KEYS):
+        return {"written": False, "reason": "no_telegram_env_in_os"}
+
+    base = memory_dir or MEMORY
+    filename = "telegram.env.local"
+    keys = ENV_SPECS[filename]
+    values = {k: os.environ.get(k, "").strip() for k in keys}
+    values = {k: v for k, v in values.items() if v}
+    if not values:
+        return {"written": False, "reason": "empty_telegram_env_values"}
+
+    path = base / filename
+    if path.exists() and not force:
+        existing = _parse_env_file(path)
+        merged = {**existing}
+        for k, v in values.items():
+            merged[k] = v
+        values = merged
+    else:
+        values = {k: v for k, v in values.items() if v}
+
+    lines = ["# materialized from environment (systemd / VPS) — do not commit secrets\n"]
+    for key in keys:
+        if key in values:
+            lines.append(f"{key}={values[key]}")
+    for key, val in values.items():
+        if key not in keys:
+            lines.append(f"{key}={val}")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    rel = str(path.relative_to(PROJECT_ROOT))
+    if values.get("TELEGRAM_CHANNEL_CHAT_IDS") or values.get("TELEGRAM_CHANNEL_CHAT_ID"):
+        assert_telegram_channels(
+            values,
+            context="materialize telegram.env.local from os.environ",
+            require_two=True,
+        )
+    return {"written": True, "path": rel, "keys": sorted(values.keys())}
+
+
 def materialize_env_files(*, memory_dir: Path | None = None, force: bool = False) -> list[str]:
     """Write .env.local from os.environ — for Cloud Agent startup."""
     base = memory_dir or MEMORY

@@ -222,3 +222,18 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 - После исправления env на VPS: один `trigger-vps-webhook.py --topic {id}` (не публиковать из Cloud).
 
 **Не делать:** включать `@morozova_emdr`; не дублировать секреты в pitfalls/queue.
+
+## VPS telegram.env.local drift (rsync / git exclude)
+
+**Симптом (2026-08-07, sb-10 recurrence):** Cloud phase 1+2 OK, VPS webhook HTTP 202, b17 может опубликоваться, но `telegram-publish-log.json` не появляется; тема остаётся `in_progress`.
+
+**Причина:** `sync-to-vps.sh` и `git pull` **не** обновляют `posts-emdr-memory/*.env.local`; на VPS остаётся устаревший `telegram.env.local` (один канал или снятый `@morozova_emdr`), хотя Cloud Secrets уже валидны.
+
+**Правильно:**
+- На VPS в **systemd EnvironmentFile** (или `/etc/posts-emdr/telegram.env`): `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL_CHAT_IDS`, `TELEGRAM_CHANNEL_UTM_SOURCES` — та же пара, что в `cloud-secrets-checklist.txt`.
+- При старте `vps-webhook-server.py` и `publish-browser-deferred.py` → `materialize_telegram_env_from_os()` перезаписывает `telegram.env.local` из окружения.
+- После первого деплоя fix: один `trigger-vps-webhook.py --topic {id}` (не публиковать из Cloud).
+
+**Gate:** `materialize_telegram_env_from_os` + `validate_telegram_channels(require_two=True)`; в логе webhook — `telegram_env.written: true`.
+
+**Не делать:** полагаться на ручной rsync `telegram.env.local` с Mac; не коммитить секреты в репо.

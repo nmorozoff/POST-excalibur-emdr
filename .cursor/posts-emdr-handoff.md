@@ -1,22 +1,30 @@
 # Posts EMDR — Handoff
 
-status: IN_PROGRESS
-updated_at: 2026-08-06
+status: === POSTS EMDR DONE ===
+updated_at: 2026-08-07
 topic_id: sb-10-phrase-when-anxiety
-next_topic_id: sb-10-phrase-when-anxiety
-next_title: Что я говорю себе, когда тревога зашкаливает
+next_topic_id: sb-11-plant-wrong-pot
+next_title: Растение в неправильном горшке и человек не в своём темпе
 post_type: микро-практика
 site_url: https://morozovanatalia.ru/anxiety
 mode: full publish
+overall: partial (INC vps-pending)
 
-## Предыдущий прогон
+## Прогон sb-10-phrase-when-anxiety (2026-08-07)
 
-**sb-09-one-question-calms** — pass (2026-08-06), все платформы включая OK.
+**Cloud:** pass — Max, VK×2, Facebook, OK, обложка, b17 registry.
+**VPS:** pending — Telegram не опубликован, `--finish` не выполнен.
 
-## Следующий прогон (sb-10)
+### Ссылки
+- Max: https://max.ru/se13417616_biz/AZ_XBdn_Rvg
+- VK профиль: https://vk.com/wall218367867_658
+- VK группа: https://vk.com/wall-224685309_158
+- Facebook: https://www.facebook.com/632301483303094_122181324560837712
+- OK: https://ok.ru/group/70000034253679/topic/161356610105455
+- b17: https://www.b17.ru/blog/chto_ya_govoryu_sebe_kogda_trevoga_zashkalivaet/
 
-1. Контент через Task (max + cover-prompt.txt, TG/VK/FB/OK/b17)
-2. `publish-topic.py` — обложка **Grsai** (не kie-cover на шаге 1)
-3. MCP VK×2 + OK → git push main → VPS webhook → Отчётик
+### Блокер
+INC-20260807-1220-sb10-telegram-vps-pending — синхронизировать VPS `telegram.env.local` (два канала без @morozova_emdr), затем re-trigger webhook или ручной deferred publish.
 
-Dashboard Instructions синхронизированы с `profile/cloud-automation-prompt.md`.
+### Следующая тема
+`sb-11-plant-wrong-pot` — не начинать до закрытия sb-10 (Telegram + finish).
