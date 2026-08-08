@@ -11,6 +11,8 @@
 
 ## Опубликованные
 
+| sb-11-plant-wrong-pot | 2026-08-08 | Растение в неправильном горшке и человек не в своём темпе | @natalia_morozova_psy | 2036 | https://t.me/natalia_morozova_psy/2036 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
+| sb-11-plant-wrong-pot | 2026-08-08 | Растение в неправильном горшке и человек не в своём темпе | @nmorozova_emdr | 126 | https://t.me/nmorozova_emdr/126 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-10-phrase-when-anxiety | 2026-08-07 | Первый шаг | @natalia_morozova_psy | 2035 | https://t.me/natalia_morozova_psy/2035 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-10-phrase-when-anxiety | 2026-08-07 | Первый шаг | @nmorozova_emdr | 125 | https://t.me/nmorozova_emdr/125 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-09-one-question-calms | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | @natalia_morozova_psy | 2034 | https://t.me/natalia_morozova_psy/2034 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |

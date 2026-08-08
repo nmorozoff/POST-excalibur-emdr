@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-11-plant-wrong-pot | 2026-08-08 | Растение в неправильном горшке и человек не в своём темпе | https://www.b17.ru/blog/rastenie_v_nepravilnom_gorshke_i_chelovek_ne_v_svoem_tempe/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-10-phrase-when-anxiety | 2026-08-06 | Что я говорю себе, когда тревога зашкаливает | https://www.b17.ru/blog/chto_ya_govoryu_sebe_kogda_trevoga_zashkalivaet/ | https://morozovanatalia.ru/anxiety | b17,психология,тревога |
 | sb-09-one-question-calms | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | https://www.b17.ru/blog/odin_vopros_kotoryy_snizhaet_trevogu_luchshe_chem_uspokoysya/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-08-anxiety-for-loved-ones | 2026-08-05 | Тревога за близких: любовь, которая выходит из берегов | https://www.b17.ru/blog/trevoga_za_blizkih_lyubov_kotoraya_vyhodit_iz_beregov/ | https://morozovanatalia.ru/anxiety | b17,психология |

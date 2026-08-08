@@ -2,6 +2,7 @@
 
 | topic_id | # MSP | дата | заголовок | site_url |
 |----------|-------|------|-----------|----------|
+| `sb-11-plant-wrong-pot` | 11 | 2026-08-08 | Растение в неправильном горшке и человек не в своём темпе | in_progress | https://morozovanatalia.ru/anxiety |
 | `sb-10-phrase-when-anxiety` | 10 | 2026-08-07 | Что я говорю себе, когда тревога зашкаливает | https://morozovanatalia.ru/anxiety |
 | `sb-09-one-question-calms` | 9 | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | https://morozovanatalia.ru/anxiety |
 | `sb-08-anxiety-for-loved-ones` | 8 | 2026-08-05 | Тревога за близких: любовь, которая выходит из берегов | https://morozovanatalia.ru/anxiety |
