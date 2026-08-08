@@ -25,9 +25,8 @@
       "reason": "out_of_msp_short_blog_pipeline"
     },
     "b17": {
-      "exit_code": 0,
-      "stdout_tail": "д. Тело уже намертво запомнило этот марафон на выживание. Нервная система застряла в режиме «бей или беги», и простой логикой ее оттуда не вытащить.\\n\\nИменно для работы с застрявшими реакциями я использую EMDR. Через билатеральную стимуляцию мы перерабатываем застрявший заряд напряжения в мозге. Тело перестает выдавать паническую реакцию на привычные триггеры. Вы не просто «учитесь справляться» со стрессом, вы физически выходите из тесного горшка, получая возможность дышать полной грудью и принимать решения в своем собственном темпе.\\n\\nА в каком темпе сейчас живет ваше тело, если честно прислушаться к нему прямо в эту минуту? 👇\\n\\nЕсли тема про вас, можно написать мне в личные сообщения здесь на b17, разберём аккуратно.\\n\\nПодробности о проведении сессии, стоимости и записи читайте ТУТ: \\n\\nВсе истории публикуются только с разрешения клиентов, все имены вымышленные, все совпадения случайны.\",\n  \"body_chars\": 2781,\n  \"cover_local\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-11-plant-wrong-pot/cover.png\",\n  \"cover_wordpress\": {\n    \"url\": \"https://morozova-natalya.ru/wp-content/uploads/2026/08/sb-11-plant-wrong-pot-2.jpg\",\n    \"id\": \"279\",\n    \"link\": \"https://morozova-natalya.ru/cover-sb-11-plant-wrong-pot/\"\n  },\n  \"utm_source\": \"b17\",\n  \"status\": \"published\",\n  \"compose_url\": \"https://www.b17.ru/my_blog.php?mod=edit\",\n  \"post_url\": \"https://www.b17.ru/blog/rastenie_v_nepravilnom_gorshke_i_chelovek_ne_v_svoem_tempe/\",\n  \"public_url\": \"https://www.b17.ru/blog/rastenie_v_nepravilnom_gorshke_i_chelovek_ne_v_svoem_tempe/\",\n  \"cover_url\": \"https://morozovanatalia.ru/social-covers/sb-11-plant-wrong-pot.jpg\",\n  \"filled\": [\n    \"title\",\n    \"latname\",\n    \"razdel\",\n    \"author\",\n    \"tinymce_body\",\n    \"cover:announcement_image_url_not_found\",\n    \"cover:https_tinymce\",\n    \"draft_unchecked\"\n  ],\n  \"fill_mode\": \"playwright-b17\",\n  \"cover_inline\": true,\n  \"auto_submit\": true,\n  \"backend\": \"playwright\",\n  \"note\": \"Опубликовано автоматически (Сохранить)\"\n}\n",
-      "stderr_tail": ""
+      "skipped": true,
+      "reason": "already_published"
     }
   },
   "telegram_failed": true,
