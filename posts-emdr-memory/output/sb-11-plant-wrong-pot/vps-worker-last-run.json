@@ -15,10 +15,9 @@
       "ok": true
     },
     "telegram": {
-      "exit_code": 1,
-      "stdout_tail": "",
-      "stderr_tail": "Traceback (most recent call last):\n  File \"/home/ubuntu/POST-excalibur-emdr/scripts/send-telegram-post.py\", line 550, in <module>\n    main()\n  File \"/home/ubuntu/POST-excalibur-emdr/scripts/send-telegram-post.py\", line 471, in main\n    html = ensure_client_story_disclaimer(html, \"telegram\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nNameError: name 'ensure_client_story_disclaimer' is not defined\n",
-      "failed": true
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"status\": \"sent\",\n  \"mode\": \"publish\",\n  \"delivery\": \"link_preview_single_message\",\n  \"html_chars\": 3800,\n  \"channels\": [\n    {\n      \"chat_id\": \"@nmorozova_emdr\",\n      \"message_id\": 126\n    },\n    {\n      \"chat_id\": \"@natalia_morozova_psy\",\n      \"message_id\": 2036\n    }\n  ],\n  \"cover_source\": \"catbox\"\n}\n",
+      "stderr_tail": ""
     },
     "tenchat": {
       "skipped": true,
@@ -29,6 +28,5 @@
       "reason": "already_published"
     }
   },
-  "telegram_failed": true,
-  "status": "failed"
+  "status": "ok"
 }
