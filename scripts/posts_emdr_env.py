@@ -123,6 +123,55 @@ def sanitize_post_text(text: str) -> str:
     return text
 
 
+CLIENT_STORY_DISCLAIMER_TEXT = (
+    "Все истории публикуются только с разрешения клиентов, "
+    "все имены вымышленные, все совпадения случайны."
+)
+
+
+def has_client_story_disclaimer(text: str) -> bool:
+    low = text.lower()
+    return "разрешения клиентов" in low and "вымышлен" in low and "совпаден" in low
+
+
+def client_story_disclaimer_line(platform: str) -> str:
+    if platform == "telegram":
+        return f"<i>{CLIENT_STORY_DISCLAIMER_TEXT}</i>"
+    if platform == "max":
+        return f"_{CLIENT_STORY_DISCLAIMER_TEXT}_"
+    return CLIENT_STORY_DISCLAIMER_TEXT
+
+
+def ensure_client_story_disclaimer(text: str, platform: str) -> str:
+    """Append mandatory client-story disclaimer as the last content line."""
+    if has_client_story_disclaimer(text):
+        return text
+    line = client_story_disclaimer_line(platform)
+
+    if platform == "telegram":
+        if "<!-- END_POST -->" in text:
+            head, tail = text.split("<!-- END_POST -->", 1)
+            if has_client_story_disclaimer(head):
+                return text
+            return head.rstrip() + f"\n\n{line}\n<!-- END_POST -->" + tail
+        return text.rstrip() + f"\n\n{line}\n"
+
+    m = re.search(r"^(## Текст поста[^\n]*\n\n)(.*)$", text, re.S | re.M)
+    if m:
+        prefix = m.group(1)
+        rest = m.group(2)
+        split_m = re.search(r"\n\n(---\n\n## |\n## Мета)", rest, re.S)
+        if split_m:
+            body, tail = rest[: split_m.start()], rest[split_m.start() :]
+        else:
+            body, tail = rest, ""
+        if has_client_story_disclaimer(body):
+            return text
+        return prefix + body.rstrip() + f"\n\n{line}" + tail
+
+    return text.rstrip() + f"\n\n{line}\n"
+
+
 def extract_post_body_from_md(text: str) -> str:
     """Extract ## Текст поста body, stopping before --- / ## Meta / next ## section."""
     m = re.search(

@@ -20,7 +20,7 @@ INCIDENTS: python3 scripts/incident_queue.py --project-root . Если exit 2 �
 Генерация всех текстов одной командой (модель gemini-3.1-pro, ключ GRSAI_API_KEY — тот же, что для обложек):
 python3 scripts/grsai-generate-topic.py --topic {id}
 Повторный запуск без --force пропускает уже созданные файлы (нет двойной генерации после долгого ответа/таймаута). Таймаут запроса: GRSAI_CHAT_TIMEOUT_SEC=900 (15 мин).
-Gate: в output/{id}/ есть max-post.md, cover-prompt.txt, telegram-post.md, vk-profile-post.md, vk-group-post.md, facebook-post.md, ok-post.md, b17-blog-post.md, grsai-content-log.json.
+Gate: в output/{id}/ есть max-post.md, cover-prompt.txt, telegram-post.md, vk-profile-post.md, vk-group-post.md, facebook-post.md, ok-post.md, b17-blog-post.md, grsai-content-log.json. В конце каждого поста — приписка profile/client-story-disclaimer.md (grsai postprocess добавляет автоматически).
 TenChat снят — tenchat-post.md не создавать.
 Fallback при сбое API: Task-писатели (telegram/vk/facebook/ok) + max вручную — только если grsai-generate-topic упал дважды.
 ОБЛОЖКА: на шаге 1 только cover-prompt.txt (НЕ kie-cover, НЕ grsai-cover). cover.png генерируется в ШАГ 2 внутри publish-topic.py (Grsai gpt-image-2). Gate после publish-topic: есть cover.png и grsai-cover-log.json (или kie-cover-log.json fallback).

@@ -24,6 +24,8 @@
 Подробности о проведении сессии, стоимости и записи читайте ТУТ: https://morozovanatalia.ru/anxiety?utm_source=fb
 ```
 
+**Приписка** — последняя строка: `profile/client-story-disclaimer.md`.
+
 UTM: `utm_source=fb` (`profile/utm-sources.md`).
 
 ## Объём и тон

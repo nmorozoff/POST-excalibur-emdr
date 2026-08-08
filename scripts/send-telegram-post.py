@@ -30,7 +30,7 @@ def load_env() -> dict[str, str]:
     import sys
 
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-    from posts_emdr_env import load_env as _load, materialize_telegram_env_from_os
+    from posts_emdr_env import load_env as _load, materialize_telegram_env_from_os, ensure_client_story_disclaimer
 
     materialize_telegram_env_from_os()
     return _load("telegram.env.local", required=["TELEGRAM_BOT_TOKEN"])
@@ -468,6 +468,7 @@ def main() -> None:
     cover = resolve_cover(topic_dir)
 
     html = _normalize(extract_html(post_file))
+    html = ensure_client_story_disclaimer(html, "telegram")
     if len(html) > MESSAGE_LIMIT:
         raise SystemExit(
             f"Telegram text limit is {MESSAGE_LIMIT} chars, post has {len(html)}. "

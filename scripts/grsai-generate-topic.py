@@ -21,7 +21,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from grsai_chat import DEFAULT_TIMEOUT_SEC, chat_completion
-from posts_emdr_env import MEMORY, load_env, post_number_from_topic, remove_znakomo
+from posts_emdr_env import MEMORY, load_env, post_number_from_topic, remove_znakomo, ensure_client_story_disclaimer
 
 PROFILE = MEMORY / "profile"
 SCRIPTS = Path(__file__).resolve().parent
@@ -166,6 +166,7 @@ def shared_context() -> str:
         read_text(PROFILE / "emdr-evidence.md", max_chars=6000),
         read_text(PROFILE / "crosslink-rules.md", max_chars=5000),
         read_text(PROFILE / "short-blog-cta-rules.md", max_chars=5000),
+        read_text(PROFILE / "client-story-disclaimer.md", max_chars=2000),
         read_text(MEMORY / "shared/agent-pipeline-pitfalls.md", max_chars=4000),
     ]
     return "\n\n---\n\n".join(p for p in parts if p.strip())
@@ -202,6 +203,7 @@ def postprocess_platform(platform: str, text: str) -> str:
                     text = head.rstrip() + "\n\n<!-- END_POST -->"
             else:
                 text = text.rstrip() + "\n\n<!-- END_POST -->"
+    text = ensure_client_story_disclaimer(text, platform)
     return text
 
 
