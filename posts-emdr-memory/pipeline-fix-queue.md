@@ -930,3 +930,46 @@ files_changed:
 - posts-emdr-memory/cloud-secrets-checklist.txt
 checks_run:
 - python3 -m py_compile scripts/posts_emdr_env.py scripts/publish-browser-deferred.py scripts/vps-webhook-server.py
+
+---
+
+## INC-20260808-1227-sb11-vps-phase3-pending
+status: fixed
+fixed_at: 2026-08-08
+run_date: 2026-08-08
+role: otchetik
+topic: sb-11-plant-wrong-pot
+severity: high
+category: vps
+
+### What went wrong
+- Cloud phase 1+2 OK: Max, VK×2 (MCP), Facebook (Zernio), OK (MCP). Обложка на сайте 200.
+- VPS webhook HTTP 202 ×2, но после 6× verify нет `telegram-publish-log.json`, нет `browser-worker-finish.json`.
+- **Root cause (`vps-worker-last-run.json`):** `send-telegram-post.py` → `NameError: ensure_client_story_disclaimer is not defined` (импорт только в `load_env()`, вызов в `main()`). b17 уже `published`, Telegram fail → worker без `--finish`.
+
+### How the agent recovered this run
+- Fixic: import в `main()` + push `main` (18f3853); re-trigger webhook → 202; commit `browser-worker: published sb-11-plant-wrong-pot (tg+b17)`; verify **pass**.
+
+### Durable fix needed before next run
+- Импорт `ensure_client_story_disclaimer` в scope `main()` — сделано.
+
+### Suggested files to inspect/change
+- `scripts/send-telegram-post.py`
+- `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
+
+### Secrets
+- none recorded
+
+### Fixic resolution
+fix_summary:
+- Root cause: NameError в send-telegram-post.py (client-story disclaimer import scope).
+- Pitfall: «Telegram VPS: NameError ensure_client_story_disclaimer».
+- Telegram @nmorozova_emdr/126 + @natalia_morozova_psy/2036; b17 уже был published; finish OK.
+files_changed:
+- scripts/send-telegram-post.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 -m py_compile scripts/send-telegram-post.py
+- python3 scripts/trigger-vps-webhook.py --topic sb-11-plant-wrong-pot (202)
+- python3 scripts/verify-publish-run.py --topic sb-11-plant-wrong-pot (pass)
