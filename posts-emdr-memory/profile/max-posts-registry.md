@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-11-plant-wrong-pot | 2026-08-08 | Растение в неправильном горшке и человек не в своём темпе | https://max.ru/se13417616_biz/AZ_hEq65QBA | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,стресс,психология |
 | sb-10-phrase-when-anxiety | 2026-08-06 | Что я говорю себе, когда тревога зашкаливает | https://max.ru/se13417616_biz/AZ_XBdn_Rvg | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,стресс,психология |
 | sb-09-one-question-calms | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | https://max.ru/se13417616_biz/AZ_V64gbQFc | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,стресс,психология |
 | sb-08-anxiety-for-loved-ones | 2026-08-05 | Тревога за близких: любовь, которая выходит из берегов | https://max.ru/se13417616_biz/AZ_R6SwWaV4 | https://morozovanatalia.ru/anxiety | тревога,близкие,любовь,гиперконтроль,EMDR,стресс,психология |
