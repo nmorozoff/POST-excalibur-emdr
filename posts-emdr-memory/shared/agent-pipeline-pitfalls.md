@@ -245,3 +245,16 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 **Gate:** `materialize_telegram_env_from_os` + `validate_telegram_channels(require_two=True)`; в логе webhook — `telegram_env.written: true`.
 
 **Не делать:** полагаться на ручной rsync `telegram.env.local` с Mac; не коммитить секреты в репо.
+
+## Telegram VPS: NameError ensure_client_story_disclaimer
+
+**Симптом (2026-08-08, sb-11):** VPS webhook 202, `vps-worker-last-run.json` → `telegram.exit_code: 1`, `NameError: ensure_client_story_disclaimer is not defined`; b17 может быть `already_published`, но нет `telegram-publish-log.json` и `--finish`.
+
+**Причина:** вызов `ensure_client_story_disclaimer()` в `main()`, импорт только внутри `load_env()` (scope).
+
+**Правильно:**
+- Импорт в `main()` перед вызовом (или module-level).
+- Gate: `python3 -m py_compile scripts/send-telegram-post.py`; dry-run не должен падать с NameError.
+- После fix на `main`: один `trigger-vps-webhook.py --topic {id}` (Telegram retry; b17 skip если уже published).
+
+**Не делать:** считать partial только «env drift» — смотреть `vps-worker-last-run.json` на VPS.

@@ -30,7 +30,7 @@ def load_env() -> dict[str, str]:
     import sys
 
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-    from posts_emdr_env import load_env as _load, materialize_telegram_env_from_os, ensure_client_story_disclaimer
+    from posts_emdr_env import load_env as _load, materialize_telegram_env_from_os
 
     materialize_telegram_env_from_os()
     return _load("telegram.env.local", required=["TELEGRAM_BOT_TOKEN"])
@@ -466,6 +466,11 @@ def main() -> None:
     topic_dir = PROJECT_ROOT / "posts-emdr-memory" / "output" / args.topic
     post_file = topic_dir / "telegram-post.md"
     cover = resolve_cover(topic_dir)
+
+    import sys
+
+    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+    from posts_emdr_env import ensure_client_story_disclaimer
 
     html = _normalize(extract_html(post_file))
     html = ensure_client_story_disclaimer(html, "telegram")
