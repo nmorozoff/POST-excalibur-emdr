@@ -258,3 +258,42 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 - После fix на `main`: один `trigger-vps-webhook.py --topic {id}` (Telegram retry; b17 skip если уже published).
 
 **Не делать:** считать partial только «env drift» — смотреть `vps-worker-last-run.json` на VPS.
+
+## OK MCP: Refresh token expired
+
+**Симптом (2026-08-09, sb-12):** MCP `ok_create_post_with_photo` ×2 → `Refresh token expired` (mcp-kv); нет `ok-publish-log.json` и строки в `ok-posts-registry.md`. Остальные платформы (Max, TG, VK, Facebook, b17) — OK.
+
+**Причина:** истёк refresh token интеграции OK в Dashboard automation (mcp-kv). Fixic и скрипты **не** могут обновить токен.
+
+**Правильно (recovery после re-auth):**
+
+1. Владелец: Cursor Dashboard → Integrations & MCP → mcp-kv → **re-auth OK** (обновить refresh token).
+2. Убедиться, что `output/{topic}/ok-mcp-handoff.json` на месте (создаётся `publish-topic.py` на фазе 1; для sb-12 уже готов).
+3. Повторить MCP **один раз** (не перегенерировать контент):
+   - `ok_create_post_with_photo`: `text`, `image_url`, `gid: 70000034253679`, `onBehalfOfGroup: true` — из handoff.
+4. Записать результат:
+   ```bash
+   python3 scripts/record-ok-publish.py --topic {id} \
+     --url \"https://ok.ru/group/70000034253679/topic/...\" \
+     --mediatopic-id \"...\" --title \"...\" \
+     --site-url \"https://morozovanatalia.ru/...\" --tags \"...\"
+   ```
+5. `git add` + commit `ok-publish-log.json` и обновлённый `ok-posts-registry.md`.
+
+**Gate:** `ok-publish-log.json` со `status: published` + строка в `profile/ok-posts-registry.md`.
+
+**Не делать:** перегенерировать `ok-post.md` или обложку; не публиковать OK из VPS; не коммитить токены.
+
+## Grsai: telegram >4096 и b17 без blank line после headers
+
+**Симптом (2026-08-09, sb-12):** `telegram-post.md` от Grsai — 4403 символа (лимит TG API 4096) → VPS `send-telegram-post.py` fail. `b17-blog-post.md` без пустой строки после `## Заголовок` / `## Текст поста` → `publish-b17-blog.py` parse fail.
+
+**Причина:** `ensure_platform_contract()` не проверял длину HTML telegram и формат b17 headers при уже существующих секциях.
+
+**Правильно:**
+- `grsai-generate-topic.py` postprocess:
+  - telegram: `truncate_telegram_html()` — hard max **4096** по HTML-телу (как `send-telegram-post.py` `MESSAGE_LIMIT`), обрезка по абзацу.
+  - b17: `ensure_b17_blank_lines()` — `\n\n` после `## Заголовок` и `## Текст поста` (контракт `publish-b17-blog.py`).
+- Лог: `grsai-content-log.json` → `contract_fixes` с `truncated telegram HTML` / `fixed b17 blank lines`.
+
+**Не делать:** вручную править output как постоянный workaround; не публиковать TG/b17 до gate.
