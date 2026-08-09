@@ -973,3 +973,49 @@ checks_run:
 - python3 -m py_compile scripts/send-telegram-post.py
 - python3 scripts/trigger-vps-webhook.py --topic sb-11-plant-wrong-pot (202)
 - python3 scripts/verify-publish-run.py --topic sb-11-plant-wrong-pot (pass)
+
+---
+
+## INC-20260809-1118-ok-mcp-token-expired
+status: open
+run_date: 2026-08-09
+role: otchetik
+topic: sb-12-stray-cat-trust
+severity: high
+category: ok
+
+### What went wrong
+- MCP `ok_create_post_with_photo` ×2: `Refresh token expired` (mcp-kv).
+- OK пост не опубликован; нет `ok-publish-log.json` и строки в `ok-posts-registry.md`.
+- Остальные платформы: pass (Max, TG×2, VK×2, Facebook, b17).
+
+### Durable fix needed before next run
+- Обновить OK refresh token в Dashboard automation (mcp-kv).
+- После re-auth: повторить MCP по `ok-mcp-handoff.json` + `record-ok-publish.py`.
+
+### Suggested files to inspect/change
+- posts-emdr-memory/profile/cloud-publish-phases.md
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+
+---
+
+## INC-20260809-1120-grsai-telegram-b17-gate
+status: open
+run_date: 2026-08-09
+role: director
+topic: sb-12-stray-cat-trust
+severity: medium
+category: content
+
+### What went wrong
+- `telegram-post.md` от Grsai: 4403 символа (лимит TG 4096) → VPS fail.
+- `b17-blog-post.md`: нет пустой строки после `## Заголовок` / `## Текст поста` → parse fail на VPS.
+- Исправлено вручную (PR #20), webhook re-trigger → TG+b17 OK.
+
+### Durable fix needed before next run
+- Gate в `grsai-generate-topic.py` postprocess: telegram ≤4096, b17 headers с blank line.
+- Pitfall в `agent-pipeline-pitfalls.md`.
+
+### Suggested files to inspect/change
+- scripts/grsai-generate-topic.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md

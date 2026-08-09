@@ -2,7 +2,7 @@
 
 | topic_id | # MSP | дата | заголовок | site_url |
 |----------|-------|------|-----------|----------|
-| `sb-12-stray-cat-trust` | 12 | 2026-08-09 | Что бездомная кошка во дворе научила про доверие | in_progress | https://morozovanatalia.ru/anxiety |
+| `sb-12-stray-cat-trust` | 12 | 2026-08-09 | Что бездомная кошка во дворе научила про доверие | https://morozovanatalia.ru/anxiety |
 | `sb-11-plant-wrong-pot` | 11 | 2026-08-08 | Растение в неправильном горшке и человек не в своём темпе | https://morozovanatalia.ru/anxiety |
 | `sb-10-phrase-when-anxiety` | 10 | 2026-08-07 | Что я говорю себе, когда тревога зашкаливает | https://morozovanatalia.ru/anxiety |
 | `sb-09-one-question-calms` | 9 | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | https://morozovanatalia.ru/anxiety |
