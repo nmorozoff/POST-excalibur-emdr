@@ -12,6 +12,7 @@
 
 ## Опубликованные
 
+| sb-12-stray-cat-trust | 2026-08-09 | Что бездомная кошка во дворе научила про доверие | 160 | https://vk.com/wall-224685309_160 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,доверие,психология |
 | sb-11-plant-wrong-pot | 2026-08-08 | Растение в неправильном горшке и человек не в своём темпе | 159 | https://vk.com/wall-224685309_159 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,стресс,психология |
 | sb-10-phrase-when-anxiety | 2026-08-06 | Что я говорю себе, когда тревога зашкаливает | 158 | https://vk.com/wall-224685309_158 | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,стресс,психология |
 | sb-09-one-question-calms | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | 157 | https://vk.com/wall-224685309_157 | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,стресс,психология |
