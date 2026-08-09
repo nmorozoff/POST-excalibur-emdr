@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-12-stray-cat-trust | 2026-08-09 | Что бездомная кошка во дворе научила про доверие | https://www.b17.ru/blog/chto_bezdomnaya_koshka_vo_dvore_nauchila_pro_doverie/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-11-plant-wrong-pot | 2026-08-08 | Растение в неправильном горшке и человек не в своём темпе | https://www.b17.ru/blog/rastenie_v_nepravilnom_gorshke_i_chelovek_ne_v_svoem_tempe/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-10-phrase-when-anxiety | 2026-08-06 | Что я говорю себе, когда тревога зашкаливает | https://www.b17.ru/blog/chto_ya_govoryu_sebe_kogda_trevoga_zashkalivaet/ | https://morozovanatalia.ru/anxiety | b17,психология,тревога |
 | sb-09-one-question-calms | 2026-08-06 | Один вопрос, который снижает тревогу лучше, чем «успокойся» | https://www.b17.ru/blog/odin_vopros_kotoryy_snizhaet_trevogu_luchshe_chem_uspokoysya/ | https://morozovanatalia.ru/anxiety | b17,психология |

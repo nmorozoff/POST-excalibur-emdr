@@ -1,0 +1,13 @@
+{
+  "topic": "sb-12-stray-cat-trust",
+  "status": "browser_worker_finished",
+  "date": "2026-08-09",
+  "b17_url": "https://www.b17.ru/blog/chto_bezdomnaya_koshka_vo_dvore_nauchila_pro_doverie/",
+  "tenchat_url": null,
+  "site_url": "https://morozovanatalia.ru/anxiety",
+  "queue": {
+    "exit_code": 0,
+    "stdout": "OK marked published: sb-12-stray-cat-trust → short-blog-published.md",
+    "stderr": ""
+  }
+}
