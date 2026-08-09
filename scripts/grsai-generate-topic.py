@@ -214,6 +214,7 @@ MAX_BODY_MIN = 3000
 MAX_BODY_TARGET_MIN = 3500
 MAX_BODY_TARGET_MAX = 3800
 MAX_BODY_HARD_MAX = 4000
+TELEGRAM_HTML_HARD_MAX = 4096
 
 
 def has_text_posta_section(text: str) -> bool:
@@ -361,6 +362,69 @@ def wrap_telegram_post(text: str, brief: dict[str, str]) -> str:
     return _ensure_meta_footer(result, body)
 
 
+def extract_telegram_html_body(text: str) -> str:
+    """Extract HTML body from telegram-post.md (same contract as send-telegram-post.py)."""
+    m = re.search(
+        r"## Текст поста \(HTML[^\n]*\n\n"
+        r"(.*?)"
+        r"(?=<!-- END_POST -->|\n---\s*\n## |\Z)",
+        text,
+        flags=re.S,
+    )
+    if not m:
+        m = re.search(
+            r"## Текст поста\n\n(.*?)(?=<!-- END_POST -->|\n---\s*\n## |\Z)",
+            text,
+            flags=re.S,
+        )
+    return m.group(1).strip() if m else ""
+
+
+def truncate_telegram_html(text: str, *, hard_max: int = TELEGRAM_HTML_HARD_MAX) -> tuple[str, bool]:
+    body = extract_telegram_html_body(text)
+    if not body or len(body) <= hard_max:
+        return text, False
+
+    truncated = body[:hard_max]
+    cut = truncated.rfind("\n\n")
+    if cut >= int(hard_max * 0.85):
+        truncated = truncated[:cut].rstrip()
+    else:
+        truncated = truncated.rstrip()
+
+    for pattern in (
+        r"(## Текст поста \(HTML[^\n]*\n\n)(.*?)(?=\n\n<!-- END_POST -->|\n<!-- END_POST -->|\n---\s*\n## |\Z)",
+        r"(## Текст поста\n\n)(.*?)(?=\n\n<!-- END_POST -->|\n<!-- END_POST -->|\n---\s*\n## |\Z)",
+    ):
+        new_text, count = re.subn(
+            pattern,
+            lambda m: m.group(1) + truncated + "\n",
+            text,
+            count=1,
+            flags=re.S,
+        )
+        if count:
+            return new_text, True
+    return text, False
+
+
+def ensure_b17_blank_lines(text: str) -> tuple[str, bool]:
+    """b17 parsers require a blank line after ## Заголовок / ## Текст поста."""
+    fixed = False
+    for header in ("## Заголовок", "## Текст поста"):
+        new_text, count = re.subn(
+            rf"^({re.escape(header)})\n(?!\n)",
+            r"\1\n\n",
+            text,
+            count=1,
+            flags=re.M,
+        )
+        if count:
+            text = new_text
+            fixed = True
+    return text, fixed
+
+
 def truncate_max_body(text: str, *, hard_max: int = MAX_BODY_HARD_MAX) -> tuple[str, bool]:
     if not has_text_posta_section(text):
         return text, False
@@ -397,6 +461,11 @@ def validate_platform_output(platform: str, text: str) -> list[str]:
             warnings.append("missing telegram HTML section")
         if "<!-- END_POST -->" not in text:
             warnings.append("missing END_POST marker")
+        html_body = extract_telegram_html_body(text)
+        if html_body and len(html_body) > TELEGRAM_HTML_HARD_MAX:
+            warnings.append(
+                f"telegram HTML too long: {len(html_body)}>{TELEGRAM_HTML_HARD_MAX}"
+            )
         return warnings
 
     if not has_text_posta_section(text):
@@ -423,8 +492,15 @@ def validate_platform_output(platform: str, text: str) -> list[str]:
             )
         if not _has_cover_block(text):
             warnings.append("missing cover Line 1/2/3 in max header")
-    if platform == "b17" and not re.search(r"^## Заголовок\s*$", text, re.M):
-        warnings.append("missing ## Заголовок for b17")
+    if platform == "b17":
+        if not re.search(r"^## Заголовок\s*$", text, re.M):
+            warnings.append("missing ## Заголовок for b17")
+        elif not re.search(r"^## Заголовок\s*\n\n", text, re.M):
+            warnings.append("b17 missing blank line after ## Заголовок")
+        if has_text_posta_section(text) and not re.search(
+            r"^## Текст поста\s*\n\n", text, re.M
+        ):
+            warnings.append("b17 missing blank line after ## Текст поста")
     return warnings
 
 
@@ -441,10 +517,16 @@ def ensure_platform_contract(platform: str, text: str, brief: dict[str, str]) ->
         if not TELEGRAM_HTML_SECTION_RE.search(text):
             text = wrap_telegram_post(text, brief)
             fixes.append("auto-wrapped telegram HTML section")
+        text, truncated = truncate_telegram_html(text)
+        if truncated:
+            fixes.append(f"truncated telegram HTML to hard max {TELEGRAM_HTML_HARD_MAX}")
     elif platform == "b17":
         if not has_text_posta_section(text) or not re.search(r"^## Заголовок\s*$", text, re.M):
             text = wrap_rewrite_post(platform, text, brief)
             fixes.append("auto-wrapped b17 sections")
+        text, blank_fixed = ensure_b17_blank_lines(text)
+        if blank_fixed:
+            fixes.append("fixed b17 blank lines after headers")
     elif not has_text_posta_section(text):
         text = wrap_rewrite_post(platform, text, brief)
         fixes.append(f"auto-wrapped {platform} sections")
