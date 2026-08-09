@@ -1,0 +1,108 @@
+{
+  "topic": "sb-12-stray-cat-trust",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-08-09T11:03:04.499124+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11841,
+        "completion_tokens": 11189,
+        "total_tokens": 23030
+      },
+      "chars": 9057,
+      "contract_fixes": [
+        "auto-wrapped max-post sections",
+        "truncated max body to hard max 4000",
+        "validation: max body outside target 3500-3800: 3979"
+      ]
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12611,
+        "completion_tokens": 4502,
+        "total_tokens": 17113
+      },
+      "chars": 4684,
+      "contract_fixes": []
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 13019,
+        "completion_tokens": 4440,
+        "total_tokens": 17459
+      },
+      "chars": 5103,
+      "contract_fixes": [
+        "auto-wrapped vk-profile sections"
+      ]
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 13027,
+        "completion_tokens": 6686,
+        "total_tokens": 19713
+      },
+      "chars": 5167,
+      "contract_fixes": [
+        "auto-wrapped vk-group sections"
+      ]
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 13034,
+        "completion_tokens": 7583,
+        "total_tokens": 20617
+      },
+      "chars": 5525,
+      "contract_fixes": []
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12256,
+        "completion_tokens": 5651,
+        "total_tokens": 17907
+      },
+      "chars": 5378,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12714,
+        "completion_tokens": 5907,
+        "total_tokens": 18621
+      },
+      "chars": 3015,
+      "contract_fixes": [
+        "validation: Cannot parse post body (need ## Текст поста)"
+      ]
+    }
+  },
+  "cover_prompt": {
+    "chars": 1875,
+    "cover_meta": {
+      "line1": "Как снова поверить",
+      "line2": "после предательства",
+      "line3": "Метафора о доверии",
+      "yellow": "поверить"
+    }
+  }
+}

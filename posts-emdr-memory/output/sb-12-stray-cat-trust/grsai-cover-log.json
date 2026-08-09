@@ -1,0 +1,37 @@
+{
+  "taskId": "16-db420a7e-4b38-4fee-9e61-c16388815861",
+  "imageURL": "https://file1.aitohumanize.com/file/ea573a7381e94256ae44ce9ae1798b2e.png",
+  "reference_rotation": {
+    "topic": "sb-12-stray-cat-trust",
+    "slot": 4,
+    "reference_path": "/workspace/posts-emdr-memory/assets/reference/portrait-04.jpg",
+    "backend": "grsai",
+    "aspect_ratio": "1280x1024",
+    "quality": "low",
+    "model": "gpt-image-2"
+  },
+  "reference_upload_url": "wp-content/uploads/2026/08/refsportrait-04.jpg",
+  "model": "gpt-image-2",
+  "backend": "grsai",
+  "raw": {
+    "callback_url": "-1",
+    "end_time": 1786273991,
+    "error": "",
+    "failure_reason": "",
+    "height": 0,
+    "id": "16-db420a7e-4b38-4fee-9e61-c16388815861",
+    "progress": 100,
+    "results": [
+      {
+        "height": 0,
+        "url": "https://file1.aitohumanize.com/file/ea573a7381e94256ae44ce9ae1798b2e.png",
+        "width": 0
+      }
+    ],
+    "start_time": 1786273910,
+    "status": "succeeded",
+    "task_id": "",
+    "url": "",
+    "width": 0
+  }
+}

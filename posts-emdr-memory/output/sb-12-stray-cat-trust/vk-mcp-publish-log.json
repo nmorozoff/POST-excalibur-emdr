@@ -1,0 +1,22 @@
+{
+  "topic": "sb-12-stray-cat-trust",
+  "method": "mcp-kv",
+  "published_at": "2026-08-09",
+  "posts": [
+    {
+      "publish_location": "personal",
+      "post_id": 660,
+      "url": "https://vk.com/wall218367867_660",
+      "photo_id": "photo218367867_457247743",
+      "status": "ok"
+    },
+    {
+      "publish_location": "group",
+      "group_id": "224685309",
+      "post_id": 160,
+      "url": "https://vk.com/wall-224685309_160",
+      "photo_id": "photo218367867_457247744",
+      "status": "ok"
+    }
+  ]
+}

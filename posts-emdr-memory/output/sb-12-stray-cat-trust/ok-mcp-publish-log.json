@@ -1,0 +1,8 @@
+{
+  "topic": "sb-12-stray-cat-trust",
+  "method": "mcp-kv",
+  "status": "failed",
+  "error": "Refresh token expired",
+  "attempts": 2,
+  "pending_retry": true
+}
