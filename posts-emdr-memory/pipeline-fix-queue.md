@@ -973,3 +973,78 @@ checks_run:
 - python3 -m py_compile scripts/send-telegram-post.py
 - python3 scripts/trigger-vps-webhook.py --topic sb-11-plant-wrong-pot (202)
 - python3 scripts/verify-publish-run.py --topic sb-11-plant-wrong-pot (pass)
+
+---
+
+## INC-20260809-1120-ok-refresh-token-expired
+status: open
+run_date: 2026-08-09
+role: otchetik
+topic: sb-12-stray-cat-trust
+severity: high
+category: ok
+
+### What went wrong
+- Cloud phase 2 MCP `ok_create_post_with_photo` failed ×2: `Refresh token expired`.
+- `ok-mcp-publish-log.json`: status `failed`, `pending_retry: true`. Нет записи в `ok-posts-registry.md`.
+
+### Durable fix needed before next run
+- Владелец: обновить OK OAuth refresh token в Dashboard automation (mcp-kv secrets).
+- После обновления: re-publish OK для sb-12 (`ok-mcp-handoff.json` + MCP) или ручной пост в группу.
+
+### Suggested files to inspect/change
+- Dashboard MCP mcp-kv OK credentials
+- `posts-emdr-memory/profile/ok-post-prompt.md`
+- `scripts/record-ok-publish.py`
+
+### Secrets
+- OK refresh token (Dashboard automation) — не записывать в git
+
+---
+
+## INC-20260809-1120-sb12-telegram-char-limit
+status: open
+run_date: 2026-08-09
+role: otchetik
+topic: sb-12-stray-cat-trust
+severity: high
+category: telegram
+
+### What went wrong
+- VPS worker (`vps-worker-last-run.json`): `send-telegram-post.py` exit 1 — «Telegram text limit is 4096 chars, post has 4403».
+- Re-trigger webhook (HTTP 202) после otchetik — та же ошибка. Нет `telegram-publish-log.json`, worker без `--finish`.
+
+### Durable fix needed before next run
+- Сократить `telegram-post.md` для sb-12 до ≤4096 символов (или gate в `grsai-generate-topic.py` / `send-telegram-post.py` с авто-truncate).
+- После правки контента: re-trigger webhook или ручной publish на VPS + `--finish`.
+
+### Suggested files to inspect/change
+- `posts-emdr-memory/output/sb-12-stray-cat-trust/telegram-post.md`
+- `scripts/grsai-generate-topic.py`
+- `scripts/send-telegram-post.py`
+- `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
+
+---
+
+## INC-20260809-1120-sb12-b17-publish-failed
+status: open
+run_date: 2026-08-09
+role: otchetik
+topic: sb-12-stray-cat-trust
+severity: high
+category: b17
+
+### What went wrong
+- VPS worker: `publish-b17-blog.py` exit 1 — «Cannot parse title/body … (need ## Заголовок and ## Текст поста)».
+- Локально файл парсится; вероятно Grsai не выдал контрактные секции на первом коммите или VPS тянул старую версию до git pull.
+- Нет `b17-publish-log.json`, тема остаётся `in_progress`.
+
+### Durable fix needed before next run
+- Убедиться, что `b17-blog-post.md` на main имеет `## Заголовок` / `## Текст поста` / `## Мета` (как в `grsai-generate-topic.py` ensure_platform_contract).
+- Re-trigger webhook после синхронизации контента.
+
+### Suggested files to inspect/change
+- `posts-emdr-memory/output/sb-12-stray-cat-trust/b17-blog-post.md`
+- `scripts/grsai-generate-topic.py`
+- `scripts/publish-b17-blog.py`
+- `posts-emdr-memory/profile/b17-blog-post-prompt.md`
