@@ -2,9 +2,10 @@
   "topic": "sb-12-stray-cat-trust",
   "profile_chars": 4892,
   "group_chars": 4951,
-  "cover_local": "/workspace/posts-emdr-memory/output/sb-12-stray-cat-trust/cover.png",
-  "deleted_remote_files": [
-    "sb-12-stray-cat-trust.jpg",
-    "sb-12-stray-cat-trust-v2.jpg"
-  ]
+  "cover_local": "/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-12-stray-cat-trust/cover.png",
+  "cover_jpeg_bytes": 71269,
+  "cover_public_url": "https://morozovanatalia.ru/social-covers/sb-12-stray-cat-trust.jpg",
+  "cover_http_status": 200,
+  "cover_serves_image": true,
+  "cover_upload_method": "curl_active"
 }

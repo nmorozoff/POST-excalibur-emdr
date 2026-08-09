@@ -1,0 +1,35 @@
+{
+  "topic": "sb-12-stray-cat-trust",
+  "steps": {
+    "site_cover": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"topic\": \"sb-12-stray-cat-trust\",\n  \"profile_chars\": 4892,\n  \"group_chars\": 4951,\n  \"cover_local\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-12-stray-cat-trust/cover.png\",\n  \"cover_jpeg_bytes\": 71269,\n  \"cover_public_url\": \"https://morozovanatalia.ru/social-covers/sb-12-stray-cat-trust.jpg\",\n  \"cover_http_status\": 200,\n  \"cover_serves_image\": true,\n  \"cover_upload_method\": \"curl_active\"\n}\n",
+      "stderr_tail": "",
+      "cover_public_url": "https://morozovanatalia.ru/social-covers/sb-12-stray-cat-trust.jpg",
+      "ok": true
+    },
+    "telegram_proxy": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"target\": \"telegram\",\n  \"asocks_port_id\": 231489552,\n  \"asocks_port_name\": \"ResKazakhstan - Turkestan\",\n  \"TELEGRAM_PROXY_SERVER\": \"195.162.68.169:9999\",\n  \"TELEGRAM_PROXY_USERNAME\": \"zx5eh3xhho-res-country-KZ-state-1524787-city-1517945-hold-session-session-6a68ee56a829f\",\n  \"TELEGRAM_PROXY_PASSWORD\": \"SBuzvBfM8hm817J7\",\n  \"template\": \"http://zx5eh3xhho-res-country-KZ-state-1524787-city-1517945-hold-session-session-6a68ee56a829f:SBuzvBfM8hm817J7@195.162.68.169:9999\",\n  \"written\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/browser.env.local\"\n}\n",
+      "stderr_tail": "",
+      "ok": true
+    },
+    "telegram": {
+      "exit_code": 1,
+      "stdout_tail": "",
+      "stderr_tail": "Telegram text limit is 4096 chars, post has 4403. Shorten telegram-post.md or split into a follow-up manually.\n",
+      "failed": true
+    },
+    "tenchat": {
+      "skipped": true,
+      "reason": "out_of_msp_short_blog_pipeline"
+    },
+    "b17": {
+      "exit_code": 1,
+      "stdout_tail": "",
+      "stderr_tail": "Cannot parse title/body from /home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-12-stray-cat-trust/b17-blog-post.md (need ## Заголовок and ## Текст поста)\n"
+    }
+  },
+  "telegram_failed": true,
+  "status": "failed"
+}
