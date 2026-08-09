@@ -977,7 +977,7 @@ checks_run:
 ---
 
 ## INC-20260809-1118-ok-mcp-token-expired
-status: open
+status: needs-human
 run_date: 2026-08-09
 role: otchetik
 topic: sb-12-stray-cat-trust
@@ -997,10 +997,26 @@ category: ok
 - posts-emdr-memory/profile/cloud-publish-phases.md
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
 
+### Fixic resolution
+fixed_at: 2026-08-09
+fix_summary:
+- Pitfall «OK MCP: Refresh token expired» + recovery playbook (re-auth → MCP по ok-mcp-handoff.json → record-ok-publish.py).
+- cloud-publish-phases.md: retry после re-auth без перегенерации контента.
+- ok-mcp-handoff.json для sb-12 готов в output/ — retry возможен после Dashboard re-auth.
+needed_decision_or_secret:
+- Владелец: Cursor Dashboard → Integrations & MCP → mcp-kv → re-auth OK; затем MCP ok_create_post_with_photo по output/sb-12-stray-cat-trust/ok-mcp-handoff.json + record-ok-publish.py.
+files_changed:
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/profile/cloud-publish-phases.md
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- ok-mcp-handoff.json present for sb-12 (retry-ready after re-auth)
+
 ---
 
 ## INC-20260809-1120-grsai-telegram-b17-gate
-status: open
+status: fixed
+fixed_at: 2026-08-09
 run_date: 2026-08-09
 role: director
 topic: sb-12-stray-cat-trust
@@ -1019,3 +1035,16 @@ category: content
 ### Suggested files to inspect/change
 - scripts/grsai-generate-topic.py
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+
+### Fixic resolution
+fix_summary:
+- grsai-generate-topic.py: truncate_telegram_html() hard max 4096; ensure_b17_blank_lines() для ## Заголовок / ## Текст поста.
+- validate_platform_output: warnings для telegram length и b17 header format.
+- Pitfall «Grsai: telegram >4096 и b17 без blank line после headers».
+files_changed:
+- scripts/grsai-generate-topic.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 -m py_compile scripts/grsai-generate-topic.py
+- unit smoke: ensure_b17_blank_lines, truncate_telegram_html, ensure_platform_contract(b17)

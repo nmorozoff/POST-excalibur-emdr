@@ -56,6 +56,8 @@ python3 scripts/record-ok-publish.py --topic {id} \
 
 Обновить реестры: `vk-profile`, `vk-group`, `max`, `facebook`, **`ok`**.
 
+**Если MCP вернул `Refresh token expired`:** re-auth OK в Dashboard (mcp-kv), затем повторить шаги 1–2 по существующему `ok-mcp-handoff.json` (не перегенерировать контент). См. pitfalls «OK MCP: Refresh token expired».
+
 ## Фаза 3 — Telegram + b17 (VPS)
 
 **TenChat снят с пайплайна** (2026-08-03).
