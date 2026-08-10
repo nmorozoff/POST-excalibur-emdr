@@ -1,0 +1,37 @@
+{
+  "taskId": "16-74e37b46-8695-4413-ad8f-d156c79072ab",
+  "imageURL": "https://file1.aitohumanize.com/file/b94fa37382374c6f97e89fe4292c3200.png",
+  "reference_rotation": {
+    "topic": "sb-13-no-repot-in-storm",
+    "slot": 5,
+    "reference_path": "/workspace/posts-emdr-memory/assets/reference/portrait-05.jpg",
+    "backend": "grsai",
+    "aspect_ratio": "1280x1024",
+    "quality": "low",
+    "model": "gpt-image-2"
+  },
+  "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-05.jpg",
+  "model": "gpt-image-2",
+  "backend": "grsai",
+  "raw": {
+    "callback_url": "-1",
+    "end_time": 1786357457,
+    "error": "",
+    "failure_reason": "",
+    "height": 0,
+    "id": "16-74e37b46-8695-4413-ad8f-d156c79072ab",
+    "progress": 100,
+    "results": [
+      {
+        "height": 0,
+        "url": "https://file1.aitohumanize.com/file/b94fa37382374c6f97e89fe4292c3200.png",
+        "width": 0
+      }
+    ],
+    "start_time": 1786357403,
+    "status": "succeeded",
+    "task_id": "",
+    "url": "",
+    "width": 0
+  }
+}

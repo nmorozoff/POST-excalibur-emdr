@@ -1,0 +1,108 @@
+{
+  "topic": "sb-13-no-repot-in-storm",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-08-10T10:15:42.954350+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11827,
+        "completion_tokens": 9842,
+        "total_tokens": 21669
+      },
+      "chars": 8728,
+      "contract_fixes": [
+        "auto-wrapped max-post sections",
+        "truncated max body to hard max 4000",
+        "validation: max body outside target 3500-3800: 3883"
+      ]
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12509,
+        "completion_tokens": 6140,
+        "total_tokens": 18649
+      },
+      "chars": 4289,
+      "contract_fixes": []
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12903,
+        "completion_tokens": 5570,
+        "total_tokens": 18473
+      },
+      "chars": 4859,
+      "contract_fixes": [
+        "auto-wrapped vk-profile sections"
+      ]
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12921,
+        "completion_tokens": 7084,
+        "total_tokens": 20005
+      },
+      "chars": 4836,
+      "contract_fixes": [
+        "auto-wrapped vk-group sections"
+      ]
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12931,
+        "completion_tokens": 5709,
+        "total_tokens": 18640
+      },
+      "chars": 4932,
+      "contract_fixes": [
+        "auto-wrapped facebook sections"
+      ]
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12285,
+        "completion_tokens": 7686,
+        "total_tokens": 19971
+      },
+      "chars": 5669,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12712,
+        "completion_tokens": 5959,
+        "total_tokens": 18671
+      },
+      "chars": 2547,
+      "contract_fixes": []
+    }
+  },
+  "cover_prompt": {
+    "chars": 1921,
+    "cover_meta": {
+      "line1": "Острая тревога и кризис",
+      "line2": "Почему нельзя принимать решения",
+      "line3": "на пике стресса",
+      "yellow": "стресса"
+    }
+  }
+}

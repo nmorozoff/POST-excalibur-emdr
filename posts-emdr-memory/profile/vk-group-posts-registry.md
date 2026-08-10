@@ -12,6 +12,7 @@
 
 ## Опубликованные
 
+| sb-13-no-repot-in-storm | 2026-08-10 | Почему нельзя пересаживать растение в грозу | 161 | https://vk.com/wall-224685309_161 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,кризис,психология |
 | sb-12-stray-cat-trust | 2026-08-09 | Что бездомная кошка во дворе научила про доверие | 160 | https://vk.com/wall-224685309_160 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,доверие,психология |
 | sb-11-plant-wrong-pot | 2026-08-08 | Растение в неправильном горшке и человек не в своём темпе | 159 | https://vk.com/wall-224685309_159 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,стресс,психология |
 | sb-10-phrase-when-anxiety | 2026-08-06 | Что я говорю себе, когда тревога зашкаливает | 158 | https://vk.com/wall-224685309_158 | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,стресс,психология |
