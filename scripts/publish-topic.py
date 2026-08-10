@@ -140,6 +140,20 @@ def write_ok_mcp_handoff(topic: str, image_url: str) -> Path | None:
     ok_md = topic_dir / "ok-post.md"
     if not ok_md.is_file():
         return None
+    from posts_emdr_env import (
+        extract_post_body_from_md,
+        format_ok_publish_text,
+        markdown_to_ok_text_tokens,
+    )
+
+    raw_body = extract_post_body_from_md(ok_md.read_text(encoding="utf-8"))
+    # Prefer markdown source before plain flatten — re-read without link flatten
+    import re as _re
+
+    raw_md = ok_md.read_text(encoding="utf-8")
+    m = _re.search(r"## Текст поста\n\n(.*?)(?:\n\n---\n\n## |\Z)", raw_md, _re.S)
+    source_body = m.group(1).strip() if m else raw_body
+    publish_text = format_ok_publish_text(source_body)
     handoff = {
         "topic": topic,
         "method": "mcp-kv",
@@ -147,7 +161,13 @@ def write_ok_mcp_handoff(topic: str, image_url: str) -> Path | None:
         "image_url": image_url,
         "gid": ok_group_gid(),
         "onBehalfOfGroup": True,
-        "text": _extract_vk_post(ok_md),
+        "text": publish_text,
+        "text_tokens": markdown_to_ok_text_tokens(source_body),
+        "text_tokens_note": (
+            "OK API MediaTextToken: якоря через text_tokens[].link. "
+            "Текущий MCP ok_create_post_with_photo принимает только text — "
+            "используй text (plain). text_tokens — для апгрейда MCP."
+        ),
         "instructions": "posts-emdr-memory/profile/cloud-publish-phases.md",
         "record_after_publish": (
             f"python3 scripts/record-ok-publish.py --topic {topic} "

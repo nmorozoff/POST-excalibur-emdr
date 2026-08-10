@@ -116,17 +116,89 @@ def normalize_typography(text: str) -> str:
     return text.strip()
 
 
+COVER_META_BLOCK_RE = re.compile(
+    r"(?m)"
+    r"(?:^|\n)"
+    r"\*{0,2}Обложка:\*{0,2}[ \t]*\n"
+    r"(?:[ \t]*(?:[-*]\s*)?Line\s*\d+\s*:[^\n]*\n)+"
+    r"(?:[ \t]*\*?[(\[]жёлтый:[^)\]]*[)\]]\*?[ \t]*\n)?"
+    r"(?:[ \t]*OUTFIT:[^\n]*\n)?"
+)
+
+
+def strip_cover_meta_block(text: str) -> str:
+    """Remove technical cover brief (Line 1/2/3, yellow, OUTFIT) from publishable body."""
+    prev = None
+    while prev != text:
+        prev = text
+        text = COVER_META_BLOCK_RE.sub("\n", text)
+    text = re.sub(r"(?m)^[ \t]*OUTFIT:.*\n?", "", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+
+def fix_disclaimer_typo(text: str) -> str:
+    """Canonical spelling: имена (not имены)."""
+    return re.sub(r"\bимены\b", "имена", text, flags=re.IGNORECASE)
+
+
 def sanitize_post_text(text: str) -> str:
     """Apply all text normalization rules before publishing."""
     text = remove_znakomo(text)
+    text = strip_cover_meta_block(text)
+    text = fix_disclaimer_typo(text)
     text = normalize_typography(text)
     return text
 
 
 CLIENT_STORY_DISCLAIMER_TEXT = (
     "Все истории публикуются только с разрешения клиентов, "
-    "все имены вымышленные, все совпадения случайны."
+    "все имена вымышленные, все совпадения случайны."
 )
+
+MD_LINK_RE = re.compile(r"\[([^\]]+)\]\((https?://[^)\s]+)\)")
+
+
+def markdown_links_to_ok_plain(text: str) -> str:
+    """OK MCP text field is plain: keep anchor word + URL (OK auto-linkifies URL)."""
+
+    def _repl(m: re.Match[str]) -> str:
+        label, url = m.group(1).strip(), m.group(2).strip()
+        if label.lower() == url.lower():
+            return url
+        return f"{label} {url}"
+
+    return MD_LINK_RE.sub(_repl, text)
+
+
+def markdown_to_ok_text_tokens(text: str) -> list[dict[str, str]]:
+    """Split markdown text into OK MediaTextToken-like chunks (link anchors)."""
+    tokens: list[dict[str, str]] = []
+    pos = 0
+    for m in MD_LINK_RE.finditer(text):
+        if m.start() > pos:
+            chunk = text[pos : m.start()]
+            if chunk:
+                tokens.append({"text": chunk})
+        tokens.append({"text": m.group(1), "link": m.group(2)})
+        pos = m.end()
+    if pos < len(text):
+        tokens.append({"text": text[pos:]})
+    if not tokens:
+        tokens = [{"text": text}]
+    return tokens
+
+
+def format_ok_publish_text(text: str) -> str:
+    """Normalize OK body for current MCP (plain text + visible URLs)."""
+    text = strip_cover_meta_block(text)
+    text = fix_disclaimer_typo(text)
+    text = re.sub(r"(?m)^##\s+", "", text)
+    text = re.sub(r"\*\*([^*]+)\*\*", r"\1", text)
+    text = markdown_links_to_ok_plain(text)
+    text = remove_znakomo(text)
+    text = normalize_typography(text)
+    return text.strip()
 
 
 def has_client_story_disclaimer(text: str) -> bool:
@@ -144,6 +216,7 @@ def client_story_disclaimer_line(platform: str) -> str:
 
 def ensure_client_story_disclaimer(text: str, platform: str) -> str:
     """Append mandatory client-story disclaimer as the last content line."""
+    text = fix_disclaimer_typo(text)
     if has_client_story_disclaimer(text):
         return text
     line = client_story_disclaimer_line(platform)
@@ -183,7 +256,7 @@ def extract_post_body_from_md(text: str) -> str:
         m = re.search(r"## Текст поста\n\n(.*)", text, re.S)
     if not m:
         raise ValueError("Cannot parse post body (need ## Текст поста)")
-    return normalize_typography(m.group(1).strip())
+    return sanitize_post_text(m.group(1).strip())
 
 
 # Each .env.local file: list of keys (also read from os.environ in cloud).

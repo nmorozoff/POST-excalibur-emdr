@@ -297,3 +297,24 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 - Лог: `grsai-content-log.json` → `contract_fixes` с `truncated telegram HTML` / `fixed b17 blank lines`.
 
 **Не делать:** вручную править output как постоянный workaround; не публиковать TG/b17 до gate.
+
+## Cover meta утекает в текст поста (Макс / TG / OK)
+
+**Симптом (2026-08-10, sb-12/sb-13):** в начале опубликованного поста видны `Обложка:`, `Line 1/2/3`, `*(жёлтый: …)*`, `OUTFIT: slot N`.
+
+**Причина:** Grsai дублировал cover-brief внутрь `## Текст поста`; `ensure_platform_contract` раньше считал файл «готовым», если были и секция, и Line 1 где угодно.
+
+**Правильно:**
+- Cover brief — только шапка `max-post.md` (до `---`), не тело.
+- `strip_cover_meta_block()` в `sanitize_post_text` / extract / grsai postprocess.
+- Gate: если `Line 1:` внутри тела после `## Текст поста` → auto-wrap / strip.
+
+**Не делать:** публиковать сырой Grsai output без postprocess.
+
+## OK: якоря ссылок (text_tokens) vs MCP plain text
+
+**Факт:** UI OK и API `MediaTextToken.link` умеют «слово → ссылка». Текущий MCP `ok_create_post_with_photo` принимает только `text`.
+
+**Правильно сейчас:** в `ok-post.md` писать markdown `[ТУТ](url)`; `format_ok_publish_text` → `ТУТ https://url` для MCP; `text_tokens` класть в handoff на апгрейд MCP.
+
+**Не делать:** тащить `##` / `**Обложка**` / Line 1 в OK text.

@@ -33,7 +33,7 @@ description: Рерайт max-post → ok-post.md для группы Однок
 
 ## Текст поста
 
-{плоский текст для MCP — без markdown-ссылок в теле; перелинковка OK полным URL}
+{рерайт с markdown-ссылками `[здесь](ok-url)` / `[ТУТ](site?utm_source=ok)`; без блока Обложка/Line 1}
 
 ---
 

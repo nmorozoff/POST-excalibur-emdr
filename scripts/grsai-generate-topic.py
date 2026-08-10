@@ -21,7 +21,15 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from grsai_chat import DEFAULT_TIMEOUT_SEC, chat_completion
-from posts_emdr_env import MEMORY, load_env, post_number_from_topic, remove_znakomo, ensure_client_story_disclaimer
+from posts_emdr_env import (
+    MEMORY,
+    ensure_client_story_disclaimer,
+    load_env,
+    post_number_from_topic,
+    remove_znakomo,
+    strip_cover_meta_block,
+    fix_disclaimer_typo,
+)
 
 PROFILE = MEMORY / "profile"
 SCRIPTS = Path(__file__).resolve().parent
@@ -183,6 +191,7 @@ def strip_code_fence(text: str) -> str:
 def postprocess_platform(platform: str, text: str) -> str:
     text = strip_code_fence(text)
     text = remove_znakomo(text)
+    text = fix_disclaimer_typo(text)
     if platform == "telegram":
         if "## Текст поста" not in text:
             topic_line = ""
@@ -273,35 +282,68 @@ def _ensure_meta_footer(text: str, body: str) -> str:
 
 
 def wrap_max_post(text: str, brief: dict[str, str]) -> str:
-    if has_text_posta_section(text) and _has_cover_block(text):
-        return text
+    body = ""
+    header_part = ""
+    if has_text_posta_section(text):
+        try:
+            from posts_emdr_env import extract_post_body_from_md
 
-    body = _plain_body_from_raw(text)
+            body = strip_cover_meta_block(extract_post_body_from_md(text))
+        except ValueError:
+            body = strip_cover_meta_block(_plain_body_from_raw(text))
+        if _has_cover_block(text):
+            pre = text.split("\n---\n", 1)[0].rstrip()
+            if _has_cover_block(pre) and "Line 1:" in pre:
+                header_part = pre
+            else:
+                header_part = ""
+    else:
+        body = strip_cover_meta_block(_plain_body_from_raw(text))
+
     title = brief["title"]
     topic_id = brief["topic_id"]
     post_num = brief["post_number"]
     site_url = brief["site_url"]
 
-    if _has_cover_block(text):
-        pre = text.split("\n---\n", 1)[0].rstrip()
-        header_part = pre
-    else:
-        words = title.split()
-        line1 = words[0] if words else title[:24]
-        line2 = " ".join(words[1:3]) if len(words) > 1 else title[:36]
-        yellow = line2.split()[-1] if line2 else line1
-        line3 = " ".join(words[3:6]) if len(words) > 3 else ""
-        header_part = (
-            f"# Пост Макс — {topic_id}\n\n"
-            f"**Заголовок:** {title}\n"
-            f"**Обложка:**\n"
-            f"- Line 1: {line1}\n"
-            f"- Line 2: {line2} *(жёлтый: {yellow})*\n"
-            f"- Line 3: {line3 or '...'}\n"
-            f"**Сайт:** {site_url}\n"
-            f"**Формат:** {brief.get('format', 'короткий пост MSP')} · #{post_num}"
-        )
+    if not header_part or not _has_cover_block(header_part):
+        if _has_cover_block(text):
+            line1 = re.search(r"Line 1:\s*(.+)", text)
+            line2 = re.search(r"Line 2:\s*(.+)", text)
+            line3 = re.search(r"Line 3:\s*(.+)", text)
+            yellow = re.search(r"жёлтый:\s*(.+?)\)", text)
+            l1 = line1.group(1).strip() if line1 else title.split()[0]
+            l2_raw = line2.group(1).strip() if line2 else " ".join(title.split()[1:3])
+            l2 = re.sub(r"\s*\*\(жёлтый:.*", "", l2_raw).strip()
+            l3 = line3.group(1).strip() if line3 else ""
+            yel = yellow.group(1).strip() if yellow else (l2.split()[-1] if l2 else l1)
+            header_part = (
+                f"# Пост Макс — {topic_id}\n\n"
+                f"**Заголовок:** {title}\n"
+                f"**Обложка:**\n"
+                f"- Line 1: {l1}\n"
+                f"- Line 2: {l2} *(жёлтый: {yel})*\n"
+                f"- Line 3: {l3 or '...'}\n"
+                f"**Сайт:** {site_url}\n"
+                f"**Формат:** {brief.get('format', 'короткий пост MSP')} · #{post_num}"
+            )
+        else:
+            words = title.split()
+            line1 = words[0] if words else title[:24]
+            line2 = " ".join(words[1:3]) if len(words) > 1 else title[:36]
+            yellow = line2.split()[-1] if line2 else line1
+            line3 = " ".join(words[3:6]) if len(words) > 3 else ""
+            header_part = (
+                f"# Пост Макс — {topic_id}\n\n"
+                f"**Заголовок:** {title}\n"
+                f"**Обложка:**\n"
+                f"- Line 1: {line1}\n"
+                f"- Line 2: {line2} *(жёлтый: {yellow})*\n"
+                f"- Line 3: {line3 or '...'}\n"
+                f"**Сайт:** {site_url}\n"
+                f"**Формат:** {brief.get('format', 'короткий пост MSP')} · #{post_num}"
+            )
 
+    body = strip_cover_meta_block(body)
     result = f"{header_part}\n\n---\n\n## Текст поста\n\n{body.strip()}\n"
     return _ensure_meta_footer(result, body)
 
@@ -492,6 +534,8 @@ def validate_platform_output(platform: str, text: str) -> list[str]:
             )
         if not _has_cover_block(text):
             warnings.append("missing cover Line 1/2/3 in max header")
+        if _cover_leaked_into_body(text):
+            warnings.append("cover meta leaked into ## Текст поста body")
     if platform == "b17":
         if not re.search(r"^## Заголовок\s*$", text, re.M):
             warnings.append("missing ## Заголовок for b17")
@@ -507,7 +551,13 @@ def validate_platform_output(platform: str, text: str) -> list[str]:
 def ensure_platform_contract(platform: str, text: str, brief: dict[str, str]) -> tuple[str, list[str]]:
     fixes: list[str] = []
     if platform == "max":
-        if not has_text_posta_section(text) or not _has_cover_block(text):
+        # Always normalize: cover only in header, never inside ## Текст поста
+        needs_wrap = (
+            not has_text_posta_section(text)
+            or not _has_cover_block(text)
+            or _cover_leaked_into_body(text)
+        )
+        if needs_wrap:
             text = wrap_max_post(text, brief)
             fixes.append("auto-wrapped max-post sections")
         text, truncated = truncate_max_body(text)
@@ -517,6 +567,7 @@ def ensure_platform_contract(platform: str, text: str, brief: dict[str, str]) ->
         if not TELEGRAM_HTML_SECTION_RE.search(text):
             text = wrap_telegram_post(text, brief)
             fixes.append("auto-wrapped telegram HTML section")
+        text = _strip_cover_from_telegram(text)
         text, truncated = truncate_telegram_html(text)
         if truncated:
             fixes.append(f"truncated telegram HTML to hard max {TELEGRAM_HTML_HARD_MAX}")
@@ -527,9 +578,15 @@ def ensure_platform_contract(platform: str, text: str, brief: dict[str, str]) ->
         text, blank_fixed = ensure_b17_blank_lines(text)
         if blank_fixed:
             fixes.append("fixed b17 blank lines after headers")
-    elif not has_text_posta_section(text):
-        text = wrap_rewrite_post(platform, text, brief)
-        fixes.append(f"auto-wrapped {platform} sections")
+    elif not has_text_posta_section(text) or (
+        platform in {"ok", "facebook", "vk-profile", "vk-group"} and _cover_leaked_into_body(text)
+    ):
+        if has_text_posta_section(text) and _cover_leaked_into_body(text):
+            text = _strip_cover_from_body_section(text)
+            fixes.append(f"stripped cover meta from {platform} body")
+        else:
+            text = wrap_rewrite_post(platform, text, brief)
+            fixes.append(f"auto-wrapped {platform} sections")
 
     remaining = validate_platform_output(platform, text)
     if remaining:
@@ -540,6 +597,57 @@ def ensure_platform_contract(platform: str, text: str, brief: dict[str, str]) ->
                 f"Grsai output contract failed for {platform} after auto-wrap: {blocking}"
             )
     return text, fixes
+
+
+def _cover_leaked_into_body(text: str) -> bool:
+    if not has_text_posta_section(text):
+        return False
+    try:
+        from posts_emdr_env import extract_post_body_from_md
+
+        # Extract without sanitize would be better — check raw body for Line 1
+        m = re.search(
+            r"## Текст поста[^\n]*\n\n(.*?)(?:\n\n---\n\n## |\Z)",
+            text,
+            re.S,
+        )
+        if not m:
+            return False
+        return bool(re.search(r"Line 1:", m.group(1))) or "OUTFIT:" in m.group(1)
+    except Exception:
+        return "Line 1:" in text and has_text_posta_section(text)
+
+
+def _strip_cover_from_body_section(text: str) -> str:
+    from posts_emdr_env import strip_cover_meta_block
+
+    m = re.search(r"(## Текст поста[^\n]*\n\n)(.*?)(\n\n---\n|\Z)", text, re.S)
+    if not m:
+        return strip_cover_meta_block(text)
+    body = strip_cover_meta_block(m.group(2))
+    return text[: m.start(2)] + body + text[m.end(2) :]
+
+
+def _strip_cover_from_telegram(text: str) -> str:
+    from posts_emdr_env import strip_cover_meta_block
+
+    # Cover must not sit above HTML section either in published extract paths
+    if not TELEGRAM_HTML_SECTION_RE.search(text):
+        return text
+    head, sep, rest = text.partition("## Текст поста (HTML")
+    if not sep:
+        return text
+    head = strip_cover_meta_block(head) if "Line 1:" in head else head
+    # Also strip from HTML body
+    m = re.search(
+        r"(## Текст поста \(HTML[^\n]*\n\n)(.*?)((?:<!-- END_POST -->|\n---\s*\n## ).*)",
+        sep + rest,
+        re.S,
+    )
+    if not m:
+        return head + sep + rest if head else text
+    body = strip_cover_meta_block(m.group(2))
+    return (head.rstrip() + "\n\n" if head.strip() else "") + m.group(1) + body + m.group(3)
 
 
 def parse_cover_meta(max_post: str) -> dict[str, str]:
@@ -613,7 +721,8 @@ EMDR-лендинг: https://morozovanatalia.ru/emdr-therapy?utm_source=max
 Общий контекст:
 {shared_context()}
 
-В шапке файла обязательно блок **Обложка:** с Line 1/2/3 и *(жёлтый: слово)*.
+В шапке файла (ДО `---` и `## Текст поста`) обязательно блок **Обложка:** с Line 1/2/3 и *(жёлтый: слово)*.
+**Запрещено** дублировать блок Обложка / Line 1/2/3 / OUTFIT внутри `## Текст поста` — туда только читаемый текст поста.
 Целевой объём ## Текст поста: 3500–3800 символов.
 """
 
