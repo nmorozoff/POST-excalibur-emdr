@@ -1,0 +1,13 @@
+{
+  "topic": "sb-13-no-repot-in-storm",
+  "status": "browser_worker_finished",
+  "date": "2026-08-10",
+  "b17_url": "https://www.b17.ru/blog/ostraya_trevoga_i_zhiznennyy_krizis_pochemu_nelzya_prinimat_resheniya_na_pike_stressa/",
+  "tenchat_url": null,
+  "site_url": "https://morozovanatalia.ru/anxiety",
+  "queue": {
+    "exit_code": 0,
+    "stdout": "OK marked published: sb-13-no-repot-in-storm → short-blog-published.md",
+    "stderr": ""
+  }
+}

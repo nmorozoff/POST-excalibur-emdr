@@ -2,6 +2,7 @@
 
 | topic_id | # MSP | дата | заголовок | site_url |
 |----------|-------|------|-----------|----------|
+| `sb-13-no-repot-in-storm` | 13 | 2026-08-10 | in_progress | Почему нельзя пересаживать растение в грозу | https://morozovanatalia.ru/anxiety |
 | `sb-12-stray-cat-trust` | 12 | 2026-08-09 | Что бездомная кошка во дворе научила про доверие | https://morozovanatalia.ru/anxiety |
 | `sb-11-plant-wrong-pot` | 11 | 2026-08-08 | Растение в неправильном горшке и человек не в своём темпе | https://morozovanatalia.ru/anxiety |
 | `sb-10-phrase-when-anxiety` | 10 | 2026-08-07 | Что я говорю себе, когда тревога зашкаливает | https://morozovanatalia.ru/anxiety |

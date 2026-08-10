@@ -11,6 +11,8 @@
 
 ## Опубликованные
 
+| sb-13-no-repot-in-storm | 2026-08-10 | Острая тревога и жизненный кризис: почему нельзя принимать решения на пике стресса | @natalia_morozova_psy | 2038 | https://t.me/natalia_morozova_psy/2038 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
+| sb-13-no-repot-in-storm | 2026-08-10 | Острая тревога и жизненный кризис: почему нельзя принимать решения на пике стресса | @nmorozova_emdr | 128 | https://t.me/nmorozova_emdr/128 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-12-stray-cat-trust | 2026-08-09 | Что бездомная кошка во дворе научила про доверие | @natalia_morozova_psy | 2037 | https://t.me/natalia_morozova_psy/2037 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-12-stray-cat-trust | 2026-08-09 | Что бездомная кошка во дворе научила про доверие | @nmorozova_emdr | 127 | https://t.me/nmorozova_emdr/127 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-11-plant-wrong-pot | 2026-08-08 | Растение в неправильном горшке и человек не в своём темпе | @natalia_morozova_psy | 2036 | https://t.me/natalia_morozova_psy/2036 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
