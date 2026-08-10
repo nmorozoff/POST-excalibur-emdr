@@ -1,8 +1,10 @@
 {
   "topic": "sb-12-stray-cat-trust",
   "method": "mcp-kv",
-  "status": "failed",
-  "error": "Refresh token expired",
-  "attempts": 2,
-  "pending_retry": true
+  "status": "published",
+  "mediatopic_id": "161362623950959",
+  "url": "https://ok.ru/group/70000034253679/topic/161362623950959",
+  "error": null,
+  "attempts": 1,
+  "pending_retry": false
 }

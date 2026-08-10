@@ -106,3 +106,11 @@
 ```
 
 **Deferred (no Undetectable):** telegram, b17, vk_mcp, ok_mcp
+
+
+## OK retry 2026-08-10
+
+- status: published
+- url: https://ok.ru/group/70000034253679/topic/161362623950959
+- mediatopic_id: 161362623950959
+- note: after Dashboard re-auth OK mcp-kv

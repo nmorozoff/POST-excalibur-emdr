@@ -977,7 +977,7 @@ checks_run:
 ---
 
 ## INC-20260809-1118-ok-mcp-token-expired
-status: needs-human
+status: fixed
 run_date: 2026-08-09
 role: otchetik
 topic: sb-12-stray-cat-trust
@@ -998,19 +998,22 @@ category: ok
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
 
 ### Fixic resolution
-fixed_at: 2026-08-09
+fixed_at: 2026-08-10
 fix_summary:
 - Pitfall «OK MCP: Refresh token expired» + recovery playbook (re-auth → MCP по ok-mcp-handoff.json → record-ok-publish.py).
 - cloud-publish-phases.md: retry после re-auth без перегенерации контента.
-- ok-mcp-handoff.json для sb-12 готов в output/ — retry возможен после Dashboard re-auth.
+- 2026-08-10: владелец сделал re-auth OK в Dashboard; MCP ok_create_post_with_photo → mediatopic 161362623950959; record-ok-publish.py + registry.
 needed_decision_or_secret:
-- Владелец: Cursor Dashboard → Integrations & MCP → mcp-kv → re-auth OK; затем MCP ok_create_post_with_photo по output/sb-12-stray-cat-trust/ok-mcp-handoff.json + record-ok-publish.py.
+- none (re-auth done)
 files_changed:
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
 - posts-emdr-memory/profile/cloud-publish-phases.md
 - posts-emdr-memory/pipeline-fix-queue.md
+- posts-emdr-memory/output/sb-12-stray-cat-trust/ok-publish-log.json
+- posts-emdr-memory/profile/ok-posts-registry.md
 checks_run:
 - ok-mcp-handoff.json present for sb-12 (retry-ready after re-auth)
+- MCP publish success: https://ok.ru/group/70000034253679/topic/161362623950959
 
 ---
 
