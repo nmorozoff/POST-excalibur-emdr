@@ -578,15 +578,14 @@ def ensure_platform_contract(platform: str, text: str, brief: dict[str, str]) ->
         text, blank_fixed = ensure_b17_blank_lines(text)
         if blank_fixed:
             fixes.append("fixed b17 blank lines after headers")
-    elif not has_text_posta_section(text) or (
-        platform in {"ok", "facebook", "vk-profile", "vk-group"} and _cover_leaked_into_body(text)
-    ):
-        if has_text_posta_section(text) and _cover_leaked_into_body(text):
-            text = _strip_cover_from_body_section(text)
-            fixes.append(f"stripped cover meta from {platform} body")
-        else:
+    else:
+        # facebook / ok / vk-profile / vk-group (+ any other rewrite)
+        if not has_text_posta_section(text):
             text = wrap_rewrite_post(platform, text, brief)
             fixes.append(f"auto-wrapped {platform} sections")
+        if _cover_leaked_into_body(text):
+            text = _strip_cover_from_body_section(text)
+            fixes.append(f"stripped cover meta from {platform} body")
 
     remaining = validate_platform_output(platform, text)
     if remaining:

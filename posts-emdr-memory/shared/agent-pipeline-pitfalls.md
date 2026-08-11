@@ -298,16 +298,16 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Не делать:** вручную править output как постоянный workaround; не публиковать TG/b17 до gate.
 
-## Cover meta утекает в текст поста (Макс / TG / OK)
+## Cover meta утекает в текст поста (Макс / TG / OK / Facebook / VK)
 
-**Симптом (2026-08-10, sb-12/sb-13):** в начале опубликованного поста видны `Обложка:`, `Line 1/2/3`, `*(жёлтый: …)*`, `OUTFIT: slot N`.
+**Симптом (2026-08-10, sb-12/sb-13):** в начале опубликованного поста видны `Обложка:`, `Line 1/2/3`, `*(жёлтый: …)*`, `OUTFIT: slot N` — в т.ч. Facebook (Zernio).
 
 **Причина:** Grsai дублировал cover-brief внутрь `## Текст поста`; `ensure_platform_contract` раньше считал файл «готовым», если были и секция, и Line 1 где угодно.
 
 **Правильно:**
-- Cover brief — только шапка `max-post.md` (до `---`), не тело.
-- `strip_cover_meta_block()` в `sanitize_post_text` / extract / grsai postprocess.
-- Gate: если `Line 1:` внутри тела после `## Текст поста` → auto-wrap / strip.
+- Cover brief — только шапка `max-post.md` (до `---`), не тело ни на одной платформе.
+- `strip_cover_meta_block()` в `sanitize_post_text` (Zernio/VK/Max extract) и grsai postprocess для facebook/ok/vk/tg/max.
+- Gate: если `Line 1:` внутри тела после `## Текст поста` → strip.
 
 **Не делать:** публиковать сырой Grsai output без postprocess.
 
