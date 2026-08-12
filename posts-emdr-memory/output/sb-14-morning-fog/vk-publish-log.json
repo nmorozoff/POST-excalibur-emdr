@@ -4,15 +4,17 @@
   "status": "published",
   "method": "mcp-kv",
   "profile": {
-    "post_id": 662,
-    "url": "https://vk.com/wall218367867_662",
-    "photo_id": "photo218367867_457247747"
+    "post_id": 664,
+    "url": "https://vk.com/wall218367867_664",
+    "photo_id": "photo218367867_457247752",
+    "note": "republish after cover fix; delete placeholder wall218367867_663 if still present"
   },
   "group": {
-    "post_id": 162,
+    "post_id": 163,
     "group_id": "224685309",
-    "url": "https://vk.com/wall-224685309_162",
-    "photo_id": "photo218367867_457247748"
+    "url": "https://vk.com/wall-224685309_163",
+    "photo_id": "photo218367867_457247753"
   },
-  "date": "2026-08-12"
+  "date": "2026-08-12",
+  "republished": true
 }

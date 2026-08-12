@@ -12,6 +12,7 @@
 
 ## Опубликованные
 
+| sb-14-morning-fog | 2026-08-12 | Тревога из-за неопределенности: состояние «ничего не понятно, но спокойно» | ? | https://vk.com/wall-224685309_163 | https://morozovanatalia.ru/anxiety | тревога,EMDR |
 | sb-14-morning-fog | 2026-08-12 | Утренний туман и состояние «ничего не понятно, но спокойно» | 162 | https://vk.com/wall-224685309_162 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,неопределенность,психология |
 | sb-13-no-repot-in-storm | 2026-08-10 | Почему нельзя пересаживать растение в грозу | 161 | https://vk.com/wall-224685309_161 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,кризис,психология |
 | sb-12-stray-cat-trust | 2026-08-09 | Что бездомная кошка во дворе научила про доверие | 160 | https://vk.com/wall-224685309_160 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,доверие,психология |

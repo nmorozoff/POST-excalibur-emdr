@@ -38,8 +38,5 @@
     {
       "text": ".\n\nВсе истории публикуются только с разрешения клиентов, все имена вымышленные, все совпадения случайны."
     }
-  ],
-  "text_tokens_note": "OK API MediaTextToken: якоря через text_tokens[].link. Текущий MCP ok_create_post_with_photo принимает только text — используй text (plain). text_tokens — для апгрейда MCP.",
-  "instructions": "posts-emdr-memory/profile/cloud-publish-phases.md",
-  "record_after_publish": "python3 scripts/record-ok-publish.py --topic sb-14-morning-fog --url <post_url> --mediatopic-id <id> --title <title> --site-url <site> --tags <tags>"
+  ]
 }
