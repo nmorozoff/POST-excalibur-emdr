@@ -1,0 +1,102 @@
+{
+  "topic": "sb-14-morning-fog",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-08-12T09:00:02.269613+00:00",
+  "platforms": {
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11170,
+        "completion_tokens": 5775,
+        "total_tokens": 16945
+      },
+      "chars": 4069,
+      "contract_fixes": []
+    },
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11982,
+        "completion_tokens": 7705,
+        "total_tokens": 19687
+      },
+      "chars": 3919,
+      "contract_fixes": [
+        "truncated max body to hard max 4000"
+      ]
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11554,
+        "completion_tokens": 6010,
+        "total_tokens": 17564
+      },
+      "chars": 5351,
+      "contract_fixes": [
+        "auto-wrapped vk-profile sections"
+      ]
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11566,
+        "completion_tokens": 5733,
+        "total_tokens": 17299
+      },
+      "chars": 4510,
+      "contract_fixes": []
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11685,
+        "completion_tokens": 6733,
+        "total_tokens": 18418
+      },
+      "chars": 5376,
+      "contract_fixes": []
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11411,
+        "completion_tokens": 7078,
+        "total_tokens": 18489
+      },
+      "chars": 5329,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11390,
+        "completion_tokens": 5775,
+        "total_tokens": 17165
+      },
+      "chars": 1864,
+      "contract_fixes": []
+    }
+  },
+  "cover_prompt": {
+    "chars": 1871,
+    "cover_meta": {
+      "line1": "Утренний туман",
+      "line2": "и генерализованная тревога",
+      "line3": "как вернуть спокойствие",
+      "yellow": "тревога"
+    }
+  }
+}

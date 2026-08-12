@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-14-morning-fog | 2026-08-12 | Утренний туман и состояние «ничего не понятно, но спокойно» | https://max.ru/se13417616_biz/AZ_1N7OsMO4 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,неопределенность,психология |
 | sb-13-no-repot-in-storm | 2026-08-10 | Почему нельзя пересаживать растение в грозу | https://max.ru/se13417616_biz/AZ_rM8K1XyM | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,кризис,психология |
 | sb-12-stray-cat-trust | 2026-08-09 | Что бездомная кошка во дворе научила про доверие | https://max.ru/se13417616_biz/AZ_mOiY1CDE | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,доверие,психология |
 | sb-11-plant-wrong-pot | 2026-08-08 | Растение в неправильном горшке и человек не в своём темпе | https://max.ru/se13417616_biz/AZ_hEq65QBA | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,стресс,психология |
