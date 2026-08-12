@@ -1,0 +1,13 @@
+{
+  "topic": "sb-14-morning-fog",
+  "status": "browser_worker_finished",
+  "date": "2026-08-12",
+  "b17_url": "https://www.b17.ru/blog/utrenniy_tuman_i_sostoyanie_nichego_ne_ponyatno_no_spokoyno/",
+  "tenchat_url": null,
+  "site_url": "https://morozovanatalia.ru/anxiety",
+  "queue": {
+    "exit_code": 0,
+    "stdout": "OK marked published: sb-14-morning-fog → short-blog-published.md",
+    "stderr": ""
+  }
+}
