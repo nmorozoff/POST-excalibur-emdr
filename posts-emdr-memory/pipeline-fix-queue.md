@@ -1051,3 +1051,30 @@ files_changed:
 checks_run:
 - python3 -m py_compile scripts/grsai-generate-topic.py
 - unit smoke: ensure_b17_blank_lines, truncate_telegram_html, ensure_platform_contract(b17)
+
+## INC-20260812-0930-portrait-refs-zero-byte
+status: fixed
+fixed_at: 2026-08-12
+run_date: 2026-08-12
+role: director
+topic: sb-14-morning-fog
+severity: high
+category: cover
+
+### What went wrong
+- На CDN `social-covers/refs/portrait-0N.jpg` почти все файлы были 0 bytes (кроме 05).
+- `_reachable()` принимал HTTP 200 + `image/jpeg` без проверки размера → Grsai без реального референса рисовал чужое лицо.
+- sb-14: fallback на portrait-05 URL; обложка с «чужой тётей».
+
+### Fixic resolution
+fix_summary:
+- `probe_remote_image` + `ensure_reference_public_url` (min 20KB, re-upload если remote << local).
+- Перезалит portrait-01…08 на FTP.
+- sb-14 cover перегенерирован с portrait-06; CDN `sb-14-morning-fog.jpg` обновлён.
+files_changed:
+- scripts/cover_upload.py
+- scripts/grsai-cover.py
+- scripts/kie-cover.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/output/sb-14-morning-fog/cover.png
+
