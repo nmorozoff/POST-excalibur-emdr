@@ -1,0 +1,33 @@
+{
+  "topic": "sb-14-morning-fog",
+  "steps": {
+    "site_cover": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"topic\": \"sb-14-morning-fog\",\n  \"profile_chars\": 5144,\n  \"group_chars\": 4375,\n  \"cover_local\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-14-morning-fog/cover.png\",\n  \"cover_jpeg_bytes\": 76287,\n  \"cover_public_url\": \"https://morozovanatalia.ru/social-covers/sb-14-morning-fog.jpg\",\n  \"cover_http_status\": 200,\n  \"cover_serves_image\": true,\n  \"cover_upload_method\": \"curl_active\"\n}\n",
+      "stderr_tail": "",
+      "cover_public_url": "https://morozovanatalia.ru/social-covers/sb-14-morning-fog.jpg",
+      "ok": true
+    },
+    "telegram_proxy": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"target\": \"telegram\",\n  \"asocks_port_id\": 231489552,\n  \"asocks_port_name\": \"ResKazakhstan - Turkestan\",\n  \"TELEGRAM_PROXY_SERVER\": \"195.162.68.169:9999\",\n  \"TELEGRAM_PROXY_USERNAME\": \"zx5eh3xhho-res-country-KZ-state-1524787-city-1517945-hold-session-session-6a68ee56a829f\",\n  \"TELEGRAM_PROXY_PASSWORD\": \"SBuzvBfM8hm817J7\",\n  \"template\": \"http://zx5eh3xhho-res-country-KZ-state-1524787-city-1517945-hold-session-session-6a68ee56a829f:SBuzvBfM8hm817J7@195.162.68.169:9999\",\n  \"written\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/browser.env.local\"\n}\n",
+      "stderr_tail": "",
+      "ok": true
+    },
+    "telegram": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"status\": \"sent\",\n  \"mode\": \"publish\",\n  \"delivery\": \"link_preview_single_message\",\n  \"html_chars\": 4016,\n  \"channels\": [\n    {\n      \"chat_id\": \"@nmorozova_emdr\",\n      \"message_id\": 129\n    },\n    {\n      \"chat_id\": \"@natalia_morozova_psy\",\n      \"message_id\": 2039\n    }\n  ],\n  \"cover_source\": \"catbox\"\n}\n",
+      "stderr_tail": ""
+    },
+    "tenchat": {
+      "skipped": true,
+      "reason": "out_of_msp_short_blog_pipeline"
+    },
+    "b17": {
+      "exit_code": 0,
+      "stdout_tail": "словиях заключается в том, чтобы сбросить скорость, припарковаться на обочине и дышать. Разрешить себе временно не знать финал.\\n\\nС точки зрения EMDR-терапии мы понимаем, что любая неопределенность может казаться мозгу угрозой. Если в прошлом был опыт кризисов, травматический заряд застревает в теле. Любая вынужденная пауза воспринимается как сигнал к панике.\\n\\nКак помочь себе? Признайте факт плохой видимости. Скажите вслух, что сейчас вы не знаете ответов, и это нормально. Затем сместите фокус на то, что реально можете контролировать. Вы не можете разогнать туман, но можете заварить чай. Верните себя в границы тела и понятного пространства.\\n\\nЕсли тема про вас, можно написать мне в личные сообщения здесь на b17, разберём аккуратно.\\n\\nПодробности о проведении сессии, стоимости и записи читайте ТУТ: \\n\\nВсе истории публикуются только с разрешения клиентов, все имена вымышленные, все совпадения случайны.\",\n  \"body_chars\": 1667,\n  \"cover_local\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-14-morning-fog/cover.png\",\n  \"cover_wordpress\": {\n    \"url\": \"https://morozova-natalya.ru/wp-content/uploads/2026/08/sb-14-morning-fog-1.jpg\",\n    \"id\": \"296\",\n    \"link\": \"https://morozova-natalya.ru/cover-sb-14-morning-fog/\"\n  },\n  \"utm_source\": \"b17\",\n  \"status\": \"published\",\n  \"compose_url\": \"https://www.b17.ru/my_blog.php?mod=edit\",\n  \"post_url\": \"https://www.b17.ru/blog/utrenniy_tuman_i_sostoyanie_nichego_ne_ponyatno_no_spokoyno/\",\n  \"public_url\": \"https://www.b17.ru/blog/utrenniy_tuman_i_sostoyanie_nichego_ne_ponyatno_no_spokoyno/\",\n  \"cover_url\": \"https://morozovanatalia.ru/social-covers/sb-14-morning-fog.jpg\",\n  \"filled\": [\n    \"title\",\n    \"latname\",\n    \"razdel\",\n    \"author\",\n    \"tinymce_body\",\n    \"cover:announcement_image_url_not_found\",\n    \"cover:https_tinymce\",\n    \"draft_unchecked\"\n  ],\n  \"fill_mode\": \"playwright-b17\",\n  \"cover_inline\": true,\n  \"auto_submit\": true,\n  \"backend\": \"playwright\",\n  \"note\": \"Опубликовано автоматически (Сохранить)\"\n}\n",
+      "stderr_tail": ""
+    }
+  },
+  "status": "ok"
+}
