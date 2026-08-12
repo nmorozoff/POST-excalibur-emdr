@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 SITE_COVER_BASE = "https://morozovanatalia.ru/social-covers"
+MIN_REFERENCE_BYTES = 20_000
 
 
 def prepare_jpeg(cover: Path, *, width: int = 1024, quality: int = 65) -> Path:
@@ -266,30 +267,130 @@ def verify_url(url: str) -> int:
     return int((proc.stdout or "0").strip() or "0")
 
 
-def url_serves_image(url: str, *, timeout: int = 30) -> bool:
-    """True if URL responds with image/* (not HTML login/404 page with HTTP 200)."""
+def probe_remote_image(url: str, *, min_bytes: int = MIN_REFERENCE_BYTES, timeout: int = 30) -> dict[str, Any]:
+    """Probe remote image: Content-Type + real byte size (rejects 0-byte FTP stubs)."""
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; PostsEMDR-cover-verify/1.0)",
+    }
     try:
-        req = urllib.request.Request(url, method="GET")
-        req.add_header("Range", "bytes=0-63")
-        req.add_header(
-            "User-Agent",
-            "Mozilla/5.0 (compatible; PostsEMDR-cover-verify/1.0)",
-        )
+        req = urllib.request.Request(url, method="HEAD", headers=headers)
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             status = getattr(resp, "status", None) or resp.getcode()
             ct = (resp.headers.get("Content-Type") or "").lower()
-            if status not in (200, 206):
-                return False
-            return "image" in ct or "octet-stream" in ct
-    except Exception:
-        return False
+            cl_raw = resp.headers.get("Content-Length")
+            cl = int(cl_raw) if cl_raw and str(cl_raw).isdigit() else -1
+        if status in (200, 301, 302) and cl >= 0:
+            ok = ("image" in ct or "octet-stream" in ct) and cl >= min_bytes
+            return {
+                "ok": ok,
+                "http_status": status,
+                "content_type": ct,
+                "bytes": cl,
+                "method": "HEAD",
+            }
+    except Exception as exc:
+        head_err = str(exc)
+    else:
+        head_err = ""
+
+    try:
+        req = urllib.request.Request(url, method="GET", headers={**headers, "Range": "bytes=0-63"})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            status = getattr(resp, "status", None) or resp.getcode()
+            ct = (resp.headers.get("Content-Type") or "").lower()
+            cr = resp.headers.get("Content-Range") or ""
+            total = -1
+            if "/" in cr:
+                tail = cr.rsplit("/", 1)[-1].strip()
+                if tail.isdigit():
+                    total = int(tail)
+            if total < 0:
+                cl_raw = resp.headers.get("Content-Length")
+                # Range response length is chunk size — not total; treat unknown as fail-safe read
+                chunk = resp.read(64)
+                total = len(chunk) if status in (200, 206) else -1
+                if status == 200 and cl_raw and str(cl_raw).isdigit():
+                    total = int(cl_raw)
+            ok = (
+                status in (200, 206)
+                and ("image" in ct or "octet-stream" in ct)
+                and total >= min_bytes
+            )
+            return {
+                "ok": ok,
+                "http_status": status,
+                "content_type": ct,
+                "bytes": total,
+                "method": "GET_RANGE",
+                "head_error": head_err or None,
+            }
+    except Exception as exc:
+        return {
+            "ok": False,
+            "http_status": None,
+            "content_type": "",
+            "bytes": 0,
+            "method": "failed",
+            "error": str(exc),
+            "head_error": head_err or None,
+        }
+
+
+def ensure_reference_public_url(
+    local: Path,
+    *,
+    slot: int | None = None,
+    min_bytes: int = MIN_REFERENCE_BYTES,
+) -> str:
+    """HTTPS URL for portrait reference. Re-upload if remote missing/empty/too small."""
+    if not local.is_file():
+        raise SystemExit(f"Reference image missing: {local}")
+    local_size = local.stat().st_size
+    if local_size < min_bytes:
+        raise SystemExit(
+            f"Local reference too small/corrupt ({local_size} bytes): {local}"
+        )
+
+    name = local.name
+    if slot is not None:
+        name = f"portrait-{slot:02d}.jpg"
+    remote_name = f"refs/{name}"
+    url = public_cover_url(remote_name)
+    probe = probe_remote_image(url, min_bytes=min_bytes)
+
+    needs_upload = (
+        not probe.get("ok")
+        or int(probe.get("bytes") or 0) < min_bytes
+        or int(probe.get("bytes") or 0) < int(local_size * 0.5)
+    )
+    if needs_upload:
+        env = load_upload_env()
+        result = upload_cover(local, remote_name, env)
+        url = result.get("url") or url
+        probe = probe_remote_image(url, min_bytes=min_bytes)
+        if not probe.get("ok"):
+            raise SystemExit(
+                f"Reference upload failed size/type gate: {url} probe={probe}"
+            )
+    return url
+
+
+def url_serves_image(url: str, *, timeout: int = 30) -> bool:
+    """True if URL responds with a real image payload (not empty stub / HTML)."""
+    return bool(probe_remote_image(url, min_bytes=MIN_REFERENCE_BYTES, timeout=timeout).get("ok"))
 
 
 def verify_cover_url(url: str) -> dict[str, Any]:
-    """HTTP status + whether Content-Type is image (for VK MCP / Zernio gates)."""
-    status = verify_url(url)
-    serves_image = url_serves_image(url) if status in (200, 301, 302) else False
-    return {"http_status": status, "serves_image": serves_image, "ok": serves_image}
+    """HTTP status + whether Content-Type is image with non-empty bytes."""
+    probe = probe_remote_image(url, min_bytes=MIN_REFERENCE_BYTES)
+    return {
+        "http_status": probe.get("http_status"),
+        "serves_image": bool(probe.get("ok")),
+        "ok": bool(probe.get("ok")),
+        "bytes": probe.get("bytes"),
+        "content_type": probe.get("content_type"),
+        "probe_method": probe.get("method"),
+    }
 
 
 def probe_ftp(env: dict[str, str]) -> dict[str, Any]:

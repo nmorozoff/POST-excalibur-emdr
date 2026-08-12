@@ -311,6 +311,19 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Не делать:** публиковать сырой Grsai output без postprocess.
 
+## Cover reference: 0-byte portrait на FTP → чужое лицо
+
+**Симптом (2026-08-12, sb-14):** обложка с «чужой тётей»; в логе `portrait-06.jpg on server was 0 bytes; used portrait-05 fallback`. На CDN `social-covers/refs/portrait-0N.jpg` почти все файлы были **0 bytes** (кроме 05), nginx отдавал `Content-Type: image/jpeg` → старый `_reachable()` считал OK и **не перезалил** локальный портрет.
+
+**Причина:** FTP stubs + проверка только Content-Type без Content-Length.
+
+**Правильно:**
+- `cover_upload.probe_remote_image` / `ensure_reference_public_url`: gate `bytes >= 20000` и re-upload если remote << local.
+- `grsai-cover.py` / `kie-cover.py` только через `ensure_reference_public_url`.
+- После фикса: перезалить `portrait-01…08` на FTP; при битой обложке — перегенерировать cover с правильным слотом.
+
+**Не делать:** fallback на другой portrait-слот «лишь бы сгенерировать»; не считать HTTP 200 + image/* достаточным без размера.
+
 ## OK: якоря ссылок (text_tokens) vs MCP plain text
 
 **Факт:** UI OK и API `MediaTextToken.link` умеют «слово → ссылка». Текущий MCP `ok_create_post_with_photo` принимает только `text`.

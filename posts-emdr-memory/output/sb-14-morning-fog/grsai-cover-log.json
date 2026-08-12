@@ -1,17 +1,38 @@
 {
-  "taskId": "manual-portrait-05-fallback",
-  "imageURL": "https://file7.aitohumanize.com/file/34c877b542bf4426bc0675a84827e6b5.png",
+  "taskId": "6-4e29c171-8e39-425e-b519-3c9d09967e88",
+  "imageURL": "https://file2.aitohumanize.com/file/9a0e5a24ba79442eaac3fadddf6c78a5.png",
   "reference_rotation": {
     "topic": "sb-14-morning-fog",
     "slot": 6,
-    "reference_path": "/workspace/posts-emdr-memory/assets/reference/portrait-06.jpg",
+    "reference_path": "/Users/natala/Documents/Проекты СURSOR/Посты EMDR/posts-emdr-memory/assets/reference/portrait-06.jpg",
     "backend": "grsai",
     "aspect_ratio": "1280x1024",
     "quality": "low",
     "model": "gpt-image-2",
-    "note": "portrait-06.jpg on server was 0 bytes; used portrait-05 ref URL as fallback"
+    "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-06.jpg"
   },
-  "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-05.jpg",
+  "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-06.jpg",
   "model": "gpt-image-2",
-  "backend": "grsai"
+  "backend": "grsai",
+  "raw": {
+    "callback_url": "-1",
+    "end_time": 1786528011,
+    "error": "",
+    "failure_reason": "",
+    "height": 0,
+    "id": "6-4e29c171-8e39-425e-b519-3c9d09967e88",
+    "progress": 100,
+    "results": [
+      {
+        "height": 0,
+        "url": "https://file2.aitohumanize.com/file/9a0e5a24ba79442eaac3fadddf6c78a5.png",
+        "width": 0
+      }
+    ],
+    "start_time": 1786527953,
+    "status": "succeeded",
+    "task_id": "",
+    "url": "",
+    "width": 0
+  }
 }

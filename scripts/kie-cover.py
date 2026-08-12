@@ -22,40 +22,11 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from cover_upload import load_upload_env, public_cover_url, upload_cover
+from cover_upload import ensure_reference_public_url
 from kie_client import KieImageClient
 from posts_emdr_env import load_env, reference_image_path, reference_slot_for_topic
 
 MODEL = "gpt-image-2-image-to-image"
-
-
-def reference_public_https(reference: Path, slot: int | None) -> str:
-    """HTTPS URL портрета для Kie input_urls (WordPress или social-covers)."""
-    name = reference.name
-    if slot is not None:
-        name = f"portrait-{slot:02d}.jpg"
-    remote_name = f"refs/{name}"
-    url = public_cover_url(remote_name)
-
-    def _reachable(test_url: str) -> bool:
-        try:
-            req = urllib.request.Request(test_url, method="GET")
-            req.add_header("Range", "bytes=0-31")
-            with urllib.request.urlopen(req, timeout=20) as resp:
-                ct = (resp.headers.get("Content-Type") or "").lower()
-                return "image" in ct
-        except Exception:
-            return False
-
-    if _reachable(url):
-        return url
-
-    env = load_upload_env()
-    result = upload_cover(reference, remote_name, env)
-    uploaded_url = result.get("url") or url
-    if not _reachable(uploaded_url):
-        raise SystemExit(f"Reference uploaded but not reachable: {uploaded_url}")
-    return uploaded_url
 
 
 def main() -> None:
@@ -109,7 +80,7 @@ def main() -> None:
     }
     print(json.dumps({"reference_rotation": rotation_meta}, ensure_ascii=False), file=sys.stderr)
 
-    ref_url = reference_public_https(reference, slot)
+    ref_url = ensure_reference_public_url(reference, slot=slot)
     print(f"Reference URL: {ref_url}", file=sys.stderr)
 
     client = KieImageClient()
