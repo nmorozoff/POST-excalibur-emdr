@@ -154,12 +154,29 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Правильно (recovery, один раз на тему):**
 
-1. `python3 scripts/trigger-vps-webhook.py --topic {id}` — ожидать HTTP **202** (не dry-run).
+1. `python3 scripts/trigger-vps-webhook.py --topic {id}` — ожидать HTTP **202** (не dry-run). HTTP **409** `publish_lock_held` = уже идёт прогон, **не** долбить повторно.
 2. Подождать 10–15 мин → `git pull origin main` → `python3 scripts/verify-publish-run.py --topic {id}`.
-3. Если всё ещё partial — на VPS: `systemctl is-active posts-emdr-webhook`, лог `output/{topic}/vps-webhook-run.log`, `journalctl -u posts-emdr-webhook`, ручной `publish-browser-deferred.py --topic {id} --submit --finish --git-push`.
+3. Если всё ещё partial — на VPS: `systemctl is-active posts-emdr-webhook`, лог `output/{topic}/vps-webhook-run.log`, `journalctl -u posts-emdr-webhook`, ручной `python3 scripts/vps_publish_guard.py run -- python3 scripts/publish-browser-deferred.py --topic {id} --submit --finish --git-push`.
 4. Проверить `telegram.env.local` на VPS: только `@nmorozova_emdr` и `@natalia_morozova_psy` (не `@morozova_emdr`).
 
 **Gate:** commit `browser-worker: published {topic}` на `main` + `browser-worker-finish.json` в output.
+
+## Telegram: дубль поста в одном канале (webhook race)
+
+**Симптом:** один и тот же short-blog текст дважды в `@nmorozova_emdr` / `@natalia_morozova_psy` без ручного «перезалей».
+
+**Причина:** параллельный webhook/cron/otchetik re-trigger: первый прогон уже отправил TG, лог ещё не в `main`; второй сделал `git stash`/`reset --hard`, стёр локальный `telegram-publish-log.json`, снова вызвал Bot API.
+
+**Правильно (2026-08-13):**
+- `scripts/vps_publish_guard.py` — exclusive flock на весь phase 3; webhook отвечает **409** если lock занят.
+- Durable marker вне git: `$POSTS_EMDR_STATE_DIR` / `/tmp/posts-emdr-state/platforms/{topic}/telegram.json` (пишется сразу после send).
+- `_telegram_done` в `publish-browser-deferred.py` читает marker и восстанавливает log после reset.
+- Сразу после успешного TG — `git_push_logs` (не ждать b17).
+- Cron/webhook: git pull только **внутри** flock (`vps_publish_guard run`).
+
+**Не делать:** повторный `trigger-vps-webhook` пока первый pid жив / пока 409; не слать TG с Mac/Cloud параллельно с VPS на ту же тему.
+
+**Gate:** один `message_id` на канал в `telegram-publish-log.json`; повторный deferred → `already_published` / marker skip.
 
 ## Cloud → VPS webhook TimeoutError
 

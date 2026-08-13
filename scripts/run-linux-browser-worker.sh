@@ -10,24 +10,20 @@ if [[ -f .venv-browser/bin/activate ]]; then
   source .venv-browser/bin/activate
 fi
 
-# Git pull (private repo — нужен github.env.local с GITHUB_TOKEN)
-if [[ -f posts-emdr-memory/github.env.local ]]; then
-  # shellcheck disable=SC1091
-  set -a
-  source posts-emdr-memory/github.env.local
-  set +a
-fi
-if [[ -d .git ]]; then
-  git stash push -u -m "vps-cron-auto" 2>/dev/null || true
-  if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-    git remote set-url origin "https://${GITHUB_TOKEN}@github.com/nmorozoff/POST-excalibur-emdr.git" 2>/dev/null || true
-  fi
-  git fetch origin main 2>/dev/null && git reset --hard FETCH_HEAD 2>/dev/null || true
+run_steps() {
+  python3 scripts/materialize_vps_env.py || true
+  python3 scripts/browser_ensure_sessions.py --refresh || echo "WARN: session refresh failed (continue; per-platform checks apply)"
+  python3 scripts/asocks_sync_proxy.py --target telegram || true
+  python3 scripts/asocks_sync_proxy.py --target b17 || true
+  python3 scripts/fetch-topic-cover.py --all-pending
+  python3 scripts/publish-browser-deferred.py --submit --finish --git-push
+}
+
+# Nested call from vps_publish_guard / webhook: lock + git pull already done.
+if [[ "${POSTS_EMDR_PUBLISH_LOCKED:-}" == "1" ]]; then
+  run_steps
+  exit 0
 fi
 
-python3 scripts/materialize_vps_env.py || true
-python3 scripts/browser_ensure_sessions.py --refresh || echo "WARN: session refresh failed (continue; per-platform checks apply)"
-python3 scripts/asocks_sync_proxy.py --target telegram || true
-python3 scripts/asocks_sync_proxy.py --target b17 || true
-python3 scripts/fetch-topic-cover.py --all-pending
-python3 scripts/publish-browser-deferred.py --submit --finish --git-push
+# Exclusive flock + git pull, then same steps (prevents TG double-send vs webhook).
+exec python3 scripts/vps_publish_guard.py run -- "$ROOT/scripts/run-linux-browser-worker.sh"

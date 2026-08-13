@@ -548,6 +548,13 @@ def main() -> None:
         log.update({k: v for k, v in channel_logs[0].items() if k != "chat_id"})
     log_path = topic_dir / ("telegram-publish-log.json" if args.publish else "telegram-preview-log.json")
     log_path.write_text(json.dumps(log, ensure_ascii=False, indent=2), encoding="utf-8")
+    if args.publish:
+        try:
+            from vps_publish_guard import mark_telegram_sent
+
+            mark_telegram_sent(args.topic, log)
+        except Exception as exc:  # noqa: BLE001 — never fail publish on marker IO
+            log["durable_marker_error"] = str(exc)
     print(json.dumps(log, ensure_ascii=False, indent=2))
 
 

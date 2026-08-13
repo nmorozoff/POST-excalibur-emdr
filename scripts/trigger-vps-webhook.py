@@ -74,6 +74,20 @@ def main() -> None:
         except urllib.error.HTTPError as e:
             text = e.read().decode("utf-8", errors="replace")
             last_err = {"status": e.code, "error": text[:500]}
+            if e.code == 409:
+                # Publish already running under flock — not a failure; do not retry-spam TG.
+                try:
+                    payload = json.loads(text) if text else {}
+                except json.JSONDecodeError:
+                    payload = {}
+                print(
+                    json.dumps(
+                        {"status": 409, "accepted": False, "busy": True, **payload},
+                        ensure_ascii=False,
+                        indent=2,
+                    )
+                )
+                sys.exit(0)
             if e.code in (401, 403):
                 print(json.dumps(last_err, ensure_ascii=False, indent=2))
                 sys.exit(2)

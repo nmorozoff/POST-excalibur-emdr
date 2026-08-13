@@ -25,6 +25,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_backend import browser_ready
 from browser_worker_finish import finish_topic
 from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env, materialize_vps_runtime_env
+from vps_publish_guard import (
+    mark_telegram_sent,
+    restore_telegram_log_from_marker,
+    telegram_marker_done,
+)
 
 SCRIPTS = PROJECT_ROOT / "scripts"
 
@@ -44,6 +49,11 @@ def _log_status(path: Path) -> str | None:
 
 
 def _telegram_done(topic_dir: Path) -> bool:
+    topic = topic_dir.name
+    # Durable marker survives git reset --hard that wiped the repo log.
+    if telegram_marker_done(topic):
+        restore_telegram_log_from_marker(topic_dir, topic)
+        return True
     status = _log_status(topic_dir / "telegram-publish-log.json")
     return status in {"sent", "published"}
 
@@ -207,6 +217,17 @@ def run_publish(topic: str, *, submit: bool) -> dict:
                 # Continue to b17/TenChat — do not block the whole deferred pipeline on TG SSL/proxy blips
                 result["telegram_failed"] = True
                 # previously: result["status"] = "failed"; return result
+            else:
+                # Durable marker + immediate push so concurrent reset cannot re-send TG.
+                tg_log_path = topic_dir / "telegram-publish-log.json"
+                if tg_log_path.is_file():
+                    try:
+                        tg_log = json.loads(tg_log_path.read_text(encoding="utf-8"))
+                        marker = mark_telegram_sent(topic, tg_log)
+                        result["steps"]["telegram"]["durable_marker"] = str(marker)
+                    except (json.JSONDecodeError, OSError) as exc:
+                        result["steps"]["telegram"]["durable_marker_error"] = str(exc)
+                result["steps"]["telegram_git_push"] = git_push_logs(topic)
     else:
         result["steps"]["telegram"] = {"skipped": True, "reason": "already_published"}
 

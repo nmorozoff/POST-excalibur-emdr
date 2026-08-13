@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shlex
 import subprocess
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -28,73 +29,11 @@ WORKER = SCRIPTS / "run-linux-browser-worker.sh"
 
 sys.path.insert(0, str(SCRIPTS))
 from posts_emdr_env import materialize_telegram_env_from_os
+from vps_publish_guard import lock_held
 
 
 def _ensure_telegram_env() -> dict[str, object]:
     return materialize_telegram_env_from_os()
-
-
-def _git_pull() -> dict:
-    """Fetch origin/main; stash dirty tree so VPS automation never blocks on local drift."""
-    env_file = PROJECT_ROOT / "posts-emdr-memory" / "github.env.local"
-    env = os.environ.copy()
-    if env_file.is_file():
-        for line in env_file.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            k, v = line.split("=", 1)
-            env[k.strip()] = v.strip().strip('"').strip("'")
-    token = env.get("GITHUB_TOKEN", "").strip()
-    if not (PROJECT_ROOT / ".git").is_dir():
-        return {"ok": False, "reason": "no_git"}
-
-    remote = "origin"
-    if token:
-        remote_url = f"https://{token}@github.com/nmorozoff/POST-excalibur-emdr.git"
-        subprocess.run(
-            ["git", "remote", "set-url", "origin", remote_url],
-            cwd=PROJECT_ROOT,
-            capture_output=True,
-            text=True,
-            env=env,
-        )
-
-    stash = subprocess.run(
-        ["git", "stash", "push", "-u", "-m", "vps-webhook-auto"],
-        cwd=PROJECT_ROOT,
-        capture_output=True,
-        text=True,
-        env=env,
-    )
-    fetch = subprocess.run(
-        ["git", "fetch", remote, "main"],
-        cwd=PROJECT_ROOT,
-        capture_output=True,
-        text=True,
-        env=env,
-    )
-    if fetch.returncode != 0:
-        return {
-            "ok": False,
-            "stash_exit": stash.returncode,
-            "stdout_tail": (fetch.stdout or "")[-500:],
-            "stderr_tail": (fetch.stderr or "")[-500:],
-        }
-    reset = subprocess.run(
-        ["git", "reset", "--hard", "FETCH_HEAD"],
-        cwd=PROJECT_ROOT,
-        capture_output=True,
-        text=True,
-        env=env,
-    )
-    return {
-        "ok": reset.returncode == 0,
-        "mode": "fetch_reset_hard",
-        "stash_exit": stash.returncode,
-        "stdout_tail": (reset.stdout or "")[-500:],
-        "stderr_tail": (reset.stderr or "")[-500:],
-    }
 
 
 class WebhookHandler(BaseHTTPRequestHandler):
@@ -151,34 +90,51 @@ class WebhookHandler(BaseHTTPRequestHandler):
             self._json(200, {"ok": True, "auth": "ok", "dry_run": True, "topic": topic or None})
             return
 
-        pull = _git_pull()
+        # Reject concurrent publish before spawning (flock also held inside guard run).
+        if lock_held():
+            self._json(
+                409,
+                {
+                    "ok": False,
+                    "accepted": False,
+                    "status": "busy",
+                    "error": "publish_lock_held",
+                    "topic": topic or None,
+                    "note": "another VPS publish is running; retry later — do not force a second TG send",
+                },
+            )
+            return
+
         telegram_env = _ensure_telegram_env()
 
         if topic:
-            # cover may be gitignored — fetch from site/FTP
-            subprocess.run(
-                [
-                    sys.executable,
-                    str(PROJECT_ROOT / "scripts" / "fetch-topic-cover.py"),
-                    "--topic",
-                    topic,
-                ],
-                cwd=PROJECT_ROOT,
-                capture_output=True,
-                text=True,
-                env=env,
+            # Cover fetch + deferred publish share one flock (git pull inside guard).
+            import shlex
+
+            t = shlex.quote(topic)
+            worker_cmd = (
+                f"{sys.executable} {shlex.quote(str(PROJECT_ROOT / 'scripts' / 'fetch-topic-cover.py'))} "
+                f"--topic {t}; "
+                f"{sys.executable} {shlex.quote(str(PROJECT_ROOT / 'scripts' / 'publish-browser-deferred.py'))} "
+                f"--topic {t} --submit --finish --git-push"
             )
             cmd = [
                 sys.executable,
-                str(PROJECT_ROOT / "scripts" / "publish-browser-deferred.py"),
-                "--topic",
-                topic,
-                "--submit",
-                "--finish",
-                "--git-push",
+                str(PROJECT_ROOT / "scripts" / "vps_publish_guard.py"),
+                "run",
+                "--",
+                "bash",
+                "-lc",
+                worker_cmd,
             ]
         else:
-            cmd = [str(WORKER)]
+            cmd = [
+                sys.executable,
+                str(PROJECT_ROOT / "scripts" / "vps_publish_guard.py"),
+                "run",
+                "--",
+                str(WORKER),
+            ]
 
         # Async: do not block HTTP thread (Playwright can take many minutes).
         log_path = PROJECT_ROOT / "posts-emdr-memory" / "output" / (topic or "_cron") / "vps-webhook-run.log"
@@ -202,10 +158,10 @@ class WebhookHandler(BaseHTTPRequestHandler):
                 "accepted": True,
                 "pid": proc.pid,
                 "topic": topic or None,
-                "git_pull": pull,
                 "telegram_env": telegram_env,
                 "log": str(log_path),
-                "note": "publish running in background; poll output logs / git for completion",
+                "lock": "vps_publish_guard",
+                "note": "publish running in background under flock; poll output logs / git for completion",
             },
         )
 
