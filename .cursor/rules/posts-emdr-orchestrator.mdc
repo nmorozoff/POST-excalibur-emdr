@@ -13,6 +13,8 @@ alwaysApply: true
 **TenChat снят с пайплайна** (2026-08-03). **LinkedIn отменён** (блокировка аккаунта). **Кружок Макс** — вне scope MSP short-blog.
 **НЕ** запускать Ядрышко/Core, SEO-scout, WordPress publish (если пользователь явно не попросил блог).
 
+**Закрытие цикла:** после удачной публикации / перезалива / fix — сразу commit + **push в main** (и нужный webhook), без вопросов «пушить?». Подробности: `publish-close-the-loop.mdc`.
+
 ## Память
 
 `posts-emdr-memory/` — единый банк артефактов.
