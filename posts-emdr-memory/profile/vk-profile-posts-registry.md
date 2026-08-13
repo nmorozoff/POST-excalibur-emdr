@@ -10,6 +10,7 @@
 
 ## Опубликованные
 
+| sb-15-bending-tree | 2026-08-13 | Дерево, которое гнётся, но не ломается | 665 | https://vk.com/wall218367867_665 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,гибкость,психология |
 | sb-14-morning-fog | 2026-08-12 | Утренний туман и состояние «ничего не понятно, но спокойно» | ? | https://vk.com/wall218367867_664 | https://morozovanatalia.ru/anxiety | тревога,EMDR |
 | sb-14-morning-fog | 2026-08-12 | Утренний туман и состояние «ничего не понятно, но спокойно» | 662 | https://vk.com/wall218367867_662 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,неопределенность,психология |
 | sb-13-no-repot-in-storm | 2026-08-10 | Почему нельзя пересаживать растение в грозу | 661 | https://vk.com/wall218367867_661 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,кризис,психология |
