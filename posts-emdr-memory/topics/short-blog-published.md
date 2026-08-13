@@ -2,6 +2,7 @@
 
 | topic_id | # MSP | дата | заголовок | site_url |
 |----------|-------|------|-----------|----------|
+| `sb-15-bending-tree` | 15 | 2026-08-13 | Дерево, которое гнётся, но не ломается | in_progress | https://morozovanatalia.ru/anxiety |
 | `sb-14-morning-fog` | 14 | 2026-08-12 | Утренний туман и состояние «ничего не понятно, но спокойно» | https://morozovanatalia.ru/anxiety |
 | `sb-13-no-repot-in-storm` | 13 | 2026-08-10 | in_progress | Почему нельзя пересаживать растение в грозу | https://morozovanatalia.ru/anxiety |
 | `sb-12-stray-cat-trust` | 12 | 2026-08-09 | Что бездомная кошка во дворе научила про доверие | https://morozovanatalia.ru/anxiety |

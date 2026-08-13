@@ -11,6 +11,8 @@
 
 ## Опубликованные
 
+| sb-15-bending-tree | 2026-08-13 | Дерево, которое гнётся, но не ломается. Как жесткий контроль усиливает тревогу | @natalia_morozova_psy | 2042 | https://t.me/natalia_morozova_psy/2042 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
+| sb-15-bending-tree | 2026-08-13 | Дерево, которое гнётся, но не ломается. Как жесткий контроль усиливает тревогу | @nmorozova_emdr | 132 | https://t.me/nmorozova_emdr/132 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-14-morning-fog | 2026-08-12 | Тревога из-за неопределенности: состояние «ничего не понятно, но спокойно» | @natalia_morozova_psy | 2040 | https://t.me/natalia_morozova_psy/2040 | https://morozovanatalia.ru/anxiety | тревога,EMDR |
 | sb-14-morning-fog | 2026-08-12 | Утренний туман и состояние «ничего не понятно, но спокойно» | @morozova_emdr | ? | https://t.me/nmorozova_emdr/130 | https://morozovanatalia.ru/anxiety | тревога,EMDR |
 | sb-14-morning-fog | 2026-08-12 | Тревога из-за неопределенности: состояние «ничего не понятно, но спокойно» | @natalia_morozova_psy | 2040 | https://t.me/natalia_morozova_psy/2040 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |

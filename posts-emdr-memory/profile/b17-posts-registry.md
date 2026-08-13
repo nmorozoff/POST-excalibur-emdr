@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-15-bending-tree | 2026-08-13 | Дерево, которое гнётся, но не ломается | https://www.b17.ru/blog/derevo_kotoroe_gnetsya_no_ne_lomaetsya/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-14-morning-fog | 2026-08-12 | Утренний туман и состояние «ничего не понятно, но спокойно» | https://www.b17.ru/blog/utrenniy_tuman_i_sostoyanie_nichego_ne_ponyatno_no_spokoyno/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-13-no-repot-in-storm | 2026-08-10 | Острая тревога и жизненный кризис: почему нельзя принимать решения на пике стресса | https://www.b17.ru/blog/ostraya_trevoga_i_zhiznennyy_krizis_pochemu_nelzya_prinimat_resheniya_na_pike_stressa/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-12-stray-cat-trust | 2026-08-09 | Что бездомная кошка во дворе научила про доверие | https://www.b17.ru/blog/chto_bezdomnaya_koshka_vo_dvore_nauchila_pro_doverie/ | https://morozovanatalia.ru/anxiety | b17,психология |

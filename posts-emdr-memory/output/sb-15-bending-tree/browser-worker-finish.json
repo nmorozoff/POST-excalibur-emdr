@@ -1,0 +1,13 @@
+{
+  "topic": "sb-15-bending-tree",
+  "status": "browser_worker_finished",
+  "date": "2026-08-13",
+  "b17_url": "https://www.b17.ru/blog/derevo_kotoroe_gnetsya_no_ne_lomaetsya/",
+  "tenchat_url": null,
+  "site_url": "https://morozovanatalia.ru/anxiety",
+  "queue": {
+    "exit_code": 0,
+    "stdout": "OK marked published: sb-15-bending-tree → short-blog-published.md",
+    "stderr": ""
+  }
+}
