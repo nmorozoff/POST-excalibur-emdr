@@ -1,0 +1,103 @@
+{
+  "topic": "sb-15-bending-tree",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-08-13T10:48:32.519238+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11979,
+        "completion_tokens": 7513,
+        "total_tokens": 19492
+      },
+      "chars": 4162,
+      "contract_fixes": [
+        "truncated max body to hard max 4000",
+        "validation: max body outside target 3500-3800: 3988"
+      ]
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11235,
+        "completion_tokens": 4728,
+        "total_tokens": 15963
+      },
+      "chars": 3517,
+      "contract_fixes": []
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11584,
+        "completion_tokens": 7799,
+        "total_tokens": 19383
+      },
+      "chars": 5039,
+      "contract_fixes": []
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11602,
+        "completion_tokens": 6171,
+        "total_tokens": 17773
+      },
+      "chars": 4957,
+      "contract_fixes": [
+        "auto-wrapped vk-group sections"
+      ]
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11686,
+        "completion_tokens": 7757,
+        "total_tokens": 19443
+      },
+      "chars": 5192,
+      "contract_fixes": []
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11722,
+        "completion_tokens": 6250,
+        "total_tokens": 17972
+      },
+      "chars": 5072,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11444,
+        "completion_tokens": 6235,
+        "total_tokens": 17679
+      },
+      "chars": 1867,
+      "contract_fixes": []
+    }
+  },
+  "cover_prompt": {
+    "chars": 1860,
+    "cover_meta": {
+      "line1": "Дерево, которое гнётся",
+      "line2": "но не ломается",
+      "line3": "Как выстоять в бурю",
+      "yellow": "гнётся"
+    }
+  }
+}
