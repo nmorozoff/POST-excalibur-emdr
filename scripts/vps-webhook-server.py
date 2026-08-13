@@ -109,8 +109,6 @@ class WebhookHandler(BaseHTTPRequestHandler):
 
         if topic:
             # Cover fetch + deferred publish share one flock (git pull inside guard).
-            import shlex
-
             t = shlex.quote(topic)
             worker_cmd = (
                 f"{sys.executable} {shlex.quote(str(PROJECT_ROOT / 'scripts' / 'fetch-topic-cover.py'))} "
