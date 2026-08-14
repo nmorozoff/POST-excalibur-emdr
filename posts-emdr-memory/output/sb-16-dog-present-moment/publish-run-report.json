@@ -30,6 +30,11 @@
       "ok": true,
       "registry": true
     },
+    "vk_story": {
+      "ok": true,
+      "log": true,
+      "required": false
+    },
     "facebook": {
       "ok": true,
       "log": true,
@@ -42,7 +47,8 @@
       "log": true,
       "registry": true,
       "status": "published",
-      "required": true
+      "required": true,
+      "format_ok": true
     },
     "b17": {
       "ok": true,
@@ -55,7 +61,7 @@
   "covers": {
     "local_cover": {
       "ok": true,
-      "path": "/workspace/posts-emdr-memory/output/sb-16-dog-present-moment/cover.png"
+      "path": "/Users/natala/Documents/Проекты СURSOR/Посты EMDR/posts-emdr-memory/output/sb-16-dog-present-moment/cover.png"
     },
     "site_cover": {
       "url": "https://morozovanatalia.ru/social-covers/sb-16-dog-present-moment.jpg",

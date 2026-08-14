@@ -1,0 +1,26 @@
+{
+  "topic": "sb-16-dog-present-moment",
+  "method": "mcp-kv",
+  "tool": "vk_publish_story",
+  "cover_public_url": "https://morozovanatalia.ru/social-covers/sb-16-dog-present-moment.jpg",
+  "link_text": "Читать пост",
+  "instructions": "После публикации постов на стене вызвать MCP vk_publish_story для каждого элемента calls[]. Gate: успешный ответ MCP.",
+  "calls": [
+    {
+      "publish_location": "personal",
+      "content_type": "photo",
+      "photo_url": "https://morozovanatalia.ru/social-covers/sb-16-dog-present-moment.jpg",
+      "link_text": "Читать пост",
+      "link_url": "https://vk.com/wall218367867_667"
+    },
+    {
+      "publish_location": "group",
+      "group_id": "224685309",
+      "content_type": "photo",
+      "photo_url": "https://morozovanatalia.ru/social-covers/sb-16-dog-present-moment.jpg",
+      "link_text": "Читать пост",
+      "link_url": "https://vk.com/wall-224685309_167"
+    }
+  ],
+  "record_after_publish": "python3 scripts/publish-vk-story.py --topic sb-16-dog-present-moment --record --profile-story-id <id> --group-story-id <id>"
+}

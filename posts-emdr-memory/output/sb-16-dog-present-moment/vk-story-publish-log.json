@@ -1,0 +1,21 @@
+{
+  "topic": "sb-16-dog-present-moment",
+  "platform": "vk_story",
+  "status": "published",
+  "method": "mcp-kv",
+  "tool": "vk_publish_story",
+  "date": "2026-08-14",
+  "cover_public_url": "https://morozovanatalia.ru/social-covers/sb-16-dog-present-moment.jpg",
+  "link_text": "Читать пост",
+  "stories": {
+    "personal": {
+      "story_id": "456239501",
+      "link_url": "https://vk.com/wall218367867_667"
+    },
+    "group": {
+      "story_id": "456239062",
+      "group_id": "224685309",
+      "link_url": "https://vk.com/wall-224685309_167"
+    }
+  }
+}

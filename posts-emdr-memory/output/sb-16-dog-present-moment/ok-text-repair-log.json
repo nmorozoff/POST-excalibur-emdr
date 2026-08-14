@@ -1,0 +1,18 @@
+{
+  "topic": "sb-16-dog-present-moment",
+  "mediatopic_id": "161368950468719",
+  "url": "https://ok.ru/group/70000034253679/topic/161368950468719",
+  "status": "handoff_fixed_live_manual",
+  "fixed_at": "2026-08-14",
+  "issue": "Live OK post had _*disclaimer*_ markdown artifacts",
+  "actions_done": [
+    "ok-post.md disclaimer → plain text",
+    "regenerate-ok-handoff.py → ok-mcp-handoff.json without markdown",
+    "format_ok_publish_text() strips _italic_ and normalizes disclaimer"
+  ],
+  "live_edit": {
+    "required": true,
+    "reason": "MCP mcp-kv has no mediatopic.edit tool",
+    "instruction": "В админке группы ОК отредактировать последнюю строку поста: убрать _* и *_ вокруг disclaimer"
+  }
+}

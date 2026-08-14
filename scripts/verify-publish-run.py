@@ -17,7 +17,7 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env
+from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env, publish_text_format_issues
 
 PROFILE = MEMORY / "profile"
 EXPECTED_TG_CHANNELS = ("nmorozova_emdr", "natalia_morozova_psy")
@@ -164,6 +164,20 @@ def verify_topic(topic: str) -> dict:
     if not vk_group:
         report["issues"].append("VK группа: нет в реестре")
 
+    vk_handoff = _read_json(topic_dir / "vk-mcp-handoff.json")
+    if vk_handoff:
+        for call in vk_handoff.get("calls") or []:
+            msg = call.get("message") or ""
+            for issue in publish_text_format_issues(msg, "vk"):
+                report["issues"].append(issue)
+
+    vk_story_log = _read_json(topic_dir / "vk-story-publish-log.json")
+    report["platforms"]["vk_story"] = {
+        "ok": bool(vk_story_log and vk_story_log.get("status") == "published"),
+        "log": bool(vk_story_log),
+        "required": False,
+    }
+
     # Facebook
     fb_log = _read_json(topic_dir / "zernio-publish-log.json")
     fb_reg = _registry_row(topic, PROFILE / "facebook-posts-registry.md")
@@ -220,6 +234,13 @@ def verify_topic(topic: str) -> dict:
                 report["links"]["ok"] = m.group(1)
         if not ok_ok:
             report["issues"].append("OK: нет publish-log или реестра")
+        ok_handoff = _read_json(topic_dir / "ok-mcp-handoff.json")
+        if ok_handoff:
+            ok_text = ok_handoff.get("text") or ""
+            fmt_issues = publish_text_format_issues(ok_text, "ok")
+            report["platforms"]["ok"]["format_ok"] = not fmt_issues
+            for issue in fmt_issues:
+                report["issues"].append(issue)
     else:
         report["platforms"]["ok"] = {
             "ok": True,

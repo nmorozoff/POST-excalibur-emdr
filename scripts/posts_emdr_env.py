@@ -189,15 +189,54 @@ def markdown_to_ok_text_tokens(text: str) -> list[dict[str, str]]:
     return tokens
 
 
+DISCLAIMER_LINE_RE = re.compile(
+    r"[_\*]*\s*Все истории публикуются только с разрешения клиентов.*?случайны\.\s*[_\*]*",
+    re.S,
+)
+
+
+def strip_markdown_italic(text: str) -> str:
+    """Remove _italic_, *italic*, and _*combo*_ wrappers (OK/VK plain text)."""
+    text = re.sub(r"_\*([^*]+)\*_", r"\1", text)
+    text = re.sub(r"\*([^*\n]+)\*", r"\1", text)
+    text = re.sub(r"_([^_\n]+)_", r"\1", text)
+    return text
+
+
+def normalize_client_story_disclaimer(text: str, platform: str) -> str:
+    """Replace markdown-wrapped disclaimer with platform-appropriate plain line."""
+    if not has_client_story_disclaimer(text):
+        return text
+    line = client_story_disclaimer_line(platform)
+    return DISCLAIMER_LINE_RE.sub(line, text)
+
+
+def publish_text_format_issues(text: str, platform: str) -> list[str]:
+    """Detect markdown artifacts that must not appear in live OK/VK posts."""
+    issues: list[str] = []
+    if platform == "ok":
+        if "**" in text:
+            issues.append("OK: markdown ** в тексте")
+        if re.search(r"_\*.*?\*_", text, re.S):
+            issues.append("OK: markdown _*...*_ в тексте")
+    elif platform == "vk" and "**" in text:
+        issues.append("VK: markdown ** в тексте")
+    return issues
+
+
 def format_ok_publish_text(text: str) -> str:
     """Normalize OK body for current MCP (plain text + visible URLs)."""
     text = strip_cover_meta_block(text)
     text = fix_disclaimer_typo(text)
     text = re.sub(r"(?m)^##\s+", "", text)
+    text = normalize_client_story_disclaimer(text, "ok")
     text = re.sub(r"\*\*([^*]+)\*\*", r"\1", text)
+    text = strip_markdown_italic(text)
     text = markdown_links_to_ok_plain(text)
     text = remove_znakomo(text)
     text = normalize_typography(text)
+    line = CLIENT_STORY_DISCLAIMER_TEXT
+    text = re.sub(rf"(\S)({re.escape(line)})$", rf"\1\n\n\2", text, flags=re.M)
     return text.strip()
 
 
@@ -273,7 +312,7 @@ def ensure_client_story_disclaimer(text: str, platform: str) -> str:
     """Append mandatory client-story disclaimer as the last content line."""
     text = fix_disclaimer_typo(text)
     if has_client_story_disclaimer(text):
-        return text
+        return normalize_client_story_disclaimer(text, platform)
     line = client_story_disclaimer_line(platform)
 
     if platform == "telegram":
@@ -294,10 +333,11 @@ def ensure_client_story_disclaimer(text: str, platform: str) -> str:
         else:
             body, tail = rest, ""
         if has_client_story_disclaimer(body):
-            return text
+            return normalize_client_story_disclaimer(text, platform)
         return prefix + body.rstrip() + f"\n\n{line}" + tail
 
-    return text.rstrip() + f"\n\n{line}\n"
+    out = text.rstrip() + f"\n\n{line}\n"
+    return normalize_client_story_disclaimer(out, platform)
 
 
 def extract_post_body_from_md(text: str) -> str:

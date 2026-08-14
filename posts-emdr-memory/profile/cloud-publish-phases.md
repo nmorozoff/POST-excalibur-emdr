@@ -36,6 +36,28 @@ python3 scripts/publish-topic.py --topic {topic_id}
 Gate: в ответе MCP — `📸 Загружено фото`.  
 После обоих постов: `python3 scripts/send-vk-post.py --topic {id} --delete-cover`
 
+### VK Stories (опционально, после wall-постов)
+
+Когда есть `vk-publish-log.json` с URL постов:
+
+```bash
+python3 scripts/publish-vk-story.py --topic {id} --prepare
+```
+
+Агент вызывает MCP **`vk_publish_story`** дважды по `vk-story-mcp-handoff.json`:
+
+| # | publish_location | photo_url | link_text | link_url |
+|---|------------------|-----------|-----------|----------|
+| 1 | `personal` | cover CDN | `Читать пост` | URL wall профиля |
+| 2 | `group` | cover CDN | `Читать пост` | URL wall группы |
+
+Запись лога:
+
+```bash
+python3 scripts/publish-vk-story.py --topic {id} --record \\
+  --profile-story-id ... --group-story-id ...
+```
+
 ### OK (группа)
 
 Если есть `ok-mcp-handoff.json`:

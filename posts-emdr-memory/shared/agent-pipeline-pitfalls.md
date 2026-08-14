@@ -70,6 +70,18 @@
 
 **Правильно:** `mcp_auth` для `user-mcp-kv`, затем повторить вызов. Не логировать токены.
 
+## OK: markdown в plain-text посте (`_*disclaimer*_`)
+
+**Симптом (2026-08-14, sb-16):** на стене ОК в конце поста видно `_*Все истории…*_` вместо plain disclaimer.
+
+**Причина:** Grsai иногда пишет disclaimer в стиле Макс (`_*…*_`); `format_ok_publish_text()` снимал только `**`, не `_`/`*`.
+
+**Правильно:**
+- `format_ok_publish_text()` + `normalize_client_story_disclaimer()` — plain disclaimer для OK.
+- `verify-publish-run.py` — gate на `**` и `_*…*_` в `ok-mcp-handoff.json` → `text`.
+- После правки: `python3 scripts/regenerate-ok-handoff.py --topic {id}`.
+- **Live edit:** MCP mcp-kv **не** имеет `mediatopic.edit` — одноразовый fix на стене вручную в админке группы или ждать `mediatopic.edit` в MCP.
+
 ## Обложки (Grsai / Kie / Runware)
 
 - **Основной генератор:** `scripts/grsai-cover.py` — Grsai `gpt-image-2`, **1280×1024 (5:4)**, `quality=low`, ключ `GRSAI_API_KEY` (`grsai.env.local` или Cloud Secrets).
