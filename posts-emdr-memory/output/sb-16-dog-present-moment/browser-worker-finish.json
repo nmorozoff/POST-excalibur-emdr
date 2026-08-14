@@ -1,0 +1,13 @@
+{
+  "topic": "sb-16-dog-present-moment",
+  "status": "browser_worker_finished",
+  "date": "2026-08-14",
+  "b17_url": "https://www.b17.ru/blog/moy_pes_ne_delit_vremya_na_do_i_posle/",
+  "tenchat_url": null,
+  "site_url": "https://morozovanatalia.ru/anxiety",
+  "queue": {
+    "exit_code": 0,
+    "stdout": "OK marked published: sb-16-dog-present-moment → short-blog-published.md",
+    "stderr": ""
+  }
+}

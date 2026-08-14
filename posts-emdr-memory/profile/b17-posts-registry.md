@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-16-dog-present-moment | 2026-08-14 | Мой пёс не делит время на «до» и «после» | https://www.b17.ru/blog/moy_pes_ne_delit_vremya_na_do_i_posle/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-15-bending-tree | 2026-08-13 | Дерево, которое гнётся, но не ломается | https://www.b17.ru/blog/derevo_kotoroe_gnetsya_no_ne_lomaetsya/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-14-morning-fog | 2026-08-12 | Утренний туман и состояние «ничего не понятно, но спокойно» | https://www.b17.ru/blog/utrenniy_tuman_i_sostoyanie_nichego_ne_ponyatno_no_spokoyno/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-13-no-repot-in-storm | 2026-08-10 | Острая тревога и жизненный кризис: почему нельзя принимать решения на пике стресса | https://www.b17.ru/blog/ostraya_trevoga_i_zhiznennyy_krizis_pochemu_nelzya_prinimat_resheniya_na_pike_stressa/ | https://morozovanatalia.ru/anxiety | b17,психология |

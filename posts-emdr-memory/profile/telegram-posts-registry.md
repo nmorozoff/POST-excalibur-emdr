@@ -11,6 +11,8 @@
 
 ## Опубликованные
 
+| sb-16-dog-present-moment | 2026-08-14 | Мой пёс не делит время на «до» и «после» | @natalia_morozova_psy | 2043 | https://t.me/natalia_morozova_psy/2043 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
+| sb-16-dog-present-moment | 2026-08-14 | Мой пёс не делит время на «до» и «после» | @nmorozova_emdr | 133 | https://t.me/nmorozova_emdr/133 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-15-bending-tree | 2026-08-13 | Дерево, которое гнётся, но не ломается. Как жесткий контроль усиливает тревогу | @natalia_morozova_psy | 2042 | https://t.me/natalia_morozova_psy/2042 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-15-bending-tree | 2026-08-13 | Дерево, которое гнётся, но не ломается. Как жесткий контроль усиливает тревогу | @nmorozova_emdr | 132 | https://t.me/nmorozova_emdr/132 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-14-morning-fog | 2026-08-12 | Тревога из-за неопределенности: состояние «ничего не понятно, но спокойно» | @natalia_morozova_psy | 2040 | https://t.me/natalia_morozova_psy/2040 | https://morozovanatalia.ru/anxiety | тревога,EMDR |
