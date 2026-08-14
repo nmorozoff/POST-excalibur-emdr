@@ -146,6 +146,23 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Правильно:** MSP short-blog VPS worker — только Telegram + b17 (`publish-browser-deferred.py`, `browser_worker_finish.py`). TenChat — отдельно (Mac/ручной), не gate для очереди.
 
+## ВК: звёздочки `**` в заголовке поста
+
+**Симптом:** в ленте VK заголовок вида `**Дерево…**` — markdown не рендерится.
+
+**Причина:** Grsai/`## Текст поста` оборачивает заголовок в `**…**`; VK wall API — plain text.
+
+**Правильно (2026-08-14):**
+- `format_vk_publish_text()` / `markdown_bold_to_vk_visual()` перед MCP:
+  - кириллица → снять `**` (plain);
+  - латиница/цифры → Mathematical Sans-Serif Bold.
+- Handoff: `publish-topic.write_vk_mcp_handoff` и `send-vk-post.extract_post` обязаны гнать текст через `format_vk_publish_text`.
+- Контракт: `profile/vk-post-prompt.md` (раздел «Заголовок»).
+
+**Не делать:** публиковать `message` с сырыми `**`; подменять кириллицу латинскими lookalike (ломает поиск).
+
+**Gate:** в `vk-mcp-handoff.json` → `calls[].message` нет подстроки `**`.
+
 ## VPS phase 3 partial после retry otchetik
 
 **Симптом:** Отчётик ×2 (initial + 10–15 мин) → `overall: partial`; нет `browser-worker-finish.json`, `telegram-publish-log.json`, `b17-publish-log.json` в `output/{topic}/` (после `git pull`).

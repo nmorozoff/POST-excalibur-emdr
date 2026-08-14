@@ -56,14 +56,17 @@ PLATFORM_SPECS: dict[str, dict[str, str]] = {
         "prompt": "vk-post-prompt.md",
         "registry": "vk-profile-posts-registry.md",
         "kind": "rewrite",
-        "note": "Режим VK профиль: utm_source=vk, перелинковка только vk-profile-posts-registry.md",
+        "note": "Режим VK профиль: utm_source=vk, перелинковка только vk-profile-posts-registry.md. "
+        "В ## Текст поста не оставляй видимые ** вокруг заголовка — VK wall не рендерит markdown "
+        "(пайплайн format_vk_publish_text снимет **, но лучше сразу plain).",
     },
     "vk-group": {
         "output": "vk-group-post.md",
         "prompt": "vk-post-prompt.md",
         "registry": "vk-group-posts-registry.md",
         "kind": "rewrite",
-        "note": "Режим VK группа: utm_source=vk_group, перелинковка только vk-group-posts-registry.md",
+        "note": "Режим VK группа: utm_source=vk_group, перелинковка только vk-group-posts-registry.md. "
+        "Заголовок без **markdown** — VK показывает звёздочки как текст.",
     },
     "facebook": {
         "output": "facebook-post.md",

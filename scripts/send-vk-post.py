@@ -32,9 +32,9 @@ def extract_post(md_path: Path) -> str:
     import sys
 
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-    from posts_emdr_env import extract_post_body_from_md
+    from posts_emdr_env import extract_post_body_from_md, format_vk_publish_text
 
-    return extract_post_body_from_md(md_path.read_text(encoding="utf-8"))
+    return format_vk_publish_text(extract_post_body_from_md(md_path.read_text(encoding="utf-8")))
 
 
 def delete_topic_covers(topic_id: str, env: dict[str, str]) -> list[str]:

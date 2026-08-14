@@ -100,10 +100,10 @@ def ensure_cover(topic: str) -> dict:
 
 
 def _extract_vk_post(md_path: Path) -> str:
-    from posts_emdr_env import extract_post_body_from_md
+    from posts_emdr_env import extract_post_body_from_md, format_vk_publish_text
 
     try:
-        return extract_post_body_from_md(md_path.read_text(encoding="utf-8"))
+        return format_vk_publish_text(extract_post_body_from_md(md_path.read_text(encoding="utf-8")))
     except ValueError as exc:
         raise SystemExit(str(exc)) from exc
 

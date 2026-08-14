@@ -1,0 +1,21 @@
+{
+  "topic": "sb-15-bending-tree",
+  "platform": "vk",
+  "status": "published",
+  "method": "mcp-kv",
+  "profile": {
+    "post_id": 666,
+    "url": "https://vk.com/wall218367867_666",
+    "photo_id": "photo218367867_457247756",
+    "note": "republish without markdown **; delete old wall218367867_665"
+  },
+  "group": {
+    "post_id": 166,
+    "group_id": "224685309",
+    "url": "https://vk.com/wall-224685309_166",
+    "photo_id": "photo218367867_457247758",
+    "note": "republish without markdown **; delete old wall-224685309_164 and _165 (typo draft)"
+  },
+  "date": "2026-08-14",
+  "format_vk_publish_text": true
+}

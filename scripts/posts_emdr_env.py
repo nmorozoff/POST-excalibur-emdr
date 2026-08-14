@@ -201,6 +201,61 @@ def format_ok_publish_text(text: str) -> str:
     return text.strip()
 
 
+# Mathematical Sans-Serif Bold — works in VK feed for Latin/digits.
+# Cyrillic has no Unicode math-bold block; for Russian titles we strip ** only
+# (raw asterisks look broken; faux Latin lookalikes break search/copy).
+_VK_BOLD_LATIN = str.maketrans(
+    {
+        **{chr(o): chr(0x1D5D4 + i) for i, o in enumerate(range(ord("A"), ord("Z") + 1))},
+        **{chr(o): chr(0x1D5EE + i) for i, o in enumerate(range(ord("a"), ord("z") + 1))},
+        **{chr(o): chr(0x1D7EC + i) for i, o in enumerate(range(ord("0"), ord("9") + 1))},
+    }
+)
+
+
+def to_vk_visual_bold(text: str) -> str:
+    """Bold Latin/digits via Unicode; leave other characters unchanged."""
+    return text.translate(_VK_BOLD_LATIN)
+
+
+def _cyrillic_ratio(text: str) -> float:
+    letters = [c for c in text if c.isalpha()]
+    if not letters:
+        return 0.0
+    cyr = sum(1 for c in letters if "а" <= c.lower() <= "я" or c.lower() == "ё")
+    return cyr / len(letters)
+
+
+def markdown_bold_to_vk_visual(text: str) -> str:
+    """Turn **markdown bold** into VK-safe text: never leave raw ** in the wall post.
+
+    - Latin/digit spans → Mathematical Sans-Serif Bold (visually bold in VK)
+    - Cyrillic / mixed Russian titles → plain text without asterisks
+      (VK wall has no native markdown; Cyrillic has no Unicode math-bold)
+    """
+
+    def _repl(m: re.Match[str]) -> str:
+        inner = m.group(1)
+        if _cyrillic_ratio(inner) >= 0.2:
+            return inner
+        return to_vk_visual_bold(inner)
+
+    text = re.sub(r"\*\*([^*]+)\*\*", _repl, text)
+    text = text.replace("****", "").replace("**", "")
+    return text
+
+
+def format_vk_publish_text(text: str) -> str:
+    """VK wall has no markdown: convert/strip **bold**, keep [url|anchor]."""
+    text = strip_cover_meta_block(text)
+    text = fix_disclaimer_typo(text)
+    text = re.sub(r"(?m)^##\s+", "", text)
+    text = markdown_bold_to_vk_visual(text)
+    text = remove_znakomo(text)
+    text = normalize_typography(text)
+    return text.strip()
+
+
 def has_client_story_disclaimer(text: str) -> bool:
     low = text.lower()
     return "разрешения клиентов" in low and "вымышлен" in low and "совпаден" in low
