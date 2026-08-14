@@ -1,0 +1,104 @@
+{
+  "topic": "sb-16-dog-present-moment",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-08-14T14:22:34.418651+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11988,
+        "completion_tokens": 10879,
+        "total_tokens": 22867
+      },
+      "chars": 4046,
+      "contract_fixes": [
+        "validation: max body outside target 3500-3800: 3857"
+      ]
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11273,
+        "completion_tokens": 6207,
+        "total_tokens": 17480
+      },
+      "chars": 3952,
+      "contract_fixes": []
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11791,
+        "completion_tokens": 7550,
+        "total_tokens": 19341
+      },
+      "chars": 5205,
+      "contract_fixes": [
+        "auto-wrapped vk-profile sections"
+      ]
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11785,
+        "completion_tokens": 5445,
+        "total_tokens": 17230
+      },
+      "chars": 4841,
+      "contract_fixes": [
+        "auto-wrapped vk-group sections"
+      ]
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11705,
+        "completion_tokens": 7649,
+        "total_tokens": 19354
+      },
+      "chars": 4693,
+      "contract_fixes": []
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11872,
+        "completion_tokens": 6098,
+        "total_tokens": 17970
+      },
+      "chars": 4671,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11452,
+        "completion_tokens": 6449,
+        "total_tokens": 17901
+      },
+      "chars": 1926,
+      "contract_fixes": []
+    }
+  },
+  "cover_prompt": {
+    "chars": 1877,
+    "cover_meta": {
+      "line1": "Мой пёс не делит время",
+      "line2": "на «до» и «после»",
+      "line3": "как снизить тревогу",
+      "yellow": "тревогу"
+    }
+  }
+}

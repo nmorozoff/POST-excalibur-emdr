@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-16-dog-present-moment | 2026-08-14 | Мой пёс не делит время на «до» и «после» | https://max.ru/se13417616_biz/AaAAr6bvSog | https://morozovanatalia.ru/anxiety?utm_source=max | тревога,метафора,EMDR,настоящий момент |
 | sb-15-bending-tree | 2026-08-13 | Дерево, которое гнётся, но не ломается | https://max.ru/se13417616_biz/AZ_6xVm9NXs | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,гибкость,психология |
 | sb-14-morning-fog | 2026-08-12 | Утренний туман и состояние «ничего не понятно, но спокойно» | https://max.ru/se13417616_biz/AZ_1N7OsMO4 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,неопределенность,психология |
 | sb-13-no-repot-in-storm | 2026-08-10 | Почему нельзя пересаживать растение в грозу | https://max.ru/se13417616_biz/AZ_rM8K1XyM | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,кризис,психология |
