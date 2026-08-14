@@ -1,0 +1,39 @@
+{
+  "topic": "sb-16-dog-present-moment",
+  "steps": {
+    "site_cover": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"topic\": \"sb-16-dog-present-moment\",\n  \"profile_chars\": 4991,\n  \"group_chars\": 4622,\n  \"cover_local\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-16-dog-present-moment/cover.png\",\n  \"cover_jpeg_bytes\": 65968,\n  \"cover_public_url\": \"https://morozovanatalia.ru/social-covers/sb-16-dog-present-moment.jpg\",\n  \"cover_http_status\": 200,\n  \"cover_serves_image\": true,\n  \"cover_upload_method\": \"curl_active\"\n}\n",
+      "stderr_tail": "",
+      "cover_public_url": "https://morozovanatalia.ru/social-covers/sb-16-dog-present-moment.jpg",
+      "ok": true
+    },
+    "telegram_proxy": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"target\": \"telegram\",\n  \"asocks_port_id\": 231489552,\n  \"asocks_port_name\": \"ResKazakhstan - Turkestan\",\n  \"TELEGRAM_PROXY_SERVER\": \"195.162.68.169:9999\",\n  \"TELEGRAM_PROXY_USERNAME\": \"zx5eh3xhho-res-country-KZ-state-1524787-city-1517945-hold-session-session-6a68ee56a829f\",\n  \"TELEGRAM_PROXY_PASSWORD\": \"SBuzvBfM8hm817J7\",\n  \"template\": \"http://zx5eh3xhho-res-country-KZ-state-1524787-city-1517945-hold-session-session-6a68ee56a829f:SBuzvBfM8hm817J7@195.162.68.169:9999\",\n  \"written\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/browser.env.local\"\n}\n",
+      "stderr_tail": "",
+      "ok": true
+    },
+    "telegram": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"status\": \"sent\",\n  \"mode\": \"publish\",\n  \"delivery\": \"link_preview_single_message\",\n  \"html_chars\": 3899,\n  \"channels\": [\n    {\n      \"chat_id\": \"@nmorozova_emdr\",\n      \"message_id\": 133\n    },\n    {\n      \"chat_id\": \"@natalia_morozova_psy\",\n      \"message_id\": 2043\n    }\n  ],\n  \"cover_source\": \"catbox\"\n}\n",
+      "stderr_tail": "",
+      "durable_marker": "/tmp/posts-emdr-state/platforms/sb-16-dog-present-moment/telegram.json"
+    },
+    "telegram_git_push": {
+      "committed": true,
+      "pushed": true,
+      "push_stderr": "To https://github.com/nmorozoff/POST-excalibur-emdr.git\n   60ad708..fb32489  HEAD -> main\n"
+    },
+    "tenchat": {
+      "skipped": true,
+      "reason": "out_of_msp_short_blog_pipeline"
+    },
+    "b17": {
+      "exit_code": 0,
+      "stdout_tail": "еса, тело не умеет отключаться.\\n\\nЭто картина застрявшего заряда. Логические уговоры бессильны против физиологии, префронтальная кора отключается, когда миндалина кричит об опасности. Техники заземления снимают острый симптом, но не убирают саму причину в нейронных сетях. \\n\\nЗдесь эффективно работает метод EMDR. Застрявший заряд распаковывается, нервная система понимает, что пугающее событие осталось в прошлом. Тело перестает реагировать на триггеры. Появляется та самая кристальная тишина внутри, и вы снова можете просто чувствовать вкус еды, а не планировать пути отхода.\\n\\nА где чаще всего блуждают ваши мысли: в сожалениях о прошлом или в тревогах о завтрашнем дне?\\n\\nКогда хочется разобрать свой случай, напишите мне в личные сообщения здесь на b17.\\n\\nПодробности о проведении сессии, стоимости и записи читайте ТУТ: \\n\\nВсе истории публикуются только с разрешения клиентов, все имена вымышленные, все совпадения случайны.\",\n  \"body_chars\": 1748,\n  \"cover_local\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-16-dog-present-moment/cover.png\",\n  \"cover_wordpress\": {\n    \"url\": \"https://morozova-natalya.ru/wp-content/uploads/2026/08/sb-16-dog-present-moment.jpg\",\n    \"id\": \"304\",\n    \"link\": \"https://morozova-natalya.ru/cover-sb-16-dog-present-moment/\"\n  },\n  \"utm_source\": \"b17\",\n  \"status\": \"published\",\n  \"compose_url\": \"https://www.b17.ru/my_blog.php?mod=edit\",\n  \"post_url\": \"https://www.b17.ru/blog/moy_pes_ne_delit_vremya_na_do_i_posle/\",\n  \"public_url\": \"https://www.b17.ru/blog/moy_pes_ne_delit_vremya_na_do_i_posle/\",\n  \"cover_url\": \"https://morozovanatalia.ru/social-covers/sb-16-dog-present-moment.jpg\",\n  \"filled\": [\n    \"title\",\n    \"latname\",\n    \"razdel\",\n    \"author\",\n    \"tinymce_body\",\n    \"cover:announcement_image_url_not_found\",\n    \"cover:https_tinymce\",\n    \"draft_unchecked\"\n  ],\n  \"fill_mode\": \"playwright-b17\",\n  \"cover_inline\": true,\n  \"auto_submit\": true,\n  \"backend\": \"playwright\",\n  \"note\": \"Опубликовано автоматически (Сохранить)\"\n}\n",
+      "stderr_tail": ""
+    }
+  },
+  "status": "ok"
+}
