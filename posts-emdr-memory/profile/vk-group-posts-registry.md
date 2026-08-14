@@ -12,6 +12,7 @@
 
 ## Опубликованные
 
+| sb-16-dog-present-moment | 2026-08-14 | Мой пёс не делит время на «до» и «после» | 167 | https://vk.com/wall-224685309_167 | https://morozovanatalia.ru/anxiety?utm_source=vk_group | тревога,метафора,EMDR,настоящий момент |
 | sb-15-bending-tree | 2026-08-14 | Дерево, которое гнётся, но не ломается | 166 | https://vk.com/wall-224685309_166 | https://morozovanatalia.ru/anxiety | тревога,EMDR |
 | sb-15-bending-tree | 2026-08-13 | Дерево, которое гнётся, но не ломается | 164 | https://vk.com/wall-224685309_164 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,гибкость,психология |
 | sb-14-morning-fog | 2026-08-12 | Тревога из-за неопределенности: состояние «ничего не понятно, но спокойно» | ? | https://vk.com/wall-224685309_163 | https://morozovanatalia.ru/anxiety | тревога,EMDR |

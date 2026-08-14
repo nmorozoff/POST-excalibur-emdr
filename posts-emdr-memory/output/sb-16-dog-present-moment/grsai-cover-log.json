@@ -1,0 +1,38 @@
+{
+  "taskId": "16-cdb5bcc2-72d4-49a3-a382-fe21a9a223d7",
+  "imageURL": "https://file3.aitohumanize.com/file/e7226caa25e34c6b88415f21fc2fb2f5.png",
+  "reference_rotation": {
+    "topic": "sb-16-dog-present-moment",
+    "slot": 8,
+    "reference_path": "/workspace/posts-emdr-memory/assets/reference/portrait-08.jpg",
+    "backend": "grsai",
+    "aspect_ratio": "1280x1024",
+    "quality": "low",
+    "model": "gpt-image-2",
+    "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-08.jpg"
+  },
+  "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-08.jpg",
+  "model": "gpt-image-2",
+  "backend": "grsai",
+  "raw": {
+    "callback_url": "-1",
+    "end_time": 1786717872,
+    "error": "",
+    "failure_reason": "",
+    "height": 0,
+    "id": "16-cdb5bcc2-72d4-49a3-a382-fe21a9a223d7",
+    "progress": 100,
+    "results": [
+      {
+        "height": 0,
+        "url": "https://file3.aitohumanize.com/file/e7226caa25e34c6b88415f21fc2fb2f5.png",
+        "width": 0
+      }
+    ],
+    "start_time": 1786717812,
+    "status": "succeeded",
+    "task_id": "",
+    "url": "",
+    "width": 0
+  }
+}
