@@ -1,0 +1,38 @@
+{
+  "taskId": "12-1c7524a3-6935-4ec5-a0e2-3807f12b951d",
+  "imageURL": "https://file5.aitohumanize.com/file/ea055af866f1401984fd5e92168a47c8.png",
+  "reference_rotation": {
+    "topic": "sb-17-weed-unplanted",
+    "slot": 1,
+    "reference_path": "/workspace/posts-emdr-memory/assets/reference/portrait-01.jpg",
+    "backend": "grsai",
+    "aspect_ratio": "1280x1024",
+    "quality": "low",
+    "model": "gpt-image-2",
+    "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-01.jpg"
+  },
+  "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-01.jpg",
+  "model": "gpt-image-2",
+  "backend": "grsai",
+  "raw": {
+    "callback_url": "-1",
+    "end_time": 1786786273,
+    "error": "",
+    "failure_reason": "",
+    "height": 0,
+    "id": "12-1c7524a3-6935-4ec5-a0e2-3807f12b951d",
+    "progress": 100,
+    "results": [
+      {
+        "height": 0,
+        "url": "https://file5.aitohumanize.com/file/ea055af866f1401984fd5e92168a47c8.png",
+        "width": 0
+      }
+    ],
+    "start_time": 1786786223,
+    "status": "succeeded",
+    "task_id": "",
+    "url": "",
+    "width": 0
+  }
+}
