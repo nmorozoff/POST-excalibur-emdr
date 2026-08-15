@@ -1,0 +1,39 @@
+{
+  "topic": "sb-17-weed-unplanted",
+  "steps": {
+    "site_cover": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"topic\": \"sb-17-weed-unplanted\",\n  \"profile_chars\": 4457,\n  \"group_chars\": 4390,\n  \"cover_local\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-17-weed-unplanted/cover.png\",\n  \"cover_jpeg_bytes\": 71024,\n  \"cover_public_url\": \"https://morozovanatalia.ru/social-covers/sb-17-weed-unplanted.jpg\",\n  \"cover_http_status\": 200,\n  \"cover_serves_image\": true,\n  \"cover_upload_method\": \"curl_active\"\n}\n",
+      "stderr_tail": "",
+      "cover_public_url": "https://morozovanatalia.ru/social-covers/sb-17-weed-unplanted.jpg",
+      "ok": true
+    },
+    "telegram_proxy": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"target\": \"telegram\",\n  \"asocks_port_id\": 231489552,\n  \"asocks_port_name\": \"ResKazakhstan - Turkestan\",\n  \"TELEGRAM_PROXY_SERVER\": \"195.162.68.169:9999\",\n  \"TELEGRAM_PROXY_USERNAME\": \"zx5eh3xhho-res-country-KZ-state-1524787-city-1517945-hold-session-session-6a68ee56a829f\",\n  \"TELEGRAM_PROXY_PASSWORD\": \"SBuzvBfM8hm817J7\",\n  \"template\": \"http://zx5eh3xhho-res-country-KZ-state-1524787-city-1517945-hold-session-session-6a68ee56a829f:SBuzvBfM8hm817J7@195.162.68.169:9999\",\n  \"written\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/browser.env.local\"\n}\n",
+      "stderr_tail": "",
+      "ok": true
+    },
+    "telegram": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"status\": \"sent\",\n  \"mode\": \"publish\",\n  \"delivery\": \"link_preview_single_message\",\n  \"html_chars\": 3887,\n  \"channels\": [\n    {\n      \"chat_id\": \"@nmorozova_emdr\",\n      \"message_id\": 134\n    },\n    {\n      \"chat_id\": \"@natalia_morozova_psy\",\n      \"message_id\": 2044\n    }\n  ],\n  \"cover_source\": \"catbox\"\n}\n",
+      "stderr_tail": "",
+      "durable_marker": "/tmp/posts-emdr-state/platforms/sb-17-weed-unplanted/telegram.json"
+    },
+    "telegram_git_push": {
+      "committed": true,
+      "pushed": true,
+      "push_stderr": "To https://github.com/nmorozoff/POST-excalibur-emdr.git\n   74674c2..45d89bc  HEAD -> main\n"
+    },
+    "tenchat": {
+      "skipped": true,
+      "reason": "out_of_msp_short_blog_pipeline"
+    },
+    "b17": {
+      "exit_code": 0,
+      "stdout_tail": " сетях, ожидая следующего малейшего триггера.\\n\\nЗдесь на помощь приходит метод EMDR. Это научно обоснованный подход переработки застрявшего заряда. В августе 2013 года Всемирная организация здравоохранения включила EMDR в клинические рекомендации по лечению ПТСР. Через билатеральную стимуляцию мозг находит этот глубокий корень и перерабатывает зависшую программу. Мы не просто срезаем верхушку тревоги, чтобы она вернулась через неделю, мы вытаскиваем сорняк целиком. Тело наконец понимает, что опасность миновала, и почва внутри вас снова чиста.\\n\\nА где внутри вас застрял корень прошлой тревоги?\\n\\nЕсли тема про вас, можно написать мне в личные сообщения здесь на b17, разберём аккуратно.\\n\\nПодробности о проведении сессии, стоимости и записи читайте ТУТ: истории публикуются только с разрешения клиентов, все имена вымышленные, все совпадения случайны.## Мета\\n\\nОбложка: cover.png (в тексте заметки, вставляет скрипт)\",\n  \"body_chars\": 2277,\n  \"cover_local\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-17-weed-unplanted/cover.png\",\n  \"cover_wordpress\": {\n    \"url\": \"https://morozova-natalya.ru/wp-content/uploads/2026/08/sb-17-weed-unplanted-4.jpg\",\n    \"id\": \"314\",\n    \"link\": \"https://morozova-natalya.ru/cover-sb-17-weed-unplanted/\"\n  },\n  \"utm_source\": \"b17\",\n  \"status\": \"published\",\n  \"compose_url\": \"https://www.b17.ru/my_blog.php?mod=edit\",\n  \"post_url\": \"https://www.b17.ru/blog/pochemu_sornyak_rastet_tam_gde_nichego_ne_sazhali/\",\n  \"public_url\": \"https://www.b17.ru/blog/pochemu_sornyak_rastet_tam_gde_nichego_ne_sazhali/\",\n  \"cover_url\": \"https://morozovanatalia.ru/social-covers/sb-17-weed-unplanted.jpg\",\n  \"filled\": [\n    \"title\",\n    \"latname\",\n    \"razdel\",\n    \"author\",\n    \"tinymce_body\",\n    \"cover:announcement_image_url_not_found\",\n    \"cover:https_tinymce\",\n    \"draft_unchecked\"\n  ],\n  \"fill_mode\": \"playwright-b17\",\n  \"cover_inline\": true,\n  \"auto_submit\": true,\n  \"backend\": \"playwright\",\n  \"note\": \"Опубликовано автоматически (Сохранить)\"\n}\n",
+      "stderr_tail": ""
+    }
+  },
+  "status": "ok"
+}
