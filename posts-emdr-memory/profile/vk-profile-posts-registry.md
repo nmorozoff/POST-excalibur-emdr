@@ -10,6 +10,7 @@
 
 ## Опубликованные
 
+| sb-17-weed-unplanted | 2026-08-15 | Почему сорняк растёт там, где ничего не сажали | 691 | https://vk.com/wall218367867_691 | https://morozovanatalia.ru/anxiety?utm_source=vk | тревога,метафора,EMDR |
 | sb-16-dog-present-moment | 2026-08-14 | Мой пёс не делит время на «до» и «после» | 667 | https://vk.com/wall218367867_667 | https://morozovanatalia.ru/anxiety?utm_source=vk | тревога,метафора,EMDR,настоящий момент |
 | sb-15-bending-tree | 2026-08-14 | Дерево, которое гнётся, но не ломается | 666 | https://vk.com/wall218367867_666 | https://morozovanatalia.ru/anxiety | тревога,EMDR |
 | sb-15-bending-tree | 2026-08-13 | Дерево, которое гнётся, но не ломается | 665 | https://vk.com/wall218367867_665 | https://morozovanatalia.ru/anxiety | тревога,метафора,EMDR,гибкость,психология |

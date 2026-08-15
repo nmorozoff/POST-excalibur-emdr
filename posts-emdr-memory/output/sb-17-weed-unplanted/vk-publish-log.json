@@ -1,0 +1,19 @@
+{
+  "topic": "sb-17-weed-unplanted",
+  "platform": "vk",
+  "status": "published",
+  "method": "mcp-kv",
+  "profile": {
+    "post_id": 691,
+    "url": "https://vk.com/wall218367867_691",
+    "photo_id": "photo218367867_457247785"
+  },
+  "group": {
+    "post_id": 168,
+    "group_id": "224685309",
+    "url": "https://vk.com/wall-224685309_168",
+    "photo_id": "photo218367867_457247786"
+  },
+  "date": "2026-08-15",
+  "format_vk_publish_text": true
+}
