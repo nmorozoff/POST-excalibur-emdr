@@ -2,6 +2,7 @@
 
 | topic_id | # MSP | дата | заголовок | site_url |
 |----------|-------|------|-----------|----------|
+| `sb-17-weed-unplanted` | 17 | 2026-08-15 | Почему сорняк растёт там, где ничего не сажали | in_progress | https://morozovanatalia.ru/anxiety |
 | `sb-16-dog-present-moment` | 16 | 2026-08-14 | Мой пёс не делит время на «до» и «после» | https://morozovanatalia.ru/anxiety |
 | `sb-15-bending-tree` | 15 | 2026-08-13 | Дерево, которое гнётся, но не ломается | https://morozovanatalia.ru/anxiety |
 | `sb-14-morning-fog` | 14 | 2026-08-12 | Утренний туман и состояние «ничего не понятно, но спокойно» | https://morozovanatalia.ru/anxiety |

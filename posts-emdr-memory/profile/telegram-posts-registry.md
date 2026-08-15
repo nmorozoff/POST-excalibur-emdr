@@ -11,6 +11,8 @@
 
 ## Опубликованные
 
+| sb-17-weed-unplanted | 2026-08-15 | Почему этот сорняк растет там, где ничего не сажали? | @natalia_morozova_psy | 2044 | https://t.me/natalia_morozova_psy/2044 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
+| sb-17-weed-unplanted | 2026-08-15 | Почему этот сорняк растет там, где ничего не сажали? | @nmorozova_emdr | 134 | https://t.me/nmorozova_emdr/134 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-16-dog-present-moment | 2026-08-14 | Мой пёс не делит время на «до» и «после» | @natalia_morozova_psy | 2043 | https://t.me/natalia_morozova_psy/2043 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-16-dog-present-moment | 2026-08-14 | Мой пёс не делит время на «до» и «после» | @nmorozova_emdr | 133 | https://t.me/nmorozova_emdr/133 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-15-bending-tree | 2026-08-13 | Дерево, которое гнётся, но не ломается. Как жесткий контроль усиливает тревогу | @natalia_morozova_psy | 2042 | https://t.me/natalia_morozova_psy/2042 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |

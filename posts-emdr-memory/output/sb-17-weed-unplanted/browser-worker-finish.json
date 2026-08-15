@@ -1,0 +1,13 @@
+{
+  "topic": "sb-17-weed-unplanted",
+  "status": "browser_worker_finished",
+  "date": "2026-08-15",
+  "b17_url": "https://www.b17.ru/blog/pochemu_sornyak_rastet_tam_gde_nichego_ne_sazhali/",
+  "tenchat_url": null,
+  "site_url": "https://morozovanatalia.ru/anxiety",
+  "queue": {
+    "exit_code": 0,
+    "stdout": "OK marked published: sb-17-weed-unplanted → short-blog-published.md",
+    "stderr": ""
+  }
+}
