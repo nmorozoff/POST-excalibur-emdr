@@ -1,0 +1,107 @@
+{
+  "topic": "sb-17-weed-unplanted",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-08-15T09:24:20.343031+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11970,
+        "completion_tokens": 6070,
+        "total_tokens": 18040
+      },
+      "chars": 4109,
+      "contract_fixes": [
+        "truncated max body to hard max 4000",
+        "validation: max body outside target 3500-3800: 3972"
+      ]
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11313,
+        "completion_tokens": 5435,
+        "total_tokens": 16748
+      },
+      "chars": 3933,
+      "contract_fixes": []
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11822,
+        "completion_tokens": 6401,
+        "total_tokens": 18223
+      },
+      "chars": 4667,
+      "contract_fixes": [
+        "auto-wrapped vk-profile sections"
+      ]
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11816,
+        "completion_tokens": 6579,
+        "total_tokens": 18395
+      },
+      "chars": 4605,
+      "contract_fixes": [
+        "auto-wrapped vk-group sections"
+      ]
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11740,
+        "completion_tokens": 6109,
+        "total_tokens": 17849
+      },
+      "chars": 4727,
+      "contract_fixes": [
+        "auto-wrapped facebook sections"
+      ]
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12039,
+        "completion_tokens": 7406,
+        "total_tokens": 19445
+      },
+      "chars": 5467,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11478,
+        "completion_tokens": 3185,
+        "total_tokens": 14663
+      },
+      "chars": 2475,
+      "contract_fixes": []
+    }
+  },
+  "cover_prompt": {
+    "chars": 1832,
+    "cover_meta": {
+      "line1": "Почему сорняк",
+      "line2": "растёт там, где",
+      "line3": "ничего не сажали",
+      "yellow": "сорняк"
+    }
+  }
+}
