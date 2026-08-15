@@ -1,0 +1,95 @@
+{
+  "topic": "sb-17-weed-unplanted",
+  "overall": "pass",
+  "platforms": {
+    "max": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "url": null
+    },
+    "telegram": {
+      "ok": true,
+      "delivery": "link_preview_single_message",
+      "channels": [
+        "natalia_morozova_psy",
+        "nmorozova_emdr"
+      ],
+      "missing_channels": [],
+      "cover_source": "catbox",
+      "urls": [
+        "https://t.me/nmorozova_emdr/134",
+        "https://t.me/natalia_morozova_psy/2044"
+      ]
+    },
+    "vk_profile": {
+      "ok": true,
+      "registry": true
+    },
+    "vk_group": {
+      "ok": true,
+      "registry": true
+    },
+    "vk_story": {
+      "ok": false,
+      "log": false,
+      "required": false
+    },
+    "facebook": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "pending_scheduled": false
+    },
+    "ok": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "required": true,
+      "format_ok": true
+    },
+    "b17": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "draft_saved": false
+    }
+  },
+  "covers": {
+    "local_cover": {
+      "ok": true,
+      "path": "/workspace/posts-emdr-memory/output/sb-17-weed-unplanted/cover.png"
+    },
+    "site_cover": {
+      "url": "https://morozovanatalia.ru/social-covers/sb-17-weed-unplanted.jpg",
+      "ok": true,
+      "status": 200,
+      "content_type": "image/jpeg"
+    }
+  },
+  "queue": {
+    "published": true,
+    "still_in_queue": false
+  },
+  "vps": {
+    "finish_json": true,
+    "handoff_done": false,
+    "status": "browser_worker_finished"
+  },
+  "issues": [],
+  "links": {
+    "max": "https://max.ru/se13417616_biz/AaAEw9PYQrI",
+    "telegram": [
+      "https://t.me/nmorozova_emdr/134",
+      "https://t.me/natalia_morozova_psy/2044"
+    ],
+    "vk_profile": "https://vk.com/wall218367867_691",
+    "vk_group": "https://vk.com/wall-224685309_168",
+    "facebook": "https://www.facebook.com/632301483303094_122182229954837712",
+    "ok": "https://ok.ru/group/70000034253679/topic/161369986003055",
+    "b17": "https://www.b17.ru/blog/pochemu_sornyak_rastet_tam_gde_nichego_ne_sazhali/"
+  }
+}
