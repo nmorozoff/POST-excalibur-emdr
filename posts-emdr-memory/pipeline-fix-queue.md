@@ -1078,3 +1078,25 @@ files_changed:
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
 - posts-emdr-memory/output/sb-14-morning-fog/cover.png
 
+## INC-20260816-1030-otchetik-b17-rate-limit-draft
+status: open
+run_date: 2026-08-16
+role: otchetik
+topic: sb-18-water-in-stone
+severity: low
+category: platform
+
+### What went wrong
+- b17: Playwright заполнил форму и сохранил черновик (`draft_saved`), публикация заблокирована rate-limit площадки (`draft_kept_rate_limit`).
+- После 6 polling-попыток Отчётика (≈50 мин) статус остаётся partial; остальные платформы (Max, TG×2, VK×2, FB, OK) — OK.
+- `browser-worker-finish.json` не записан; тема остаётся `in_progress` в очереди до публикации b17 (cron retry).
+
+### Durable fix needed before next run
+- Дождаться cron retry `publish-b17-blog.py` / VPS worker для sb-18-water-in-stone.
+- Не эскалировать в Fixic — известное ограничение b17, не баг пайплайна.
+
+### Suggested files to inspect/change
+- posts-emdr-memory/output/sb-18-water-in-stone/b17-publish-log.json
+- scripts/publish-b17-blog.py
+- VPS cron `run-linux-browser-worker.sh`
+
