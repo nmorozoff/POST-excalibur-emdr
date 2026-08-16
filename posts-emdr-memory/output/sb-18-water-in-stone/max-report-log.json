@@ -1,0 +1,68 @@
+{
+  "status": "sent",
+  "topic": "sb-18-water-in-stone",
+  "chat_id": "[REDACTED]",
+  "overall": "partial",
+  "result": {
+    "message": {
+      "recipient": {
+        "chat_id": "[REDACTED]",
+        "chat_type": "dialog",
+        "user_id": 12014678
+      },
+      "timestamp": 1786872293232,
+      "body": {
+        "mid": "mid.0000000016b6922b01a009e367700f1b",
+        "seq": 117104462609256219,
+        "text": "⏳ Posts EMDR — sb-18-water-in-stone\nСтатус: partial\n\nСсылки:\n• max: https://max.ru/se13417616_biz/AaAJ12kzEEQ\n• telegram: https://t.me/nmorozova_emdr/135\n• telegram: https://t.me/natalia_morozova_psy/2045\n• vk_profile: https://vk.com/wall218367867_692\n• vk_group: https://vk.com/wall-224685309_169\n• facebook: https://www.facebook.com/632301483303094_122182326740837712\n• ok: https://ok.ru/group/70000034253679/topic/161373073993839\n• b17: https://www.b17.ru/my_blog.php?mod=edit\n\nПроблемы:\n• b17: сохранено в черновик (rate limit), требуется повторный запуск\n• Тема всё ещё in_progress в очереди\n• VPS phase 3: нет finish (webhook/cron ещё не завершил)\n\nVPS мог ещё публиковать TG/b17; Zernio scheduled — ждём Meta retry. Подождите 5–15 мин и повторите проверку.",
+        "attachments": [
+          {
+            "payload": {
+              "url": "https://max.ru/se13417616_biz/AaAJ12kzEEQ",
+              "token": "f9LHodD0cOLDPVlIfiqsbAUpIFjWiJHmPqGhm5fiGBfmzDmxmwWKyvK2EQs4QKXpaVk0KKQACMgillMKhHmm"
+            },
+            "title": "Психолог | EMDR терапевт | Морозова Наталья",
+            "description": "За 2-4 сессии избавляю от фобий, страхов, ОКР, панических атак, ПТСР.\nЗапись на сайте www.morozovanatalia.ru?utm_source=max",
+            "image_url": "https://i.oneme.ru/i?r=BTGBPUwtwgYUeoFhO7rESmr8F-FUAo2Gmb8WAZBxonjEAbJ_HqH97r8QHtUvv1mBLU4",
+            "type": "share"
+          }
+        ],
+        "markup": [
+          {
+            "from": 2,
+            "length": 33,
+            "type": "strong"
+          },
+          {
+            "from": 44,
+            "length": 7,
+            "type": "strong"
+          },
+          {
+            "from": 53,
+            "length": 7,
+            "type": "strong"
+          },
+          {
+            "from": 481,
+            "length": 9,
+            "type": "strong"
+          },
+          {
+            "from": 655,
+            "length": 108,
+            "type": "emphasized"
+          }
+        ]
+      },
+      "sender": {
+        "user_id": 369215101,
+        "first_name": "КАРУСЕЛЬКА",
+        "username": "id771605638595_bot",
+        "is_bot": true,
+        "last_activity_time": 1786872293254,
+        "name": "КАРУСЕЛЬКА"
+      }
+    }
+  }
+}
