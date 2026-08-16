@@ -16,6 +16,32 @@
 
 **Запрещено:** `--delivery photo_then_text` при `--publish`.
 
+## Telegram: ссылка на другой канал в перелинковке
+
+**Симптом (2026-08-16, sb-18):** в @nmorozova_emdr/135 ссылка вела на @natalia_morozova_psy/2042.
+
+**Причина:** один `telegram-post.md` уходит в оба канала; Grsai подставил URL второго канала.
+
+**Правильно:**
+- `send-telegram-post.py` → `rewrite_telegram_interlinks()` по `telegram-posts-registry.md` для каждого канала.
+- Gate: `telegram_interlink_issues()` → BLOCKER при publish.
+- Для уже вышедших постов: MCP `telegram_edit_message` с исправленным HTML.
+
+## b17: черновики вместо публикации (rate-limit + дубли)
+
+**Симптом:** `b17-publish-log.json` → `draft_saved`, на b17 копятся «Черновик» (sb-18 ×2, старые темы).
+
+**Причины:**
+1. Rate-limit b17 («ограничение на частоту») — скрипт сохраняет черновик.
+2. Повторный запуск создавал **новый** черновик вместо открытия существующего.
+3. Grsai иногда не ставит `---` перед `## Мета` → disclaimer/мета попадают в тело.
+
+**Правильно:**
+- `format_b17_publish_body()` + `ensure_b17_meta_separator()` в grsai.
+- `find_b17_draft_edit_url()` — reuse черновика по заголовку.
+- VPS cron: `retry-b17-drafts.py --limit 1` перед `publish-browser-deferred.py`.
+- После `--submit` проверять `my.php?mod=blog` — заголовок в списке, не «Черновик».
+
 ## b17: обложка только в анонсе / base64 ломает сохранение
 
 **Симптом A:** читатели не видят обложку — она ушла в поле «Картинка для анонса».  

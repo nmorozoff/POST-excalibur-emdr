@@ -470,7 +470,11 @@ def main() -> None:
     import sys
 
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-    from posts_emdr_env import ensure_client_story_disclaimer
+    from posts_emdr_env import (
+        ensure_client_story_disclaimer,
+        rewrite_telegram_interlinks,
+        telegram_interlink_issues,
+    )
 
     html = _normalize(extract_html(post_file))
     html = ensure_client_story_disclaimer(html, "telegram")
@@ -519,15 +523,20 @@ def main() -> None:
         ).get("source")
 
     channel_logs: list[dict] = []
-    for chat_id in chat_ids:
+    utm_sources = parse_channel_utm_sources(env, len(chat_ids))
+    for chat_id, utm_source in zip(chat_ids, utm_sources):
+        channel_html = rewrite_telegram_interlinks(html, chat_id)
+        channel_html = apply_utm_source(channel_html, utm_source)
+        for issue in telegram_interlink_issues(channel_html, chat_id):
+            raise SystemExit(f"BLOCKER: {issue}")
         if args.delivery == "link_preview":
-            msg_res = send_post_with_cover_preview(token, chat_id, html, cover_url)
+            msg_res = send_post_with_cover_preview(token, chat_id, channel_html, cover_url)
             channel_logs.append({
                 "chat_id": chat_id,
                 "message_id": msg_res.get("result", {}).get("message_id"),
             })
         else:
-            photo_res, text_res = send_post_photo_then_text(token, chat_id, cover, html)
+            photo_res, text_res = send_post_photo_then_text(token, chat_id, cover, channel_html)
             channel_logs.append({
                 "chat_id": chat_id,
                 "photo_message_id": photo_res.get("result", {}).get("message_id"),

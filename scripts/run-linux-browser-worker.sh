@@ -16,6 +16,7 @@ run_steps() {
   python3 scripts/asocks_sync_proxy.py --target telegram || true
   python3 scripts/asocks_sync_proxy.py --target b17 || true
   python3 scripts/fetch-topic-cover.py --all-pending
+  python3 scripts/retry-b17-drafts.py --limit 1 || true
   python3 scripts/publish-browser-deferred.py --submit --finish --git-push
 }
 

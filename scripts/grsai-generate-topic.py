@@ -470,6 +470,23 @@ def ensure_b17_blank_lines(text: str) -> tuple[str, bool]:
     return text, fixed
 
 
+def ensure_b17_meta_separator(text: str) -> tuple[str, bool]:
+    """Ensure --- before ## Мета when Grsai omitted the separator."""
+    if re.search(r"^## Мета\s*$", text, re.M) and not re.search(
+        r"\n---\n\n## Мета\s*$", text, re.M
+    ):
+        new_text, count = re.subn(
+            r"\n(## Мета\s*$)",
+            r"\n\n---\n\n\1",
+            text.rstrip(),
+            count=1,
+            flags=re.M,
+        )
+        if count:
+            return new_text + "\n", True
+    return text, False
+
+
 def truncate_max_body(text: str, *, hard_max: int = MAX_BODY_HARD_MAX) -> tuple[str, bool]:
     if not has_text_posta_section(text):
         return text, False
@@ -581,6 +598,9 @@ def ensure_platform_contract(platform: str, text: str, brief: dict[str, str]) ->
         text, blank_fixed = ensure_b17_blank_lines(text)
         if blank_fixed:
             fixes.append("fixed b17 blank lines after headers")
+        text, meta_fixed = ensure_b17_meta_separator(text)
+        if meta_fixed:
+            fixes.append("inserted --- before ## Мета for b17")
     else:
         # facebook / ok / vk-profile / vk-group (+ any other rewrite)
         if not has_text_posta_section(text):

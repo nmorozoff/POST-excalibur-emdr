@@ -224,6 +224,91 @@ def publish_text_format_issues(text: str, platform: str) -> list[str]:
     return issues
 
 
+_TELEGRAM_REGISTRY_ROW_RE = re.compile(
+    r"^\|\s*([^|]+)\s*\|[^|]+\|[^|]+\|\s*(@?\S+)\s*\|\s*\d+\s*\|\s*(https://t\.me/\S+)\s*\|",
+    re.M,
+)
+_TG_HREF_RE = re.compile(r'href="(https://t\.me/([^/"]+)/(\d+))"')
+
+
+def _telegram_channel_slug(chat_id: str) -> str:
+    return chat_id.strip().lstrip("@").lower()
+
+
+def load_telegram_registry() -> tuple[dict[str, str], dict[str, dict[str, str]]]:
+    """Map post URL -> topic_id and topic_id -> {channel_slug: post_url}."""
+    registry_path = MEMORY / "profile" / "telegram-posts-registry.md"
+    url_to_topic: dict[str, str] = {}
+    topic_channels: dict[str, dict[str, str]] = {}
+    if not registry_path.is_file():
+        return url_to_topic, topic_channels
+    for m in _TELEGRAM_REGISTRY_ROW_RE.finditer(registry_path.read_text(encoding="utf-8")):
+        topic_id, channel, url = m.group(1).strip(), _telegram_channel_slug(m.group(2)), m.group(3).rstrip("/")
+        url_norm = url.rstrip("/")
+        url_to_topic[url_norm] = topic_id
+        topic_channels.setdefault(topic_id, {})[channel] = url_norm
+    return url_to_topic, topic_channels
+
+
+def rewrite_telegram_interlinks(html: str, target_chat_id: str) -> str:
+    """Replace t.me links in HTML with the same-topic URL for target channel."""
+    target = _telegram_channel_slug(target_chat_id)
+    url_to_topic, topic_channels = load_telegram_registry()
+
+    def _repl(match: re.Match[str]) -> str:
+        full_url = match.group(1).rstrip("/")
+        source_channel = _telegram_channel_slug(match.group(2))
+        if source_channel == target:
+            return match.group(0)
+        topic_id = url_to_topic.get(full_url)
+        if not topic_id:
+            return match.group(0)
+        replacement = topic_channels.get(topic_id, {}).get(target)
+        if not replacement:
+            return match.group(0)
+        return f'href="{replacement}"'
+
+    return _TG_HREF_RE.sub(_repl, html)
+
+
+def telegram_interlink_issues(html: str, target_chat_id: str) -> list[str]:
+    """Warn when HTML still links to another Telegram channel."""
+    target = _telegram_channel_slug(target_chat_id)
+    issues: list[str] = []
+    for m in _TG_HREF_RE.finditer(html):
+        channel = _telegram_channel_slug(m.group(2))
+        if channel != target:
+            issues.append(
+                f"Telegram ({target_chat_id}): ссылка на чужой канал {m.group(1)}"
+            )
+    return issues
+
+
+def extract_b17_title_and_body(md_text: str) -> tuple[str, str]:
+    title_m = re.search(r"^## Заголовок\s*\n\n(.+?)\n", md_text, re.M)
+    body_m = re.search(
+        r"## Текст поста\n\n(.*?)(?=\n---\n|\n## Мета\b|\Z)",
+        md_text,
+        re.S,
+    )
+    if not title_m or not body_m:
+        raise ValueError("Cannot parse b17 (need ## Заголовок and ## Текст поста)")
+    return title_m.group(1).strip(), body_m.group(1).strip()
+
+
+def format_b17_publish_body(text: str) -> str:
+    """b17 note body: no URLs, no leaked ## Мета, plain disclaimer."""
+    text = strip_cover_meta_block(text)
+    text = fix_disclaimer_typo(text)
+    text = re.sub(r"## Мета\b.*", "", text, flags=re.S)
+    text = re.sub(r"Обложка:\s*cover\.png.*", "", text, flags=re.I)
+    text = re.sub(r"https?://\S+", "", text)
+    text = re.sub(r"Подробности о проведении сессии[^\n]*\n?", "", text, flags=re.I)
+    text = normalize_client_story_disclaimer(text, "b17")
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return sanitize_post_text(text.strip())
+
+
 def format_ok_publish_text(text: str) -> str:
     """Normalize OK body for current MCP (plain text + visible URLs)."""
     text = strip_cover_meta_block(text)

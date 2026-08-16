@@ -57,6 +57,31 @@ def _b17_page_ready(page: Any) -> bool:
     )
 
 
+def find_b17_draft_edit_url(page: Any, title: str) -> str | None:
+    """Return edit URL for an existing draft with matching title (avoid duplicate drafts)."""
+    prefix = title[: min(32, len(title))]
+    try:
+        return page.evaluate(
+            """(titlePrefix) => {
+  const anchors = [...document.querySelectorAll('a[href*="mod=edit"]')];
+  for (const a of anchors) {
+    const block = a.closest('tr, li, article, div') || a.parentElement;
+    const ctx = ((block && block.innerText) || a.innerText || '').replace(/\\s+/g, ' ');
+    if (!ctx.includes('Черновик')) continue;
+    const text = (a.innerText || '').trim();
+    if (!text) continue;
+    if (text.includes(titlePrefix) || ctx.includes(titlePrefix)) {
+      return a.href;
+    }
+  }
+  return null;
+}""",
+            prefix,
+        )
+    except Exception:
+        return None
+
+
 def _tenchat_attach_cover_playwright(page: Any, cover_path: Path) -> dict[str, Any]:
     if not cover_path.exists():
         raise SystemExit(f"Cover not found: {cover_path}")
@@ -111,6 +136,19 @@ def fill_b17_compose_playwright(
         page = context.new_page()
         original = _patch_undetectable_js(page)
         try:
+            filled_extra: list[str] = []
+            if not edit_mode:
+                page.goto(
+                    "https://www.b17.ru/my.php?mod=blog",
+                    wait_until="domcontentloaded",
+                    timeout=120_000,
+                )
+                time.sleep(3)
+                draft_url = find_b17_draft_edit_url(page, title)
+                if draft_url:
+                    compose_url = draft_url
+                    edit_mode = True
+                    filled_extra.append("draft_reused")
             page.goto(compose_url, wait_until="domcontentloaded", timeout=120_000)
             time.sleep(pause_sec)
             if not _b17_page_ready(page):
@@ -119,7 +157,6 @@ def fill_b17_compose_playwright(
                     "Set B17_PROXY_SERVER in browser.env.local or refresh storage state."
                 )
             b17_cover_url: str | None = None
-            filled_extra: list[str] = []
             if cover_path:
                 from undetectable_browser import prepare_cover_jpeg_for_browser
 

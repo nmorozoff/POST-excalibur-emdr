@@ -15,8 +15,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_backend import default_b17_compose_url, publish_b17
-from posts_emdr_env import browser_backend_name, sanitize_post_text, wordpress_media_upload
-from undetectable_browser import apply_undetectable_env, load_env_file, strip_urls_from_text
+from posts_emdr_env import (
+    browser_backend_name,
+    extract_b17_title_and_body,
+    format_b17_publish_body,
+    wordpress_media_upload,
+)
+from undetectable_browser import apply_undetectable_env, load_env_file
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ENV_FILE = PROJECT_ROOT / "posts-emdr-memory" / "b17.env.local"
@@ -24,12 +29,7 @@ ENV_EXAMPLE = PROJECT_ROOT / "posts-emdr-memory" / "b17.env.example"
 
 
 def extract_title_and_body(md_path: Path) -> tuple[str, str]:
-    text = md_path.read_text(encoding="utf-8")
-    title_m = re.search(r"^## Заголовок\s*\n\n(.+?)\n", text, re.M)
-    body_m = re.search(r"## Текст поста\n\n(.*?)(?=\n---\n|\n## Мета|\Z)", text, re.S)
-    if not title_m or not body_m:
-        raise SystemExit(f"Cannot parse title/body from {md_path} (need ## Заголовок and ## Текст поста)")
-    return title_m.group(1).strip(), body_m.group(1).strip()
+    return extract_b17_title_and_body(md_path.read_text(encoding="utf-8"))
 
 
 def main() -> None:
@@ -49,9 +49,7 @@ def main() -> None:
         raise SystemExit(f"Missing {md_path}")
 
     title, body = extract_title_and_body(md_path)
-    body = strip_urls_from_text(body)
-    body = sanitize_post_text(body)
-    # b17: без URL в тексте; мягкий контакт только через ЛС на площадке
+    body = format_b17_publish_body(body)
     body = re.sub(
         r"Если тема откликается[^\n]*",
         "Если тема откликается — напишите в личные сообщения здесь на b17.",
