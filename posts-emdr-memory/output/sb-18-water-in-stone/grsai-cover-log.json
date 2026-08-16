@@ -1,0 +1,38 @@
+{
+  "taskId": "6-e09881a2-f6c1-456a-be5a-1011590c1c88",
+  "imageURL": "https://file3.aitohumanize.com/file/a47bef26ec04473e82585fd82ab1e4c1.png",
+  "reference_rotation": {
+    "topic": "sb-18-water-in-stone",
+    "slot": 2,
+    "reference_path": "/workspace/posts-emdr-memory/assets/reference/portrait-02.jpg",
+    "backend": "grsai",
+    "aspect_ratio": "1280x1024",
+    "quality": "low",
+    "model": "gpt-image-2",
+    "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-02.jpg"
+  },
+  "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-02.jpg",
+  "model": "gpt-image-2",
+  "backend": "grsai",
+  "raw": {
+    "callback_url": "-1",
+    "end_time": 1786871443,
+    "error": "",
+    "failure_reason": "",
+    "height": 0,
+    "id": "6-e09881a2-f6c1-456a-be5a-1011590c1c88",
+    "progress": 100,
+    "results": [
+      {
+        "height": 0,
+        "url": "https://file3.aitohumanize.com/file/a47bef26ec04473e82585fd82ab1e4c1.png",
+        "width": 0
+      }
+    ],
+    "start_time": 1786871391,
+    "status": "succeeded",
+    "task_id": "",
+    "url": "",
+    "width": 0
+  }
+}
