@@ -1079,7 +1079,7 @@ files_changed:
 - posts-emdr-memory/output/sb-14-morning-fog/cover.png
 
 ## INC-20260816-1030-otchetik-b17-rate-limit-draft
-status: open
+status: monitoring
 run_date: 2026-08-16
 role: otchetik
 topic: sb-18-water-in-stone
