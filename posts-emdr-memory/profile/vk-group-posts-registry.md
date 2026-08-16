@@ -12,6 +12,7 @@
 
 ## Опубликованные
 
+| sb-18-water-in-stone | 2026-08-16 | Вода находит путь в самую твёрдую породу | 169 | https://vk.com/wall-224685309_169 | https://morozovanatalia.ru/anxiety?utm_source=vk_group | тревога,метафора,EMDR |
 | sb-17-weed-unplanted | 2026-08-15 | Почему сорняк растёт там, где ничего не сажали | 168 | https://vk.com/wall-224685309_168 | https://morozovanatalia.ru/anxiety?utm_source=vk_group | тревога,метафора,EMDR |
 | sb-16-dog-present-moment | 2026-08-14 | Мой пёс не делит время на «до» и «после» | 167 | https://vk.com/wall-224685309_167 | https://morozovanatalia.ru/anxiety?utm_source=vk_group | тревога,метафора,EMDR,настоящий момент |
 | sb-15-bending-tree | 2026-08-14 | Дерево, которое гнётся, но не ломается | 166 | https://vk.com/wall-224685309_166 | https://morozovanatalia.ru/anxiety | тревога,EMDR |

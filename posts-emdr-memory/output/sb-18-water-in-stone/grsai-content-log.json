@@ -1,0 +1,105 @@
+{
+  "topic": "sb-18-water-in-stone",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-08-16T09:02:28.837211+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11963,
+        "completion_tokens": 7433,
+        "total_tokens": 19396
+      },
+      "chars": 4105,
+      "contract_fixes": [
+        "truncated max body to hard max 4000",
+        "validation: max body outside target 3500-3800: 3929"
+      ]
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11193,
+        "completion_tokens": 8188,
+        "total_tokens": 19381
+      },
+      "chars": 3995,
+      "contract_fixes": []
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11709,
+        "completion_tokens": 6093,
+        "total_tokens": 17802
+      },
+      "chars": 4769,
+      "contract_fixes": [
+        "auto-wrapped vk-profile sections"
+      ]
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11705,
+        "completion_tokens": 4459,
+        "total_tokens": 16164
+      },
+      "chars": 4469,
+      "contract_fixes": [
+        "auto-wrapped vk-group sections"
+      ]
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11624,
+        "completion_tokens": 7798,
+        "total_tokens": 19422
+      },
+      "chars": 4297,
+      "contract_fixes": []
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12063,
+        "completion_tokens": 6104,
+        "total_tokens": 18167
+      },
+      "chars": 5027,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11396,
+        "completion_tokens": 5297,
+        "total_tokens": 16693
+      },
+      "chars": 2042,
+      "contract_fixes": []
+    }
+  },
+  "cover_prompt": {
+    "chars": 1854,
+    "cover_meta": {
+      "line1": "Скрытая тревога",
+      "line2": "и напряжение в теле",
+      "line3": "как вода точит камень",
+      "yellow": "Скрытая тревога"
+    }
+  }
+}
