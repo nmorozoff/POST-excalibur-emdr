@@ -12,8 +12,8 @@
       "ok": true,
       "delivery": "link_preview_single_message",
       "channels": [
-        "natalia_morozova_psy",
-        "nmorozova_emdr"
+        "nmorozova_emdr",
+        "natalia_morozova_psy"
       ],
       "missing_channels": [],
       "cover_source": "catbox",

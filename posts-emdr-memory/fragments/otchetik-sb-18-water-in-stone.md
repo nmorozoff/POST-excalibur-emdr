@@ -1,19 +1,20 @@
 === POSTS-EMDR-OTCHETIK ===
 Статус: ⚠️ WARN
 topic_id: sb-18-water-in-stone
-Кратко: 6 polling-попыток (~50 мин); финальный статус partial — b17 draft_saved (rate-limit). Остальные платформы OK. Отчёт в Макс отправлен. Fixic не нужен.
+Кратко: 6 polling-попыток (~60 мин); финальный статус partial — b17 draft_saved (rate-limit). VPS finish не выполнен (503 transient при retry). Остальные платформы OK. Отчёт в Макс отправлен. Fixic не нужен.
 
 topic: sb-18-water-in-stone
 overall: partial
 max_report_sent: true
 incidents_written:
-- INC-20260816-1030-otchetik-b17-rate-limit-draft
+- INC-20260816-1030-otchetik-b17-rate-limit-draft (updated, no duplicate)
 fixic_needed: false
 
 Артефакты:
 - posts-emdr-memory/output/sb-18-water-in-stone/publish-run-report.json
 - posts-emdr-memory/output/sb-18-water-in-stone/b17-publish-log.json
-- posts-emdr-memory/output/sb-18-water-in-stone/telegram-publish-log.json
+- posts-emdr-memory/output/sb-18-water-in-stone/vps-worker-last-run.json
+- posts-emdr-memory/output/sb-18-water-in-stone/max-report-log.json
 
 Ссылки:
 - Max: https://max.ru/se13417616_biz/AaAJ12kzEEQ
@@ -24,6 +25,6 @@ fixic_needed: false
 - OK: https://ok.ru/group/70000034253679/topic/161373073993839
 - b17: https://www.b17.ru/my_blog.php?mod=edit (черновик, cron retry)
 
-Polling: 6 попыток; webhook re-trigger после 3-й (202 accepted). TG опубликован на попытке 3.
+Polling: 6 попыток (2026-08-17); webhook re-trigger после 3-й (202 accepted, pid 2460573). VPS b17 retry → 503 transient. TG/VK/FB/OK/Max — OK.
 
 incident_report: posts-emdr-memory/pipeline-fix-queue.md#INC-20260816-1030-otchetik-b17-rate-limit-draft
