@@ -17,10 +17,10 @@
       "reason": "out_of_msp_short_blog_pipeline"
     },
     "b17": {
-      "exit_code": 0,
-      "stdout_tail": "о найдет свою микротрещину, чтобы вырваться на свободу.\\n\\nМиндалина в мозге не понимает логики. Как EMDR-терапевт, я часто объясняю клиентам: если старый триггер активен, тело остается в режиме выживания. Эта энергия превращается в паническую атаку, бессонницу, бетонный ком в груди или вспышку ярости из-за мелочи.\\n\\nДыхательные практики дают лишь временную передышку. Они не снимают корневой заряд в нейронной сети. Здесь необходима работа на уровне нейрофизиологии. Метод EMDR, официально рекомендованный ВОЗ с 2013 года, работает именно с этим. Это научный инструмент, который убирает реакцию тела, а не просто учит ее терпеть.\\n\\nА как ваше тело сигнализирует о накопленном напряжении?\\n\\nЕсли хотите обсудить это лично, напишите мне в личные сообщения здесь на b17.\\n\\nПодробности о проведении сессии, стоимости и записи читайте ТУТ: истории публикуются только с разрешения клиентов, все имена вымышленные, все совпадения случайны.## Мета\\n\\nОбложка: cover.png, в тексте заметки (скрипт)\",\n  \"body_chars\": 1917,\n  \"cover_local\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-18-water-in-stone/cover.png\",\n  \"cover_wordpress\": {\n    \"url\": \"https://morozova-natalya.ru/wp-content/uploads/2026/08/sb-18-water-in-stone-3.jpg\",\n    \"id\": \"323\",\n    \"link\": \"https://morozova-natalya.ru/cover-sb-18-water-in-stone-2/\"\n  },\n  \"utm_source\": \"b17\",\n  \"status\": \"draft_saved\",\n  \"compose_url\": \"https://www.b17.ru/my_blog.php?mod=edit\",\n  \"post_url\": \"https://www.b17.ru/my_blog.php?mod=edit\",\n  \"public_url\": null,\n  \"cover_url\": \"https://morozovanatalia.ru/social-covers/sb-18-water-in-stone.jpg\",\n  \"filled\": [\n    \"title\",\n    \"latname\",\n    \"razdel\",\n    \"author\",\n    \"tinymce_body\",\n    \"cover:announcement_image_url_not_found\",\n    \"cover:https_tinymce\",\n    \"draft_kept_rate_limit\"\n  ],\n  \"fill_mode\": \"playwright-b17\",\n  \"cover_inline\": true,\n  \"auto_submit\": false,\n  \"backend\": \"playwright\",\n  \"note\": \"b17 rate limit: сохранено в черновик, нужен повторный запуск позже\"\n}\n",
-      "stderr_tail": ""
+      "skipped": true,
+      "reason": "b17_not_accessible",
+      "detail": "{\n  \"ok\": false,\n  \"blocked\": false,\n  \"error\": \"HTTP Error 503: Service Unavailable\",\n  \"url\": \"https://www.b17.ru/my_blog.php?mod=edit\",\n  \"proxy\": true\n}\n"
     }
   },
-  "status": "ok"
+  "status": "failed"
 }
