@@ -85,7 +85,7 @@ def _registry_has_topic(path: Path, topic_id: str) -> bool:
     )
 
 
-def finish_topic(topic_id: str, *, skip_queue: bool = False) -> dict:
+def finish_topic(topic_id: str, *, skip_queue: bool = False, force_b17_optional: bool = False) -> dict:
     topic_dir = MEMORY / "output" / topic_id
     if not topic_dir.is_dir():
         raise SystemExit(f"No output dir: {topic_dir}")
@@ -94,10 +94,13 @@ def finish_topic(topic_id: str, *, skip_queue: bool = False) -> dict:
     b17_status = _log_status(topic_dir, "b17")
     ten_status = _log_status(topic_dir, "tenchat")
     tg_ok = tg_status in {"sent", "published"} or not (topic_dir / "telegram-post.md").is_file()
-    if not tg_ok or b17_status != "published":
+    b17_required = (topic_dir / "b17-blog-post.md").is_file() and not force_b17_optional
+    b17_ok = b17_status == "published" or not b17_required
+    if not tg_ok or not b17_ok:
         raise SystemExit(
             f"Not ready to finish {topic_id}: telegram={tg_status}, "
-            f"b17={b17_status} (need tg sent/published + b17 published; tenchat optional)"
+            f"b17={b17_status} (need tg sent/published + b17 published; "
+            f"use --force-b17-optional to finish without b17 published)"
         )
 
     b17_log = _read_json(topic_dir / "b17-publish-log.json")
@@ -116,7 +119,8 @@ def finish_topic(topic_id: str, *, skip_queue: bool = False) -> dict:
     ten_registry = PROFILE / "tenchat-posts-registry.md"
     tg_registry = PROFILE / "telegram-posts-registry.md"
 
-    if not _registry_has_topic(b17_registry, topic_id):
+    # Only register b17 if it was actually published (not draft-only).
+    if b17_status == "published" and not _registry_has_topic(b17_registry, topic_id):
         _append_registry(
             b17_registry,
             f"| {topic_id} | {d} | {title_b17} | {b17_url} | {site_url} | b17,психология |",
@@ -201,8 +205,17 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--topic", required=True)
     p.add_argument("--skip-queue", action="store_true", help="Only registries + handoff, not queue")
+    p.add_argument(
+        "--force-b17-optional",
+        action="store_true",
+        help="Finish main short-blog topic even if b17 is not published (b17 handled by repair queue)",
+    )
     args = p.parse_args()
-    result = finish_topic(args.topic, skip_queue=args.skip_queue)
+    result = finish_topic(
+        args.topic,
+        skip_queue=args.skip_queue,
+        force_b17_optional=args.force_b17_optional,
+    )
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 

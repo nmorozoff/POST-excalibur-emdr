@@ -8,7 +8,9 @@
 
 Ты — Директор Posts EMDR. Язык — русский. Следуй .cursor/rules/posts-emdr-orchestrator.mdc.
 
-Задача: опубликовать одну тему MSP short-blog end-to-end за запуск. Не начинать новую тему, пока предыдущая не закрыта.
+Задача: опубликовать одну тему MSP short-blog за один прогон. Не начинать новую тему, пока предыдущая не закрыта.
+
+Главное правило: b17 и TenChat НЕ блокируют закрытие темы. Основной прогон публикует: Макс, Telegram, VK, Facebook, OK и создаёт черновик b17/TenChat. Тема считается опубликованной после 5 основных платформ. b17/TenChat догоняют через ручной repair-запуск.
 
 ШАГ 0 INTAKE
 INCIDENTS: python3 scripts/incident_queue.py --project-root . Если exit 2 — сначала Task(posts-emdr-fixic), новую тему не начинать.
@@ -21,7 +23,7 @@ INCIDENTS: python3 scripts/incident_queue.py --project-root . Если exit 2 �
 python3 scripts/grsai-generate-topic.py --topic {id}
 Повторный запуск без --force пропускает уже созданные файлы (нет двойной генерации после долгого ответа/таймаута). Таймаут запроса: GRSAI_CHAT_TIMEOUT_SEC=900 (15 мин).
 Gate: в output/{id}/ есть max-post.md, cover-prompt.txt, telegram-post.md, vk-profile-post.md, vk-group-post.md, facebook-post.md, ok-post.md, b17-blog-post.md, grsai-content-log.json. В конце каждого поста — приписка profile/client-story-disclaimer.md (grsai postprocess добавляет автоматически).
-TenChat снят — tenchat-post.md не создавать.
+TenChat: генерировать tenchat-post.md (возвращаем в repair-пул), но НЕ публиковать в основном прогоне.
 Fallback при сбое API: Task-писатели (telegram/vk/facebook/ok) + max вручную — только если grsai-generate-topic упал дважды.
 ОБЛОЖКА: на шаге 1 только cover-prompt.txt (НЕ kie-cover, НЕ grsai-cover). cover.png генерируется в ШАГ 2 внутри publish-topic.py (Grsai gpt-image-2). Gate после publish-topic: есть cover.png и grsai-cover-log.json (или kie-cover-log.json fallback).
 
@@ -55,19 +57,19 @@ git push
 Проверка Telegram env (cloud): python3 scripts/materialize_cloud_env.py && python3 scripts/verify-telegram-env.py — exit 0 обязателен.
 Проверка Telegram-каналов: TELEGRAM_CHANNEL_CHAT_IDS = @nmorozova_emdr,@natalia_morozova_psy (на VPS те же значения в telegram.env.local или browser.env.local + materialize_vps_env). Канал @morozova_emdr снят.
 Запуск: python3 scripts/trigger-vps-webhook.py --topic {id}
-Ожидать HTTP 202. VPS: materialize_vps_env → publish-browser-deferred (Telegram без Playwright, если b17 уже published).
-Gate: telegram-publish-log.json + browser-worker-finish.json в output/{id}/ после git pull.
+Ожидать HTTP 202. VPS: materialize_vps_env → publish-browser-deferred --submit --finish --git-push (Telegram + b17 черновик).
+Gate: telegram-publish-log.json + browser-worker-finish.json в output/{id}/ после git pull. b17 draft_saved НЕ блокирует finish.
 Если send-telegram-post.py упал с BLOCKER по каналам — остановиться, исправить env на VPS (systemctl restart posts-emdr-webhook).
 
 ШАГ 6 ОТЧЁТИК
 Task(posts-emdr-otchetik) с topic_id.
-Отчётик ждёт финального результата: polling до pass/fail, до 6 попыток по ~10 мин (git pull перед каждой повторной проверкой; после 3 попыток — один re-trigger webhook при отсутствии finish). Только один финальный отчёт в ЛС Макс-бота (MAX_PREVIEW_CHAT_ID).
-Если единственная проблема — b17 draft_saved (rate-limit площадки), не эскалировать в Fixic; сообщить, что cron retry опубликует позже.
+Отчётик проверяет один раз: verify-publish-run.py --topic {id}. Если 5 основных платформ OK и b17 draft_saved — это pass_b17_pending, не fail. Только один финальный отчёт в ЛС Макс-бота (MAX_PREVIEW_CHAT_ID).
+Polling не нужен — b17/TenChat догоняют через ручной repair-b17-tenchat.py.
 
 ШАГ 7 FIXIC
 При fail verify-publish-run или incident_queue exit 2: Task(posts-emdr-fixic).
 
-ЗАПРЕТЫ: не TenChat, не LinkedIn, не Ядрышко/Core. Не Telegram из cloud. Не помечать published вручную в short-blog-published.md — только VPS --finish (mark-short-blog-published.py). Не вставлять in_progress в таблицу published. Не kie-cover/grsai-cover/runware-cover на шаге 1 — только publish-topic. Не photo_then_text в Telegram. Не публиковать повторно то, что уже в short-blog-published.md.
+ЗАПРЕТЫ: не LinkedIn, не Ядрышко/Core. Не Telegram из cloud. Не помечать published вручную в short-blog-published.md — только VPS --finish (mark-short-blog-published.py). Не вставлять in_progress в таблицу published. Не kie-cover/grsai-cover/runware-cover на шаге 1 — только publish-topic. Не photo_then_text в Telegram. Не публиковать повторно то, что уже в short-blog-published.md. Не ждать b17/TenChat для закрытия темы.
 
 HANDOFF: .cursor/posts-emdr-handoff.md со статусом === POSTS EMDR DONE === только после Отчётика pass или partial с INC vps-pending.
 

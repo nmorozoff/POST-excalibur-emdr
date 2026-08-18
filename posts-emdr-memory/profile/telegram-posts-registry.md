@@ -11,6 +11,8 @@
 
 ## Опубликованные
 
+| sb-18-water-in-stone | 2026-08-18 | Скрытая тревога в теле: почему напряжение всегда находит путь наружу, даже если вы держите идеальное лицо | @natalia_morozova_psy | 2045 | https://t.me/natalia_morozova_psy/2045 | https://morozovanatalia.ru/Вода находит путь в самую твёрдую породу | тревога,EMDR,стресс,психология |
+| sb-18-water-in-stone | 2026-08-18 | Скрытая тревога в теле: почему напряжение всегда находит путь наружу, даже если вы держите идеальное лицо | @nmorozova_emdr | 135 | https://t.me/nmorozova_emdr/135 | https://morozovanatalia.ru/Вода находит путь в самую твёрдую породу | тревога,EMDR,стресс,психология |
 | sb-17-weed-unplanted | 2026-08-15 | Почему этот сорняк растет там, где ничего не сажали? | @natalia_morozova_psy | 2044 | https://t.me/natalia_morozova_psy/2044 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-17-weed-unplanted | 2026-08-15 | Почему этот сорняк растет там, где ничего не сажали? | @nmorozova_emdr | 134 | https://t.me/nmorozova_emdr/134 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-16-dog-present-moment | 2026-08-14 | Мой пёс не делит время на «до» и «после» | @natalia_morozova_psy | 2043 | https://t.me/natalia_morozova_psy/2043 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |

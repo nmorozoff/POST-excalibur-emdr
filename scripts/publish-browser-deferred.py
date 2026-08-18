@@ -35,7 +35,9 @@ SCRIPTS = PROJECT_ROOT / "scripts"
 
 
 def _msp_deferred_complete(topic_dir: Path) -> bool:
-    return _platform_done(topic_dir, "telegram") and _platform_done(topic_dir, "b17")
+    # Main short-blog completion only requires Telegram. b17/TenChat are handled
+    # by the manual repair queue: b17-tenchat-pending-queue.md
+    return _platform_done(topic_dir, "telegram")
 
 
 def _log_status(path: Path) -> str | None:
@@ -233,15 +235,9 @@ def run_publish(topic: str, *, submit: bool) -> dict:
 
     result["steps"]["tenchat"] = {"skipped": True, "reason": "out_of_msp_short_blog_pipeline"}
 
-    # 2) b17
-    for script, key in (("publish-b17-blog.py", "b17"),):
-        if _platform_done(topic_dir, key):
-            result["steps"][key] = {"skipped": True, "reason": "already_published"}
-            continue
-        md_name = "b17-blog-post.md"
-        if not (topic_dir / md_name).is_file():
-            result["steps"][key] = {"skipped": True, "reason": f"no_{md_name}"}
-            continue
+    # 2) b17 — create draft if possible, but do NOT block the main short-blog flow.
+    b17_md = topic_dir / "b17-blog-post.md"
+    if b17_md.is_file() and not _platform_done(topic_dir, "b17"):
         b17_check = subprocess.run(
             [sys.executable, str(SCRIPTS / "check-b17-ip-access.py")],
             cwd=PROJECT_ROOT,
@@ -249,32 +245,67 @@ def run_publish(topic: str, *, submit: bool) -> dict:
             text=True,
         )
         if b17_check.returncode != 0:
-            result["steps"][key] = {
+            result["steps"]["b17"] = {
                 "skipped": True,
                 "reason": "b17_not_accessible",
                 "detail": (b17_check.stdout or b17_check.stderr)[-800:],
             }
-            result["status"] = "failed"
-            return result
-        proc = subprocess.run(
-            [sys.executable, str(SCRIPTS / script), "--topic", topic, *submit_args],
-            cwd=PROJECT_ROOT,
-            capture_output=True,
-            text=True,
-        )
-        result["steps"][key] = {
-            "exit_code": proc.returncode,
-            "stdout_tail": proc.stdout[-2000:] if proc.stdout else "",
-            "stderr_tail": proc.stderr[-1000:] if proc.stderr else "",
-        }
-        if proc.returncode != 0:
-            result["status"] = "failed"
-            return result
+            result["b17_blocked"] = True
+        else:
+            proc = subprocess.run(
+                [sys.executable, str(SCRIPTS / "publish-b17-blog.py"), "--topic", topic, *submit_args],
+                cwd=PROJECT_ROOT,
+                capture_output=True,
+                text=True,
+            )
+            result["steps"]["b17"] = {
+                "exit_code": proc.returncode,
+                "stdout_tail": proc.stdout[-2000:] if proc.stdout else "",
+                "stderr_tail": proc.stderr[-1000:] if proc.stderr else "",
+            }
+            if proc.returncode != 0:
+                result["b17_draft"] = True
+
+    # Always record b17/TenChat in the pending repair queue so manual repair can retry.
+    if (topic_dir / "b17-blog-post.md").is_file() and not _platform_done(topic_dir, "b17"):
+        _ensure_b17_tenchat_pending(topic, "b17")
+    if (topic_dir / "tenchat-post.md").is_file() and not _platform_done(topic_dir, "tenchat"):
+        _ensure_b17_tenchat_pending(topic, "tenchat")
+
     if result.get("telegram_failed") and not _telegram_done(topic_dir):
         result["status"] = "failed"
     elif result.get("status") != "failed":
         result["status"] = "ok"
     return result
+
+
+def _ensure_b17_tenchat_pending(topic: str, platform: str) -> None:
+    """Add a topic to the manual repair queue if not already queued."""
+    from datetime import datetime
+
+    pending_path = MEMORY / "b17-tenchat-pending-queue.md"
+    if not pending_path.is_file():
+        pending_path.write_text(
+            "# b17 + TenChat — pending repair queue\n\n"
+            "Ручная автоматизация. Запускать только по вашему ОК.\n\n"
+            "| topic_id | platform | status | created_at | last_retry |\n"
+            "|----------|----------|--------|------------|------------|\n",
+            encoding="utf-8",
+        )
+    text = pending_path.read_text(encoding="utf-8")
+    if f"| `{topic}` | `{platform}` |" in text:
+        return
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    line = f"| `{topic}` | `{platform}` | `pending` | {now} | - |"
+    lines = text.splitlines()
+    # Insert after the second table header line
+    insert_at = 0
+    for i, line_ in enumerate(lines):
+        if line_.strip().startswith("|----------|") and i + 1 < len(lines):
+            insert_at = i + 1
+            break
+    lines.insert(insert_at, line)
+    pending_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def git_push_logs(topic: str) -> dict:
@@ -414,13 +445,15 @@ def main() -> None:
         if args.git_push:
             # Always push logs so next run / cloud Otchetik sees them (prevent re-publish on git reset)
             report["git_logs"] = git_push_logs(tid)
-        if report.get("status") == "ok" and args.finish:
+        if report.get("status") in {"ok", "draft"} and args.finish:
+            # Finish the main short-blog topic even if b17 is only a draft.
+            # The repair queue handles b17/TenChat separately.
             try:
-                report["finish"] = finish_topic(tid)
+                report["finish"] = finish_topic(tid, force_b17_optional=True)
             except SystemExit as exc:
                 report["finish"] = {"error": str(exc)}
                 report["status"] = "finish_failed"
-            if args.git_push and report.get("status") == "ok":
+            if args.git_push and report.get("status") in {"ok", "draft"}:
                 report["git"] = git_push_changes(tid)
         reports.append(report)
 

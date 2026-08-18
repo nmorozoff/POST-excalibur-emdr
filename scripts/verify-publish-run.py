@@ -288,9 +288,13 @@ def verify_topic(topic: str) -> dict:
         "handoff_done": handoff_done,
         "status": (finish or {}).get("status"),
     }
-    vps_platforms_ok = report["platforms"]["telegram"]["ok"] and report["platforms"]["b17"]["ok"]
-    if not handoff_done and not finish and not vps_platforms_ok:
-        report["issues"].append("VPS phase 3: нет finish (webhook/cron ещё не завершил)")
+    # b17 and TenChat are NOT required for the main short-blog pass.
+    # They are handled by the manual repair queue: b17-tenchat-pending-queue.md
+    b17_status = report["platforms"]["b17"].get("status")
+    b17_draft = b17_status == "draft_saved"
+
+    if not report["platforms"]["telegram"]["ok"]:
+        report["issues"].append("VPS phase 3: Telegram ещё не отработал")
 
     fb_pending = report["platforms"]["facebook"].get("pending_scheduled")
     hard_fail = (
@@ -302,14 +306,29 @@ def verify_topic(topic: str) -> dict:
             report["platforms"]["ok"].get("required")
             and not report["platforms"]["ok"]["ok"]
         )
+        or not report["platforms"]["telegram"]["ok"]
     )
-    vps_pending = not report["platforms"]["telegram"]["ok"] or not report["platforms"]["b17"]["ok"]
+    # b17 draft_saved is informational, not a failure/blocker.
+    main_ok = (
+        report["platforms"]["max"]["ok"]
+        and report["platforms"]["vk_profile"]["ok"]
+        and report["platforms"]["vk_group"]["ok"]
+        and (report["platforms"]["facebook"]["ok"] or fb_pending)
+        and (not report["platforms"]["ok"].get("required") or report["platforms"]["ok"]["ok"])
+        and report["platforms"]["telegram"]["ok"]
+    )
 
-    if not report["issues"]:
+    if not report["issues"] or (main_ok and not b17_draft):
         report["overall"] = "pass"
+    elif b17_draft and main_ok:
+        report["overall"] = "pass_b17_pending"
+        report["issues"].append(
+            "b17: сохранено в черновик (rate limit). Тема считается опубликованной; "
+            "b17 выйдет через ручной repair-запуск."
+        )
     elif hard_fail:
         report["overall"] = "fail"
-    elif vps_pending or fb_pending or (not handoff_done and not finish and vps_platforms_ok):
+    elif fb_pending:
         report["overall"] = "partial"
     else:
         report["overall"] = "fail"

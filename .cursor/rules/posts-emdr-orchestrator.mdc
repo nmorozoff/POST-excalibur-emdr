@@ -9,8 +9,8 @@ alwaysApply: true
 
 ## Суть
 
-Локальный профиль **Excalibur Social**: тема из файла → контент для **Макс → Telegram → ВК×2 → Facebook (Zernio) → Одноклассники (группа) → b17**.  
-**TenChat снят с пайплайна** (2026-08-03). **LinkedIn отменён** (блокировка аккаунта). **Кружок Макс** — вне scope MSP short-blog.
+Локальный профиль **Excalibur Social**: тема из файла → контент для **Макс → Telegram → ВК×2 → Facebook (Zernio) → Одноклассники (группа) → b17/TenChat (repair)**.  
+**b17 и TenChat — repair-пул** (ручной запуск, не блокирует основной прогон). **LinkedIn отменён** (блокировка аккаунта). **Кружок Макс** — вне scope MSP short-blog.
 **НЕ** запускать Ядрышко/Core, SEO-scout, WordPress publish (если пользователь явно не попросил блог).
 
 **Закрытие цикла:** после удачной публикации / перезалива / fix — сразу commit + **push в main** (и нужный webhook), без вопросов «пушить?». Подробности: `publish-close-the-loop.mdc`.
@@ -75,7 +75,7 @@ python3 scripts/publish-topic.py --topic {id}
 python3 scripts/grsai-generate-topic.py --topic {id}
 ```
 
-Выход в `output/{id}/`: `max-post.md`, `cover-prompt.txt`, `telegram-post.md`, `vk-profile-post.md`, `vk-group-post.md`, `facebook-post.md`, `ok-post.md`, `b17-blog-post.md`, `grsai-content-log.json`.
+Выход в `output/{id}/`: `max-post.md`, `cover-prompt.txt`, `telegram-post.md`, `vk-profile-post.md`, `vk-group-post.md`, `facebook-post.md`, `ok-post.md`, `b17-blog-post.md`, `tenchat-post.md`, `grsai-content-log.json`.
 
 Fallback при сбое API: Task-писатели + max вручную.
 
@@ -138,22 +138,24 @@ Gate после publish: в `telegram-publish-log.json` должно быть `"
 После MCP: `python scripts/record-ok-publish.py --topic {id} ...`  
 **Gate:** есть `ok-publish-log.json` или строка в `ok-posts-registry.md`.
 
-### Шаг 6 — b17.ru
+### Шаг 6 — b17.ru (черновик, не блокирует основной прогон)
 
 Рерайт `b17-blog-post.md` по `profile/b17-blog-post-prompt.md` (**1000–1600** знаков, без ссылок в тексте).  
-Обложка **inline в TinyMCE** (не только анонс).
+Обложка **inline в TinyMCE** (не только анонс). При основном прогоне создавать черновик; финальная публикация — через ручной repair.
 
 ```bash
-python scripts/publish-b17-blog.py --topic {id}
+python scripts/publish-b17-blog.py --topic {id}        # черновик
+python scripts/repair-b17-tenchat.py --topic {id}      # ручной repair
 ```
 
 Gate: форма заполнена, `b17-publish-prep.json`. Опционально `--submit` для автоклика «Сохранить».
 
 ### Шаг 7 — Закрытие
 
-- Пометить тему `published` + дата в `short-blog-queue.md` / `short-blog-published.md`
+- Пометить тему `published` + дата в `short-blog-queue.md` / `short-blog-published.md` после 5 основных платформ (Макс, Telegram, VK, Facebook, OK). b17/TenChat не блокируют закрытие.
 - `publish-log.md` в output
 - Обновить реестры платформ (`max`, `telegram`, `vk-profile`, `vk-group`, `facebook`, `ok`)
+- Добавить тему в `b17-tenchat-pending-queue.md` если b17/TenChat не published
 - Fragment шага: `incident_report:` (`shared/subagent-end-of-task-contract.md`)
 - Handoff: `=== POSTS EMDR DONE ===`
 
@@ -164,9 +166,9 @@ Gate: форма заполнена, `b17-publish-prep.json`. Опциональ
 После cloud + MCP VK/OK + webhook VPS:
 
 1. **Task(`posts-emdr-otchetik`)** с `topic_id`
-2. Отчётик **ждёт финального результата**: polling до `pass`/`fail`, до 6 попыток по ~10 мин (`git pull` перед каждой повторной проверкой; после 3 попыток — один re-trigger webhook при отсутствии finish).
+2. Отчётик **проверяет один раз**: `verify-publish-run.py --write` → `send-max-publish-report.py`. b17/TenChat draft_saved — это `pass_b17_pending`, не fail/partial.
 3. Только один финальный отчёт в Макс: `verify-publish-run.py --write` → `send-max-publish-report.py`
-4. При `fail` — эскалировать Fixic. При `partial` после 6 попыток: если причина только **b17 draft_saved** (rate-limit площадки), не эскалировать в Fixic, записать INC и отметить, что cron retry опубликует позже. Другие partial — Fixic.
+4. При `fail` (основные платформы не OK) — эскалировать Fixic. b17/TenChat не влияют на fail.
 
 | Task | Роль |
 |------|------|
@@ -213,7 +215,8 @@ Gate: форма заполнена, `b17-publish-prep.json`. Опциональ
 - НЕ эзотерика вместо EMDR-науки
 - НЕ публиковать Telegram с `--delivery photo_then_text` — только `link_preview` (одно сообщение)
 - НЕ публиковать в Telegram-канал @morozova_emdr — снят с пайплайна (2026-08-03); только @nmorozova_emdr и @natalia_morozova_psy
-- НЕ TenChat — снят с пайплайна (2026-08-03)
+- НЕ TenChat в основном прогоне — только в ручном repair-b17-tenchat
+- НЕ ждать b17/TenChat для закрытия темы
 - НЕ удалять и не перепубликовывать уже вышедшие посты в соцсетях без явной просьбы пользователя
 
 ## Связь с Excalibur Blog
