@@ -1,30 +1,30 @@
 === POSTS-EMDR-OTCHETIK ===
-Статус: ⚠️ WARN
-topic_id: sb-18-water-in-stone
-Кратко: 6 polling-попыток (~60 мин); финальный статус partial — b17 draft_saved (rate-limit). VPS finish не выполнен (503 transient при retry). Остальные платформы OK. Отчёт в Макс отправлен. Fixic не нужен.
-
 topic: sb-18-water-in-stone
 overall: partial
 max_report_sent: true
 incidents_written:
-- INC-20260816-1030-otchetik-b17-rate-limit-draft (updated, no duplicate)
+- INC-20260816-1030-otchetik-b17-rate-limit-draft (updated, not duplicated)
 fixic_needed: false
+incident_report: posts-emdr-memory/pipeline-fix-queue.md#INC-20260816-1030-otchetik-b17-rate-limit-draft
 
-Артефакты:
-- posts-emdr-memory/output/sb-18-water-in-stone/publish-run-report.json
-- posts-emdr-memory/output/sb-18-water-in-stone/b17-publish-log.json
-- posts-emdr-memory/output/sb-18-water-in-stone/vps-worker-last-run.json
-- posts-emdr-memory/output/sb-18-water-in-stone/max-report-log.json
+## Polling summary
 
-Ссылки:
-- Max: https://max.ru/se13417616_biz/AaAJ12kzEEQ
-- TG: https://t.me/nmorozova_emdr/135, https://t.me/natalia_morozova_psy/2045
-- VK профиль: https://vk.com/wall218367867_692
-- VK группа: https://vk.com/wall-224685309_169
-- Facebook: https://www.facebook.com/632301483303094_122182326740837712
-- OK: https://ok.ru/group/70000034253679/topic/161373073993839
-- b17: https://www.b17.ru/my_blog.php?mod=edit (черновик, cron retry)
+- Attempts: 6 (interval ~10 min each)
+- Webhook re-trigger: yes (after attempt 3, pid 3336206, 202 accepted)
+- Final overall: partial
 
-Polling: 6 попыток (2026-08-17); webhook re-trigger после 3-й (202 accepted, pid 2460573). VPS b17 retry → 503 transient. TG/VK/FB/OK/Max — OK.
+## Issues
+
+1. b17: сохранено в черновик (rate limit), требуется повторный запуск
+2. Тема всё ещё in_progress в очереди
+3. VPS phase 3: нет finish (webhook/cron ещё не завершил)
+
+## Platforms OK
+
+Max, Telegram×2, VK profile, VK group, Facebook, OK — все опубликованы.
+
+## Fixic
+
+Не эскалировать: единственная блокирующая причина — b17 rate-limit (`draft_saved`). Cron retry опубликует позже.
 
 incident_report: posts-emdr-memory/pipeline-fix-queue.md#INC-20260816-1030-otchetik-b17-rate-limit-draft

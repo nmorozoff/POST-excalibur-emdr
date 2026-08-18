@@ -1091,6 +1091,7 @@ category: platform
 - После 6 polling-попыток Отчётика (≈50 мин) статус остаётся partial; остальные платформы (Max, TG×2, VK×2, FB, OK) — OK.
 - `browser-worker-finish.json` не записан; тема остаётся `in_progress` в очереди до публикации b17 (cron retry).
 - 2026-08-17: повторный цикл Отчётика (6× polling ~60 мин); webhook re-trigger после 3-й попытки (202 accepted, pid 2460573). VPS worker: `b17_not_accessible` HTTP 503 (transient) — не Fixic. Статус по-прежнему `draft_saved`.
+- 2026-08-18: третий цикл Отчётика (6× polling ~60 мин); webhook re-trigger после 3-й попытки (202 accepted, pid 3336206). Статус без изменений: `draft_saved`, `finish_json` отсутствует, тема `in_progress`. Остальные платформы OK. Отчёт partial отправлен в Макс ЛС.
 
 ### Durable fix needed before next run
 - Дождаться cron retry `publish-b17-blog.py` / VPS worker для sb-18-water-in-stone.
