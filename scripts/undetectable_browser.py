@@ -6,6 +6,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import re
 import subprocess
 import tempfile
 import random
@@ -202,6 +203,40 @@ def open_url(base_url: str, profile_id: str, url: str) -> None:
     human_pause(2.5, 1.0)
 
 
+def open_url_tolerant(
+    base_url: str,
+    profile_id: str,
+    url: str,
+    *,
+    expected_path: str | None = None,
+    wait_sec: float = 8.0,
+) -> None:
+    """Open URL forgiving the Undetectable 'Url load timeout' false positive.
+
+    The API often reports a timeout even though the SPA eventually loads.
+    We wait, then verify via window.location.href injected into the DOM.
+    """
+    try:
+        open_url(base_url, profile_id, url)
+        return
+    except SystemExit as exc:
+        if "Url load timeout" not in str(exc):
+            raise
+    time.sleep(wait_sec)
+    run_js(
+        base_url,
+        profile_id,
+        "document.documentElement.setAttribute('data-open-url', window.location.href);",
+    )
+    page = get_page_html(base_url, profile_id)
+    match = re.search(r'data-open-url="([^"]+)"', page)
+    actual = match.group(1) if match else ""
+    if actual and actual != "about:blank":
+        if expected_path is None or expected_path in actual:
+            return
+    raise SystemExit(f"openurl timed out and page did not load: {url} (actual={actual})")
+
+
 def get_page_html(base_url: str, profile_id: str) -> str:
     result = api_request(base_url, "GET", f"/browser/getpage/{profile_id}")
     if result.get("code") != 0:
@@ -356,11 +391,15 @@ def tenchat_click_button_by_text(base_url: str, profile_id: str, text: str, *, e
         profile_id,
         f"""(() => {{
   const needle = {label};
-  const btn = [...document.querySelectorAll('button')].find((b) => {{
+  const candidates = [...document.querySelectorAll('button, div[role="button"], span[role="button"]')];
+  const btn = candidates.find((b) => {{
     const t = (b.textContent || '').replace(/\\s+/g, ' ').trim();
-    return {exact_js} ? t === needle : t.includes(needle);
+    if (!t) return false;
+    if ({exact_js}) return t === needle;
+    return t === needle || t.includes(needle);
   }});
   if (!btn) throw new Error('Button not found: ' + needle);
+  btn.scrollIntoView({{ block: 'center' }});
   btn.click();
 }})();""",
     )
@@ -398,10 +437,11 @@ def tenchat_markdown_to_html(md: str) -> str:
     import re
 
     def inline(s: str) -> str:
-        s = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2" rel="noopener noreferrer">\1</a>', s)
+        s = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2" target="_blank" rel="noopener noreferrer">\1</a>', s)
         s = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", s)
         return s
 
+    # Split on double newlines, but keep single newlines inside blocks as <br>.
     blocks = [b.strip() for b in md.strip().split("\n\n") if b.strip()]
     parts: list[str] = []
     for block in blocks:
@@ -410,9 +450,14 @@ def tenchat_markdown_to_html(md: str) -> str:
             len(lines) >= 2
             and all(re.match(r"^[-—•]\s+", ln) for ln in lines)
         ):
-            items = "".join(f"<li>{inline(ln)}</li>" for ln in lines)
+            # Strip the leading dash/marker from each list item.
+            items = "".join(
+                f"<li>{inline(re.sub(r'^[-—•]\\s+', '', ln))}</li>"
+                for ln in lines
+            )
             parts.append(f"<ul>{items}</ul>")
         else:
+            # Preserve single line breaks inside the paragraph as <br>.
             parts.append(f"<p>{inline(block.replace(chr(10), '<br>'))}</p>")
     return "".join(parts)
 
@@ -462,6 +507,13 @@ def b17_apply_form_meta(
 
 
 def set_tenchat_body_html(base_url: str, profile_id: str, html: str) -> None:
+    """Insert HTML into TenChat Quill editor.
+
+    TenChat's Quill instance is not exposed in DOM, so we use the browser's
+    contentEditable APIs: select all, then insertHTML, which lets the editor
+    parse and sanitize the markup while keeping <p>, <strong>, <ul>, <li> and
+    <a> when the editor supports them.
+    """
     html_json = json.dumps(html, ensure_ascii=False)
     run_js(
         base_url,
@@ -476,14 +528,23 @@ def set_tenchat_body_html(base_url: str, profile_id: str, html: str) -> None:
     document.querySelector('.ql-editor');
   if (!editor) throw new Error('TenChat ql-editor not found');
   editor.focus();
-  const container = editor.closest('.ql-container');
-  const quill = container?.__quill || editor.__quill;
-  if (quill && quill.clipboard) {{
-    quill.clipboard.dangerouslyPasteHTML(0, {html_json});
-  }} else {{
+  // Clear existing content so we start from a single paragraph.
+  editor.innerHTML = '<p><br></p>';
+  editor.dispatchEvent(new InputEvent('input', {{ bubbles: true }}));
+  // Select all and replace with the formatted HTML via execCommand.
+  const range = document.createRange();
+  range.selectNodeContents(editor);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  if (!document.execCommand('insertHTML', false, {html_json})) {{
+    // Fallback: directly set innerHTML if execCommand is unavailable.
     editor.innerHTML = {html_json};
     editor.dispatchEvent(new InputEvent('input', {{ bubbles: true }}));
   }}
+  sel.removeAllRanges();
+  editor.dispatchEvent(new InputEvent('input', {{ bubbles: true }}));
+  editor.dispatchEvent(new Event('change', {{ bubbles: true }}));
 }})();""",
     )
 
@@ -494,10 +555,27 @@ def tenchat_add_topics(base_url: str, profile_id: str, topics: list[str]) -> lis
         tenchat_click_button_by_text(base_url, profile_id, "Добавить тематику")
         time.sleep(1.0)
         set_field_value_js(base_url, profile_id, 'input[placeholder*="Поиск по тематикам"]', topic)
-        time.sleep(0.6)
-        tenchat_click_button_by_text(base_url, profile_id, topic)
+        time.sleep(1.2)
+        # Click the topic option that matches exactly (avoid "Тестирование" / "Медицина" partial matches).
+        topic_json = json.dumps(topic, ensure_ascii=False)
+        run_js(
+            base_url,
+            profile_id,
+            f"""(() => {{
+  const needle = {topic_json};
+  const opts = [...document.querySelectorAll('button, div, span')].filter(el => {{
+    const t = (el.textContent || '').replace(/\\s+/g, ' ').trim();
+    return t && (t === needle || t.includes(needle));
+  }});
+  const exact = opts.find(el => (el.textContent || '').replace(/\\s+/g, ' ').trim() === needle);
+  const target = exact || opts[0];
+  if (!target) throw new Error('Topic option not found: ' + needle);
+  target.scrollIntoView({{ block: 'center' }});
+  target.click();
+}})();""",
+        )
         added.append(topic)
-        time.sleep(0.6)
+        time.sleep(0.8)
     return added
 
 
@@ -601,16 +679,24 @@ def b17_inline_cover_html(cover_path: Path, *, public_url: str | None = None) ->
 
 
 def tenchat_attach_cover_image(base_url: str, profile_id: str, cover_path: Path) -> dict[str, Any]:
-    """Прикрепить cover через кнопку-скрепку (input[type=file] в меню)."""
+    """Прикрепить cover через кнопку-скрепку (input[type=file] в меню Quill).
+
+    In TenChat, the first image attached to a post is used as the cover image.
+    The file button inserts the image at the current cursor position (usually
+    the end of the body). We therefore move the uploaded image to the very
+    beginning of the editor body and wait for the upload to finish so it
+    renders as the post preview image.
+    """
     if not cover_path.exists():
         raise SystemExit(f"Cover not found: {cover_path}")
     jpeg = prepare_cover_jpeg_for_browser(cover_path)
     b64 = base64.b64encode(jpeg.read_bytes()).decode("ascii")
     b64_json = json.dumps(b64, ensure_ascii=False)
     fname = json.dumps(jpeg.name, ensure_ascii=False)
+    # Use the dedicated Quill file button class to trigger the hidden file input.
     attach_js = f"""(() => {{
-  const btn = [...document.querySelectorAll('button')].find(b => b.querySelector('.i-fa6-solid\\\\:paperclip'));
-  if (!btn) throw new Error('TenChat paperclip button not found');
+  const btn = document.querySelector('button.ql-file');
+  if (!btn) throw new Error('TenChat ql-file button not found');
   btn.click();
   const deadline = Date.now() + 4000;
   let input = null;
@@ -630,9 +716,42 @@ def tenchat_attach_cover_image(base_url: str, profile_id: str, cover_path: Path)
   input.dispatchEvent(new Event('input', {{ bubbles: true }}));
 }})();"""
     run_js(base_url, profile_id, attach_js, timeout=90)
+    # Poll until the uploaded post image appears in the editor, then move it to the top.
+    move_js = """(() => {
+  const editor = document.querySelector('#tc-editor .ql-editor') || document.querySelector('.ql-editor');
+  if (!editor) throw new Error('TenChat editor not found');
+  function isPostImg(i) {
+    const src = i.src || '';
+    return src && !src.includes('tenchat.ru/images') && !src.includes('reactions') && !src.includes('user-picture') && !src.includes('level-gray');
+  }
+  let img = null;
+  const deadline = Date.now() + 20000;
+  while (Date.now() < deadline) {
+    const candidates = [...editor.querySelectorAll('img')].filter(isPostImg);
+    if (candidates.length) {
+      img = candidates[candidates.length - 1];
+      break;
+    }
+  }
+  if (!img) throw new Error('TenChat cover image did not appear in editor after upload');
+  // Move image to the very top of the editor body so it becomes the cover.
+  editor.insertBefore(img, editor.firstChild);
+  editor.dispatchEvent(new InputEvent('input', { bubbles: true }));
+  editor.dispatchEvent(new Event('change', { bubbles: true }));
+  // Force Quill to notice the DOM change by inserting and removing a tiny text node.
+  const p = editor.querySelector('p') || editor;
+  const marker = document.createTextNode(' ');
+  p.appendChild(marker);
+  p.removeChild(marker);
+  editor.dispatchEvent(new InputEvent('input', { bubbles: true }));
+})();"""
+    run_js(base_url, profile_id, move_js, timeout=30)
+    time.sleep(1)
     verify_js = """(() => {
-  const imgs = [...document.querySelectorAll('#tc-editor img, .ql-editor img, [class*="attachment"] img')];
-  if (!imgs.length) throw new Error('TenChat cover image not visible after attach');
+  const editor = document.querySelector('#tc-editor .ql-editor') || document.querySelector('.ql-editor');
+  if (!editor) throw new Error('TenChat editor not found');
+  const firstImg = editor.querySelector('img');
+  if (!firstImg) throw new Error('TenChat cover image not visible after attach');
 })();"""
     run_js(base_url, profile_id, verify_js, timeout=30)
     return {"ok": True, "file": jpeg.name, "source": str(cover_path), "method": "paperclip"}
@@ -686,7 +805,7 @@ def fill_b17_compose(
     edit_mode: bool = False,
 ) -> dict[str, Any]:
     ensure_ready(base_url)
-    open_url(base_url, profile_id, compose_url)
+    open_url_tolerant(base_url, profile_id, compose_url, expected_path="b17.ru")
     time.sleep(pause_sec)
     # Human-like: scroll to read/inspect the form before filling.
     human_scroll(base_url, profile_id, direction="down", amount=300)
@@ -746,7 +865,7 @@ def fill_tenchat_compose(
     auto_submit: bool = False,
 ) -> dict[str, Any]:
     ensure_ready(base_url)
-    open_url(base_url, profile_id, compose_url)
+    open_url_tolerant(base_url, profile_id, compose_url, expected_path="tenchat.ru")
     time.sleep(pause_sec)
     # Human-like: scroll through page to "read" before filling.
     human_scroll(base_url, profile_id, direction="down", amount=350)
