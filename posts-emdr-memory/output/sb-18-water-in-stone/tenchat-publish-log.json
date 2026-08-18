@@ -1,0 +1,20 @@
+{
+  "topic": "sb-18-water-in-stone",
+  "platform": "tenchat",
+  "title": "Вода находит путь в самую твёрдую породу — и тревога тоже",
+  "title_chars": 58,
+  "body": "Поймала себя на мысли: мы привыкли восхищаться людьми, которые «держатся»...",
+  "body_chars": 980,
+  "cover_local": "posts-emdr-memory/output/sb-18-water-in-stone/cover.png",
+  "utm_source": "tenchat",
+  "topics": ["Саморазвитие"],
+  "status": "published",
+  "tenchat_url": "https://tenchat.ru/media/5891510-voda-nakhodit-put-v-samuyu-tvyorduyu-porodu--i-trevoga-tozhe",
+  "filled": ["ql_editor_html", "title", "topics:Саморазвитие", "cover:browser-cover-cover.jpg"],
+  "fill_mode": "tenchat-html-editor",
+  "cover_attached": true,
+  "auto_submit": true,
+  "note": "Опубликовано автоматически",
+  "humanizer": true,
+  "published_at": "2026-08-18T11:45:00+03:00"
+}

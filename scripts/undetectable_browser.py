@@ -8,11 +8,27 @@ import json
 import os
 import subprocess
 import tempfile
+import random
 import time
 import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
+
+
+def human_pause(base: float = 1.0, variance: float = 0.5) -> None:
+    """Pause for a random duration to mimic human typing/reading behavior."""
+    time.sleep(base + random.uniform(-variance, variance))
+
+
+def human_scroll(base_url: str, profile_id: str, *, direction: str = "down", amount: int = 300) -> None:
+    """Scroll the page like a human reading the form."""
+    script = f"""(() => {{
+  window.scrollBy({{ top: {amount if direction == 'down' else -amount}, left: 0, behavior: 'smooth' }});
+}})();"""
+    run_js(base_url, profile_id, script)
+    human_pause(0.8, 0.4)
+
 
 DEFAULT_API_BASE = "http://127.0.0.1:25325"
 
@@ -183,6 +199,7 @@ def open_url(base_url: str, profile_id: str, url: str) -> None:
     result = api_request(base_url, "POST", f"/browser/openurl/{profile_id}", {"url": url})
     if result.get("code") != 0:
         raise SystemExit(f"openurl failed: {result}")
+    human_pause(2.5, 1.0)
 
 
 def get_page_html(base_url: str, profile_id: str) -> str:
@@ -204,6 +221,7 @@ def fill_field(base_url: str, profile_id: str, selector: str, text: str) -> None
     )
     if result.get("code") != 0:
         raise SystemExit(f"fill failed for {selector}: {result}")
+    human_pause(0.6, 0.3)
 
 
 def evaluate_js(base_url: str, profile_id: str, script: str) -> Any:
@@ -215,6 +233,7 @@ def evaluate_js(base_url: str, profile_id: str, script: str) -> Any:
     )
     if result.get("code") != 0:
         raise SystemExit(f"evaluate failed: {result}")
+    human_pause(0.4, 0.2)
     return result.get("data")
 
 
@@ -233,6 +252,7 @@ def paste_into_contenteditable(base_url: str, profile_id: str, selector: str, te
     data = evaluate_js(base_url, profile_id, script)
     if not data or not data.get("ok"):
         raise SystemExit(f"paste failed: {data}")
+    human_pause(0.8, 0.4)
 
 
 def smart_fill_compose(
@@ -271,6 +291,7 @@ def run_js(base_url: str, profile_id: str, script: str, *, timeout: int = 30) ->
     )
     if result.get("code") != 0:
         raise SystemExit(f"evaluate failed: {result}")
+    human_pause(0.4, 0.2)
 
 
 def set_field_value_js(base_url: str, profile_id: str, selector: str, value: str) -> None:
@@ -290,6 +311,7 @@ def set_field_value_js(base_url: str, profile_id: str, selector: str, value: str
   el.dispatchEvent(new Event('change', {{ bubbles: true }}));
 }})();""",
     )
+    human_pause(0.8, 0.4)
 
 
 def wait_for_tinymce_and_set(base_url: str, profile_id: str, html_body: str, *, attempts: int = 24) -> None:
@@ -666,6 +688,9 @@ def fill_b17_compose(
     ensure_ready(base_url)
     open_url(base_url, profile_id, compose_url)
     time.sleep(pause_sec)
+    # Human-like: scroll to read/inspect the form before filling.
+    human_scroll(base_url, profile_id, direction="down", amount=300)
+    human_scroll(base_url, profile_id, direction="up", amount=150)
     set_field_value_js(base_url, profile_id, B17_TITLE_SELECTOR, title)
     time.sleep(0.5)
     b17_apply_form_meta(base_url, profile_id, section_value="1", edit_mode=edit_mode)
@@ -673,6 +698,8 @@ def fill_b17_compose(
     if cover_path:
         html_body = b17_inline_cover_html(cover_path) + html_body
     wait_for_tinymce_and_set(base_url, profile_id, html_body)
+    # Human-like: pause to "review" the post before deciding to publish.
+    human_pause(3.0, 1.5)
     filled = ["title", "latname", "razdel", "author", "tinymce_body"]
     if cover_path:
         filled.append("cover:https_tinymce")
@@ -684,6 +711,8 @@ def fill_b17_compose(
         )
     submitted = False
     if auto_submit:
+        # Human-like: scroll back to submit button area before clicking.
+        human_scroll(base_url, profile_id, direction="up", amount=400)
         click_button_by_text(base_url, profile_id, "Сохранить")
         submitted = True
     note = (
@@ -719,6 +748,9 @@ def fill_tenchat_compose(
     ensure_ready(base_url)
     open_url(base_url, profile_id, compose_url)
     time.sleep(pause_sec)
+    # Human-like: scroll through page to "read" before filling.
+    human_scroll(base_url, profile_id, direction="down", amount=350)
+    human_scroll(base_url, profile_id, direction="up", amount=120)
     filled: list[str] = []
     if use_code_block:
         run_js(
@@ -755,8 +787,11 @@ def fill_tenchat_compose(
         time.sleep(0.5)
         cover_result = tenchat_attach_cover_image(base_url, profile_id, cover_path)
         filled.append(f"cover:{cover_result.get('file')}")
+    # Human-like: pause to "review" the post before submitting.
+    human_pause(3.0, 1.5)
     submitted = False
     if auto_submit:
+        human_scroll(base_url, profile_id, direction="up", amount=400)
         click_button_by_text(base_url, profile_id, "Опубликовать")
         submitted = True
     note = (
