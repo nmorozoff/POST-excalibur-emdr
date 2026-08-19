@@ -17,12 +17,13 @@ import json
 import os
 import sys
 import time
-import urllib.error
-import urllib.request
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ENV_FILE = PROJECT_ROOT / "posts-emdr-memory" / "browser.env.local"
+
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+from vps_webhook_client import post_json, probe_health
 
 
 def load_secret() -> str:
@@ -44,62 +45,61 @@ def main() -> None:
     parser.add_argument("--host", default="195.209.210.45")
     parser.add_argument("--port", type=int, default=8787)
     parser.add_argument("--dry-run", action="store_true", help="Auth check only")
+    parser.add_argument("--timeout", type=int, default=90, help="POST /publish timeout seconds")
+    parser.add_argument("--health-timeout", type=int, default=10, help="GET /health timeout seconds")
+    parser.add_argument("--skip-health", action="store_true", help="Skip GET /health pre-check")
     args = parser.parse_args()
 
     secret = load_secret()
+    base = f"http://{args.host}:{args.port}"
+
+    if not args.skip_health:
+        health_ok, health = probe_health(args.host, args.port, timeout=args.health_timeout)
+        if not health_ok:
+            print(json.dumps({"health_ok": False, **health}, ensure_ascii=False, indent=2))
+            if health.get("vps_down"):
+                sys.exit(3)
+            sys.exit(2)
+
     payload = {"topic": args.topic}
     if args.dry_run:
         payload["dry_run"] = True
 
-    body = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        f"http://{args.host}:{args.port}/publish",
-        data=body,
-        method="POST",
-        headers={
-            "Authorization": f"Bearer {secret}",
-            "Content-Type": "application/json",
-        },
-    )
-    last_err = None
+    last_err: dict = {}
     for attempt in range(1, 4):
-        try:
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                text = resp.read().decode("utf-8")
-                data = json.loads(text) if text else {}
-                print(json.dumps({"status": resp.status, **data}, ensure_ascii=False, indent=2))
-                if resp.status == 202 or (args.dry_run and resp.status == 200):
-                    sys.exit(0)
-                sys.exit(2)
-        except urllib.error.HTTPError as e:
-            text = e.read().decode("utf-8", errors="replace")
-            last_err = {"status": e.code, "error": text[:500]}
-            if e.code == 409:
-                # Publish already running under flock — not a failure; do not retry-spam TG.
-                try:
-                    payload = json.loads(text) if text else {}
-                except json.JSONDecodeError:
-                    payload = {}
-                print(
-                    json.dumps(
-                        {"status": 409, "accepted": False, "busy": True, **payload},
-                        ensure_ascii=False,
-                        indent=2,
-                    )
-                )
+        status, data = post_json(
+            f"{base}/publish",
+            secret,
+            payload,
+            timeout=float(args.timeout),
+        )
+        if status in (202, 200):
+            print(json.dumps({"status": status, **data}, ensure_ascii=False, indent=2))
+            if status == 202 or (args.dry_run and status == 200):
                 sys.exit(0)
-            if e.code in (401, 403):
-                print(json.dumps(last_err, ensure_ascii=False, indent=2))
-                sys.exit(2)
-        except Exception as e:
-            last_err = {"error": str(e)[:500]}
+            sys.exit(2)
+        if status == 409:
+            print(
+                json.dumps(
+                    {"status": 409, "accepted": False, "busy": True, **data},
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+            sys.exit(0)
+        if status in (401, 403):
+            print(json.dumps({"status": status, **data}, ensure_ascii=False, indent=2))
+            sys.exit(2)
+        last_err = {"status": status, **data} if status else data
+        if data.get("vps_down"):
+            break
         if attempt < 3:
             wait = 10 * attempt
             print(json.dumps({"attempt": attempt, "wait_seconds": wait, **last_err}, ensure_ascii=False, indent=2))
             time.sleep(wait)
 
-    print(json.dumps({"status": "timeout", "attempts": 3, **last_err}, ensure_ascii=False, indent=2))
-    sys.exit(2)
+    print(json.dumps({"status": "failed", "attempts": 3, **last_err}, ensure_ascii=False, indent=2))
+    sys.exit(3 if last_err.get("vps_down") else 2)
 
 
 if __name__ == "__main__":

@@ -20,12 +20,13 @@ import argparse
 import json
 import os
 import sys
-import urllib.error
-import urllib.request
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ENV_FILE = PROJECT_ROOT / "posts-emdr-memory" / "browser.env.local"
+
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+from vps_webhook_client import post_json, probe_health
 
 
 def load_secret() -> str:
@@ -43,30 +44,6 @@ def load_secret() -> str:
     )
 
 
-def post_json(url: str, secret: str, payload: dict) -> tuple[int, dict]:
-    body = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        url,
-        data=body,
-        method="POST",
-        headers={
-            "Authorization": f"Bearer {secret}",
-            "Content-Type": "application/json",
-        },
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            text = resp.read().decode("utf-8")
-            return resp.status, json.loads(text) if text else {}
-    except urllib.error.HTTPError as e:
-        text = e.read().decode("utf-8", errors="replace")
-        try:
-            data = json.loads(text) if text else {}
-        except json.JSONDecodeError:
-            data = {"raw": text[:200]}
-        return e.code, data
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description="Verify VPS webhook secret matches")
     parser.add_argument("--host", default="195.209.210.45")
@@ -76,14 +53,13 @@ def main() -> None:
     secret = load_secret()
     base = f"http://{args.host}:{args.port}"
 
-    # health
-    with urllib.request.urlopen(f"{base}/health", timeout=10) as resp:
-        health = json.loads(resp.read().decode("utf-8"))
-    if not health.get("ok"):
-        raise SystemExit(f"Health check failed: {health}")
+    health_ok, health = probe_health(args.host, args.port, timeout=10.0)
+    if not health_ok:
+        print(json.dumps({"health_ok": False, **health}, ensure_ascii=False, indent=2))
+        sys.exit(3 if health.get("vps_down") else 2)
 
-    wrong_code, wrong_body = post_json(f"{base}/publish", "wrong-secret-test", {"dry_run": True})
-    ok_code, ok_body = post_json(f"{base}/publish", secret, {"dry_run": True})
+    wrong_code, wrong_body = post_json(f"{base}/publish", "wrong-secret-test", {"dry_run": True}, timeout=15.0)
+    ok_code, ok_body = post_json(f"{base}/publish", secret, {"dry_run": True}, timeout=15.0)
 
     result = {
         "health": health,
