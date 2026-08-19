@@ -1,0 +1,19 @@
+{
+  "topic": "sb-19-question-before-sleep",
+  "platform": "vk",
+  "status": "published",
+  "method": "mcp-kv",
+  "profile": {
+    "post_id": 693,
+    "url": "https://vk.com/wall218367867_693",
+    "photo_id": "photo218367867_457247790"
+  },
+  "group": {
+    "post_id": 170,
+    "group_id": "224685309",
+    "url": "https://vk.com/wall-224685309_170",
+    "photo_id": "photo218367867_457247791"
+  },
+  "date": "2026-08-19",
+  "format_vk_publish_text": true
+}

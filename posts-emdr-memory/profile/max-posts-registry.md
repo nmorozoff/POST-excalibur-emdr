@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-19-question-before-sleep | 2026-08-19 | Один вопрос себе перед сном, который меняет качество утра | https://max.ru/se13417616_biz/AaAbGflxdSc | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,сон,психология |
 | sb-18-water-in-stone | 2026-08-16 | Вода находит путь в самую твёрдую породу | https://max.ru/se13417616_biz/AaAJ12kzEEQ | https://morozovanatalia.ru/anxiety?utm_source=max | тревога,метафора,EMDR |
 | sb-17-weed-unplanted | 2026-08-15 | Почему сорняк растёт там, где ничего не сажали | https://max.ru/se13417616_biz/AaAEw9PYQrI | https://morozovanatalia.ru/anxiety?utm_source=max | тревога,метафора,EMDR |
 | sb-16-dog-present-moment | 2026-08-14 | Мой пёс не делит время на «до» и «после» | https://max.ru/se13417616_biz/AaAAr6bvSog | https://morozovanatalia.ru/anxiety?utm_source=max | тревога,метафора,EMDR,настоящий момент |
