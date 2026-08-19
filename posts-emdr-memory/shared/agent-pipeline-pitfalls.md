@@ -246,6 +246,21 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Gate:** HTTP **202** + позже `browser-worker-finish.json` в output.
 
+## VPS webhook: Connection reset by peer (service down)
+
+**Симптом (2026-08-19, sb-19):** TCP к `195.209.210.45:8787` устанавливается, но `GET /health` и `POST /publish` → `Connection reset by peer` / `[Errno 104]`; `trigger-vps-webhook.py` ×3 — тот же сброс; phase 3 не стартует.
+
+**Причина:** процесс `posts-emdr-webhook` на VPS упал, завис или перегружен (не баг Cloud-скриптов). Отличается от TimeoutError (медленный ответ) и от HTTP 409 (lock занят).
+
+**Правильно (Cloud / Fixic):**
+- `probe_health()` / `trigger-vps-webhook.py`: при `vps_down: true` — **не** публиковать TG/b17 из Cloud; exit **3**.
+- Отчётик: webhook re-trigger **пропустить**, если health fail (не долбить 3× retry).
+- INC → `needs-human` до восстановления VPS; после fix на VPS — один `trigger-vps-webhook.py --topic {id}`.
+
+**Правильно (recovery на VPS, владелец):** см. `profile/browser-autonomous-vps.md` § «Webhook недоступен».
+
+**Gate:** `curl -fsS http://127.0.0.1:8787/health` на VPS → `{"ok":true}`; с Cloud → `verify-vps-webhook-secret.py` exit 0; затем webhook 202 для pending темы.
+
 ## Обложка: wp-content URL отдаёт HTML, не image/jpeg
 
 **Симптом (2026-08-05, sb-08):** WordPress media URL (HTTP 200) → `Content-Type: text/html`; VK MCP `vk_create_post_with_photo` падает.

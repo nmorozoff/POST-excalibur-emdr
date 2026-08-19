@@ -1,14 +1,16 @@
 === POSTS-EMDR-FIXIC ===
 Статус: needs-human
 incidents_handled:
-- INC-20260809-1118-ok-mcp-token-expired (needs-human: Dashboard re-auth OK mcp-kv)
-- INC-20260809-1120-grsai-telegram-b17-gate (fixed)
+- INC-20260819-1745-sb19-vps-webhook-connection-reset (needs-human: VPS webhook down, connection reset)
 files_changed:
-- scripts/grsai-generate-topic.py
+- scripts/vps_webhook_client.py
+- scripts/trigger-vps-webhook.py
+- scripts/verify-vps-webhook-secret.py
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
-- posts-emdr-memory/profile/cloud-publish-phases.md
+- posts-emdr-memory/profile/browser-autonomous-vps.md
 - posts-emdr-memory/pipeline-fix-queue.md
 checks:
-- python3 -m py_compile scripts/grsai-generate-topic.py
-- smoke: ensure_b17_blank_lines, truncate_telegram_html, ensure_platform_contract(b17)
-incident_report: none
+- python3 -m py_compile scripts/vps_webhook_client.py scripts/trigger-vps-webhook.py scripts/verify-vps-webhook-secret.py
+- curl http://195.209.210.45:8787/health → Connection reset by peer (VPS still down)
+- python3 scripts/trigger-vps-webhook.py --topic sb-19-question-before-sleep --dry-run → exit 3, vps_down true
+incident_report: posts-emdr-memory/pipeline-fix-queue.md#INC-20260819-1745-sb19-vps-webhook-connection-reset

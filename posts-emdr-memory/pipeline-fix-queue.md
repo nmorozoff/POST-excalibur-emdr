@@ -1079,7 +1079,7 @@ files_changed:
 - posts-emdr-memory/output/sb-14-morning-fog/cover.png
 
 ## INC-20260819-1745-sb19-vps-webhook-connection-reset
-status: open
+status: needs-human
 run_date: 2026-08-19
 role: otchetik
 topic: sb-19-question-before-sleep
@@ -1103,6 +1103,27 @@ category: webhook
 - `scripts/trigger-vps-webhook.py`
 - `scripts/verify-vps-webhook-secret.py`
 - posts-emdr-memory/output/sb-19-question-before-sleep/browser-local-handoff.md
+
+### Fixic resolution
+fixed_at: 2026-08-19
+fix_summary:
+- Fixic probe (2026-08-19): VPS всё ещё `Connection reset by peer` на /health и /publish (curl + trigger-vps-webhook ×3).
+- Root cause: infra VPS (webhook service down/hung), не баг Cloud phase 1+2.
+- Durable: `scripts/vps_webhook_client.py` (probe_health, classify connection_reset → vps_down); trigger/verify используют health pre-check; exit 3 при vps_down.
+- Runbook: `profile/browser-autonomous-vps.md` § «Webhook недоступен»; pitfall в agent-pipeline-pitfalls.md.
+needed_decision_or_secret:
+- Владелец VPS: SSH → restart `posts-emdr-webhook`, проверить health локально и с Cloud; затем один re-trigger для sb-19.
+files_changed:
+- scripts/vps_webhook_client.py
+- scripts/trigger-vps-webhook.py
+- scripts/verify-vps-webhook-secret.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/profile/browser-autonomous-vps.md
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 -m py_compile scripts/vps_webhook_client.py scripts/trigger-vps-webhook.py scripts/verify-vps-webhook-secret.py
+- curl http://195.209.210.45:8787/health → connection reset (VPS still down)
+- python3 scripts/trigger-vps-webhook.py --topic sb-19-question-before-sleep --dry-run → exit 3, vps_down true
 
 ---
 

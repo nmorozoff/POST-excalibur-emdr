@@ -124,6 +124,47 @@ curl -fsS -X POST "http://195.209.210.45:8787/publish" \
 
 Если webhook недоступен — cron подхватит в **10:00** или **17:00** MSK (ближайший слот).
 
+## Webhook недоступен (Connection reset / refused)
+
+**Симптом с Cloud:** `curl http://195.209.210.45:8787/health` → `Connection reset by peer` или timeout; `trigger-vps-webhook.py` → `vps_down: true`.
+
+**Диагностика на VPS (SSH):**
+
+```bash
+sudo systemctl status posts-emdr-webhook
+sudo journalctl -u posts-emdr-webhook -n 80 --no-pager
+ss -tlnp | grep 8787
+curl -fsS http://127.0.0.1:8787/health
+```
+
+**Восстановление:**
+
+```bash
+cd ~/POST-excalibur-emdr
+git fetch origin main && git reset --hard origin/main
+sudo systemctl restart posts-emdr-webhook
+sleep 2
+curl -fsS http://127.0.0.1:8787/health
+```
+
+Если health OK локально, но с Cloud — reset: проверить firewall / ufw (порт 8787), conntrack, не занят ли порт другим процессом.
+
+**После восстановления (с Cloud или Mac, один раз на тему):**
+
+```bash
+python3 scripts/trigger-vps-webhook.py --topic sb-19-question-before-sleep
+# ожидать HTTP 202
+python3 scripts/verify-publish-run.py --topic sb-19-question-before-sleep
+```
+
+Ручной fallback на VPS (если webhook 202, но worker не завершился):
+
+```bash
+cd ~/POST-excalibur-emdr && source .venv-browser/bin/activate
+python3 scripts/vps_publish_guard.py run -- \
+  python3 scripts/publish-browser-deferred.py --topic sb-19-question-before-sleep --submit --finish --git-push
+```
+
 ## Почему Mac больше не нужен
 
 | Проблема Mac | Решение VPS |
