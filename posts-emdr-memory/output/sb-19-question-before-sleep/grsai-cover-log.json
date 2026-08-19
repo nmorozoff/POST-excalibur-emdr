@@ -1,0 +1,38 @@
+{
+  "taskId": "14-74cf37a4-d2ba-4e42-b674-cad9839652ff",
+  "imageURL": "https://file8.aitohumanize.com/file/2cef6795b6584738be2ac87ff46e10a3.png",
+  "reference_rotation": {
+    "topic": "sb-19-question-before-sleep",
+    "slot": 3,
+    "reference_path": "/workspace/posts-emdr-memory/assets/reference/portrait-03.jpg",
+    "backend": "grsai",
+    "aspect_ratio": "1280x1024",
+    "quality": "low",
+    "model": "gpt-image-2",
+    "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-03.jpg"
+  },
+  "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-03.jpg",
+  "model": "gpt-image-2",
+  "backend": "grsai",
+  "raw": {
+    "callback_url": "-1",
+    "end_time": 1787160904,
+    "error": "",
+    "failure_reason": "",
+    "height": 0,
+    "id": "14-74cf37a4-d2ba-4e42-b674-cad9839652ff",
+    "progress": 100,
+    "results": [
+      {
+        "height": 0,
+        "url": "https://file8.aitohumanize.com/file/2cef6795b6584738be2ac87ff46e10a3.png",
+        "width": 0
+      }
+    ],
+    "start_time": 1787160836,
+    "status": "succeeded",
+    "task_id": "",
+    "url": "",
+    "width": 0
+  }
+}

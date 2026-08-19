@@ -1,0 +1,90 @@
+{
+  "topic": "sb-19-question-before-sleep",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-08-19T17:35:31.889741+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11955,
+        "completion_tokens": 5386,
+        "total_tokens": 17341
+      },
+      "chars": 3840,
+      "contract_fixes": [
+        "truncated max body to hard max 4000"
+      ]
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "skipped": true,
+      "chars": 3986
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "skipped": true,
+      "chars": 4915
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11669,
+        "completion_tokens": 5348,
+        "total_tokens": 17017
+      },
+      "chars": 4752,
+      "contract_fixes": [
+        "auto-wrapped vk-group sections"
+      ]
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11548,
+        "completion_tokens": 7383,
+        "total_tokens": 18931
+      },
+      "chars": 6077,
+      "contract_fixes": []
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12019,
+        "completion_tokens": 6506,
+        "total_tokens": 18525
+      },
+      "chars": 5277,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11350,
+        "completion_tokens": 3811,
+        "total_tokens": 15161
+      },
+      "chars": 2534,
+      "contract_fixes": []
+    }
+  },
+  "cover_prompt": {
+    "chars": 1839,
+    "cover_meta": {
+      "line1": "Тревога перед сном",
+      "line2": "Один вопрос, который",
+      "line3": "меняет качество утра",
+      "yellow": "утро"
+    }
+  }
+}
