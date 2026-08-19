@@ -14,7 +14,12 @@ overall: fail (VPS phase 3 blocked)
 ШАГ 0–4: OK (cloud + MCP + main f6cac0f/1255fb3)
 ШАГ 5: VPS webhook FAIL — Connection reset peer 195.209.210.45:8787
 ШАГ 6: Отчётик fail, отчёт в Макс отправлен
-ШАГ 7: Fixic — INC-20260819-1745-sb19-vps-webhook-connection-reset (open)
+ШАГ 7: Fixic OK — INC → `needs-human`, probe client в main (`a4f589c`); `OPEN_INCIDENTS=0`
+
+## VPS (после Fixic)
+- `/health` и `--dry-run` → 200 OK (webhook поднят)
+- `/publish` → `publish_lock_held` (worker занят или завис)
+- Phase 3 (TG + b17) ещё не завершена — ждать worker/cron или снять lock на VPS
 
 ## Ссылки (опубликовано)
 - Max: https://max.ru/se13417616_biz/AaAbGflxdSc
