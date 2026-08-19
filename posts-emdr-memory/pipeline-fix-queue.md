@@ -1078,6 +1078,34 @@ files_changed:
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
 - posts-emdr-memory/output/sb-14-morning-fog/cover.png
 
+## INC-20260819-1745-sb19-vps-webhook-connection-reset
+status: open
+run_date: 2026-08-19
+role: otchetik
+topic: sb-19-question-before-sleep
+severity: high
+category: webhook
+
+### What went wrong
+- Cloud phase 1+2 OK: Max, VK×2 (MCP), Facebook, OK опубликованы; commit `publish: sb-19-question-before-sleep` в origin/main (PR #30 merged).
+- VPS webhook недоступен: `Connection reset by peer` на `195.209.210.45:8787` (`/health` и `/publish`).
+- `verify-vps-webhook-secret.py` и `trigger-vps-webhook.py` (3× retry) — тот же сброс соединения.
+- Phase 3 не стартовал: Telegram не отправлен, b17 не published, `browser-worker-finish.json` отсутствует, тема `in_progress` в очереди.
+
+### Durable fix needed before next run
+- На VPS: `systemctl status posts-emdr-webhook`, перезапуск сервиса, проверка firewall/порта 8787.
+- С Cloud: `curl http://195.209.210.45:8787/health` должен вернуть 200.
+- После восстановления VPS: `python3 scripts/trigger-vps-webhook.py --topic sb-19-question-before-sleep` → 202, дождаться Telegram + b17.
+- Проверить cron `run-linux-browser-worker.sh`, `python3 scripts/asocks_check.py`, `python3 scripts/browser_ensure_sessions.py`.
+
+### Suggested files to inspect/change
+- VPS: `posts-emdr-webhook` systemd unit, `scripts/vps-webhook-server.py`
+- `scripts/trigger-vps-webhook.py`
+- `scripts/verify-vps-webhook-secret.py`
+- posts-emdr-memory/output/sb-19-question-before-sleep/browser-local-handoff.md
+
+---
+
 ## INC-20260816-1030-otchetik-b17-rate-limit-draft
 status: monitoring
 run_date: 2026-08-16
