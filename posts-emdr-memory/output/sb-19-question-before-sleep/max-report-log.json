@@ -2,7 +2,7 @@
   "status": "sent",
   "topic": "sb-19-question-before-sleep",
   "chat_id": "[REDACTED]",
-  "overall": "fail",
+  "overall": "pass",
   "result": {
     "message": {
       "recipient": {
@@ -10,16 +10,16 @@
         "chat_type": "dialog",
         "user_id": 12014678
       },
-      "timestamp": 1787161603874,
+      "timestamp": 1787162288984,
       "body": {
-        "mid": "mid.0000000016b6922b01a01b21ef2258cb",
-        "seq": 117123422871509195,
-        "text": "❌ Posts EMDR — sb-19-question-before-sleep\nСтатус: fail\n\nСсылки:\n• max: https://max.ru/se13417616_biz/AaAbGflxdSc\n• vk_profile: https://vk.com/wall218367867_693\n• vk_group: https://vk.com/wall-224685309_170\n• facebook: https://www.facebook.com/632301483303094_122182671764837712\n• ok: https://ok.ru/group/70000034253679/topic/161377985065071\n\nПроблемы:\n• Telegram: не отправлен (или VPS ещё не отработал)\n• b17: не published (VPS мог ещё не отработать)\n• Тема всё ещё in_progress в очереди\n• VPS phase 3: Telegram ещё не отработал\n\nНужна помощь: откройте Cursor / проверьте VPS логи.",
+        "mid": "mid.0000000016b6922b01a01b2c63586eb8",
+        "seq": 117123467770883768,
+        "text": "✅ Posts EMDR — sb-19-question-before-sleep\nСтатус: pass\n\nСсылки:\n• max: https://max.ru/se13417616_biz/AaAbGflxdSc\n• telegram: https://t.me/nmorozova_emdr/136\n• telegram: https://t.me/natalia_morozova_psy/2046\n• vk_profile: https://vk.com/wall218367867_693\n• vk_group: https://vk.com/wall-224685309_170\n• facebook: https://www.facebook.com/632301483303094_122182671764837712\n• ok: https://ok.ru/group/70000034253679/topic/161377985065071\n\nПроблемы:\n• b17: не published (VPS мог ещё не отработать)\n• Тема всё ещё in_progress в очереди",
         "attachments": [
           {
             "payload": {
               "url": "https://max.ru/se13417616_biz/AaAbGflxdSc",
-              "token": "f9LHodD0cOIYAxa622y2l10BE-QxD36yJM2YSAZcTdt7iU7_WLx0NobnC7A3CImrhxBeqZ2QYn-UxuUpr_i5"
+              "token": "f9LHodD0cOLoqhuOxeeZt4fN760GarVUNF6xp0KRsLa62yh9XrKphnq5bh64I9WqJC5pcSZZqPbqS65F3XZl"
             },
             "title": "Психолог | EMDR терапевт | Морозова Наталья",
             "description": "За 2-4 сессии избавляю от фобий, страхов, ОКР, панических атак, ПТСР.\nЗапись на сайте www.morozovanatalia.ru?utm_source=max",
@@ -44,14 +44,9 @@
             "type": "strong"
           },
           {
-            "from": 343,
+            "from": 438,
             "length": 9,
             "type": "strong"
-          },
-          {
-            "from": 532,
-            "length": 51,
-            "type": "emphasized"
           }
         ]
       },
@@ -60,7 +55,7 @@
         "first_name": "КАРУСЕЛЬКА",
         "username": "id771605638595_bot",
         "is_bot": true,
-        "last_activity_time": 1787161603896,
+        "last_activity_time": 1787162289001,
         "name": "КАРУСЕЛЬКА"
       }
     }
