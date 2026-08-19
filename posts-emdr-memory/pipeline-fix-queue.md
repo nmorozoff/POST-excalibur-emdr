@@ -1108,6 +1108,7 @@ category: webhook
 fixed_at: 2026-08-19
 fix_summary:
 - Fixic probe (2026-08-19): VPS всё ещё `Connection reset by peer` на /health и /publish (curl + trigger-vps-webhook ×3).
+- Fixic follow-up 17:52 UTC: VPS восстановлен; `trigger-vps-webhook.py --topic sb-19-question-before-sleep` → HTTP 202 (pid 1924). Phase 3 (TG+b17) ещё не подтверждён verify.
 - Root cause: infra VPS (webhook service down/hung), не баг Cloud phase 1+2.
 - Durable: `scripts/vps_webhook_client.py` (probe_health, classify connection_reset → vps_down); trigger/verify используют health pre-check; exit 3 при vps_down.
 - Runbook: `profile/browser-autonomous-vps.md` § «Webhook недоступен»; pitfall в agent-pipeline-pitfalls.md.
