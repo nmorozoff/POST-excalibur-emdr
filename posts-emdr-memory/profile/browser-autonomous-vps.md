@@ -124,6 +124,8 @@ curl -fsS -X POST "http://195.209.210.45:8787/publish" \
 
 Если webhook недоступен — cron подхватит в **10:00** или **17:00** MSK (ближайший слот).
 
+<a id="vps-webhook-down"></a>
+
 ## Webhook недоступен (Connection reset / refused)
 
 **Симптом с Cloud:** `curl http://195.209.210.45:8787/health` → `Connection reset by peer` или timeout; `trigger-vps-webhook.py` → `vps_down: true`.
