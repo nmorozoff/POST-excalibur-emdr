@@ -2,6 +2,7 @@
 
 | topic_id | # MSP | дата | заголовок | site_url |
 |----------|-------|------|-----------|----------|
+| `sb-20-ask-for-support` | 20 | 2026-08-20 | Фраза-стартер, чтобы попросить о поддержке | https://morozovanatalia.ru/anxiety |
 | `sb-19-question-before-sleep` | 19 | 2026-08-20 | Один вопрос себе перед сном, который меняет качество утра | https://morozovanatalia.ru/anxiety |
 | `sb-18-water-in-stone` | 18 | 2026-08-18 | Вода находит путь в самую твёрдую породу | https://morozovanatalia.ru/anxiety |
 | `sb-17-weed-unplanted` | 17 | 2026-08-15 | Почему сорняк растёт там, где ничего не сажали | https://morozovanatalia.ru/anxiety |

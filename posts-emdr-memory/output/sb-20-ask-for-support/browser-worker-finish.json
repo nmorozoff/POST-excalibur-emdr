@@ -1,0 +1,13 @@
+{
+  "topic": "sb-20-ask-for-support",
+  "status": "browser_worker_finished",
+  "date": "2026-08-20",
+  "b17_url": "https://www.b17.ru/blog/frazastarter_chtoby_poprosit_o_podderzhke/",
+  "tenchat_url": null,
+  "site_url": "https://morozovanatalia.ru/anxiety",
+  "queue": {
+    "exit_code": 0,
+    "stdout": "OK marked published: sb-20-ask-for-support → short-blog-published.md",
+    "stderr": ""
+  }
+}

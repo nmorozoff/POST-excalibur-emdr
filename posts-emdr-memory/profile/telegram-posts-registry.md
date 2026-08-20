@@ -11,6 +11,8 @@
 
 ## Опубликованные
 
+| sb-20-ask-for-support | 2026-08-20 | Во-первых | @natalia_morozova_psy | 2047 | https://t.me/natalia_morozova_psy/2047 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
+| sb-20-ask-for-support | 2026-08-20 | Во-первых | @nmorozova_emdr | 137 | https://t.me/nmorozova_emdr/137 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-19-question-before-sleep | 2026-08-19 | Один вопрос себе перед сном, который меняет качество утра | @natalia_morozova_psy | 2046 | https://t.me/natalia_morozova_psy/2046 | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,сон |
 | sb-19-question-before-sleep | 2026-08-19 | Один вопрос себе перед сном, который меняет качество утра | @nmorozova_emdr | 136 | https://t.me/nmorozova_emdr/136 | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,сон |
 | sb-18-water-in-stone | 2026-08-18 | Скрытая тревога в теле: почему напряжение всегда находит путь наружу, даже если вы держите идеальное лицо | @natalia_morozova_psy | 2045 | https://t.me/natalia_morozova_psy/2045 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
