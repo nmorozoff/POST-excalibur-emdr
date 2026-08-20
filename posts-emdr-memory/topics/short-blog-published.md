@@ -2,6 +2,7 @@
 
 | topic_id | # MSP | дата | заголовок | site_url |
 |----------|-------|------|-----------|----------|
+| `sb-19-question-before-sleep` | 19 | 2026-08-20 | /anxiety | Один вопрос себе перед сном, который меняет качество утра | https://morozovanatalia.ru/микро-практика |
 | `sb-18-water-in-stone` | 18 | 2026-08-18 | Вода находит путь в самую твёрдую породу | in_progress | https://morozovanatalia.ru/anxiety |
 | `sb-17-weed-unplanted` | 17 | 2026-08-15 | Почему сорняк растёт там, где ничего не сажали | https://morozovanatalia.ru/anxiety |
 | `sb-16-dog-present-moment` | 16 | 2026-08-14 | Мой пёс не делит время на «до» и «после» | https://morozovanatalia.ru/anxiety |
