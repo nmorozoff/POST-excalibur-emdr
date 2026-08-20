@@ -1,0 +1,38 @@
+{
+  "taskId": "16-f7c9d7cc-4b43-48bf-be8a-8d5d06b026cd",
+  "imageURL": "https://file8.aitohumanize.com/file/75d4c2b41e05460bbc58ce38aee380f9.png",
+  "reference_rotation": {
+    "topic": "sb-20-ask-for-support",
+    "slot": 4,
+    "reference_path": "/workspace/posts-emdr-memory/assets/reference/portrait-04.jpg",
+    "backend": "grsai",
+    "aspect_ratio": "1280x1024",
+    "quality": "low",
+    "model": "gpt-image-2",
+    "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-04.jpg"
+  },
+  "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-04.jpg",
+  "model": "gpt-image-2",
+  "backend": "grsai",
+  "raw": {
+    "callback_url": "-1",
+    "end_time": 1787217583,
+    "error": "",
+    "failure_reason": "",
+    "height": 0,
+    "id": "16-f7c9d7cc-4b43-48bf-be8a-8d5d06b026cd",
+    "progress": 100,
+    "results": [
+      {
+        "height": 0,
+        "url": "https://file8.aitohumanize.com/file/75d4c2b41e05460bbc58ce38aee380f9.png",
+        "width": 0
+      }
+    ],
+    "start_time": 1787217524,
+    "status": "succeeded",
+    "task_id": "",
+    "url": "",
+    "width": 0
+  }
+}

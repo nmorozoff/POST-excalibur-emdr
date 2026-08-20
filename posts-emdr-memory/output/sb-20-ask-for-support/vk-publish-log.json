@@ -1,0 +1,19 @@
+{
+  "topic": "sb-20-ask-for-support",
+  "platform": "vk",
+  "status": "published",
+  "method": "mcp-kv",
+  "profile": {
+    "post_id": 694,
+    "url": "https://vk.com/wall218367867_694",
+    "photo_id": "photo218367867_457247792"
+  },
+  "group": {
+    "post_id": 171,
+    "group_id": "224685309",
+    "url": "https://vk.com/wall-224685309_171",
+    "photo_id": "photo218367867_457247793"
+  },
+  "date": "2026-08-20",
+  "format_vk_publish_text": true
+}
