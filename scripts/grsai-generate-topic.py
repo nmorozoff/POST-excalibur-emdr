@@ -437,18 +437,26 @@ def truncate_telegram_html(text: str, *, hard_max: int = TELEGRAM_HTML_HARD_MAX)
     else:
         truncated = truncated.rstrip()
 
+    # Preserve <!-- END_POST --> and meta tail — regex replacement drops the lookahead match.
+    tail = ""
+    if "<!-- END_POST -->" in text:
+        _, _, after_end = text.partition("<!-- END_POST -->")
+        tail = "\n\n<!-- END_POST -->" + after_end
+
     for pattern in (
         r"(## Текст поста \(HTML[^\n]*\n\n)(.*?)(?=\n\n<!-- END_POST -->|\n<!-- END_POST -->|\n---\s*\n## |\Z)",
         r"(## Текст поста\n\n)(.*?)(?=\n\n<!-- END_POST -->|\n<!-- END_POST -->|\n---\s*\n## |\Z)",
     ):
         new_text, count = re.subn(
             pattern,
-            lambda m: m.group(1) + truncated + "\n",
+            lambda m: m.group(1) + truncated + "\n" + tail,
             text,
             count=1,
             flags=re.S,
         )
         if count:
+            if "<!-- END_POST -->" not in new_text:
+                new_text = new_text.rstrip() + "\n\n<!-- END_POST -->"
             return new_text, True
     return text, False
 

@@ -1,0 +1,106 @@
+{
+  "topic": "sb-20-ask-for-support",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-08-20T09:20:18.053173+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11953,
+        "completion_tokens": 9816,
+        "total_tokens": 21769
+      },
+      "chars": 3902,
+      "contract_fixes": [
+        "truncated max body to hard max 4000"
+      ]
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11218,
+        "completion_tokens": 9843,
+        "total_tokens": 21061
+      },
+      "chars": 4159,
+      "contract_fixes": [
+        "truncated telegram HTML to hard max 4096"
+      ]
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11700,
+        "completion_tokens": 7441,
+        "total_tokens": 19141
+      },
+      "chars": 4507,
+      "contract_fixes": []
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11694,
+        "completion_tokens": 10005,
+        "total_tokens": 21699
+      },
+      "chars": 4696,
+      "contract_fixes": [
+        "auto-wrapped vk-group sections"
+      ]
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11541,
+        "completion_tokens": 6682,
+        "total_tokens": 18223
+      },
+      "chars": 5323,
+      "contract_fixes": [
+        "auto-wrapped facebook sections"
+      ]
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12052,
+        "completion_tokens": 9819,
+        "total_tokens": 21871
+      },
+      "chars": 5248,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11369,
+        "completion_tokens": 5503,
+        "total_tokens": 16872
+      },
+      "chars": 3241,
+      "contract_fixes": []
+    }
+  },
+  "cover_prompt": {
+    "chars": 1842,
+    "cover_meta": {
+      "line1": "Как попросить",
+      "line2": "о поддержке",
+      "line3": "при острой тревоге",
+      "yellow": "поддержке"
+    }
+  }
+}

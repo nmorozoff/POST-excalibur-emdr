@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-20-ask-for-support | 2026-08-20 | Фраза-стартер, чтобы попросить о поддержке | https://max.ru/se13417616_biz/AaAee1m0bWE | https://morozovanatalia.ru/anxiety?utm_source=max | тревога,микро-практика,EMDR,поддержка,психология |
 | sb-19-question-before-sleep | 2026-08-19 | Один вопрос себе перед сном, который меняет качество утра | https://max.ru/se13417616_biz/AaAbGflxdSc | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,сон,психология |
 | sb-18-water-in-stone | 2026-08-16 | Вода находит путь в самую твёрдую породу | https://max.ru/se13417616_biz/AaAJ12kzEEQ | https://morozovanatalia.ru/anxiety?utm_source=max | тревога,метафора,EMDR |
 | sb-17-weed-unplanted | 2026-08-15 | Почему сорняк растёт там, где ничего не сажали | https://max.ru/se13417616_biz/AaAEw9PYQrI | https://morozovanatalia.ru/anxiety?utm_source=max | тревога,метафора,EMDR |
