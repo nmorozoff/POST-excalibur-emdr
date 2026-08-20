@@ -1,6 +1,6 @@
 {
   "topic": "sb-19-question-before-sleep",
-  "overall": "pass",
+  "overall": "pass_b17_pending",
   "platforms": {
     "max": {
       "ok": true,
@@ -52,10 +52,10 @@
     },
     "b17": {
       "ok": false,
-      "log": false,
+      "log": true,
       "registry": false,
-      "status": null,
-      "draft_saved": false
+      "status": "draft_saved",
+      "draft_saved": true
     }
   },
   "covers": {
@@ -71,17 +71,17 @@
     }
   },
   "queue": {
-    "published": false,
-    "still_in_queue": true
+    "published": true,
+    "still_in_queue": false
   },
   "vps": {
-    "finish_json": false,
-    "handoff_done": false,
-    "status": null
+    "finish_json": true,
+    "handoff_done": true,
+    "status": "browser_worker_finished"
   },
   "issues": [
-    "b17: не published (VPS мог ещё не отработать)",
-    "Тема всё ещё in_progress в очереди"
+    "b17: сохранено в черновик (rate limit), требуется повторный запуск",
+    "b17: сохранено в черновик (rate limit). Тема считается опубликованной; b17 выйдет через ручной repair-запуск."
   ],
   "links": {
     "max": "https://max.ru/se13417616_biz/AaAbGflxdSc",
@@ -92,6 +92,7 @@
     "vk_profile": "https://vk.com/wall218367867_693",
     "vk_group": "https://vk.com/wall-224685309_170",
     "facebook": "https://www.facebook.com/632301483303094_122182671764837712",
-    "ok": "https://ok.ru/group/70000034253679/topic/161377985065071"
+    "ok": "https://ok.ru/group/70000034253679/topic/161377985065071",
+    "b17": "https://www.b17.ru/my_blog.php?mod=edit"
   }
 }
