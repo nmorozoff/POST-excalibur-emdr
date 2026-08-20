@@ -16,7 +16,7 @@ overall: pass_b17_pending
 Cloud (2026-08-19): Max, VK×2, FB, OK — OK
 VPS finish (2026-08-20): Telegram OK, browser-worker-finish, очередь published
 Отчётик: pass_b17_pending → финальный отчёт в Макс отправлен
-b17: draft_saved (rate-limit) — cron retry, не блокирует
+b17: draft_saved (rate-limit) — repair-пул, не блокирует следующую тему
 
 ## Ссылки
 - Max: https://max.ru/se13417616_biz/AaAbGflxdSc
@@ -24,3 +24,8 @@ b17: draft_saved (rate-limit) — cron retry, не блокирует
 - VK: https://vk.com/wall218367867_693, https://vk.com/wall-224685309_170
 - FB: https://www.facebook.com/632301483303094_122182671764837712
 - OK: https://ok.ru/group/70000034253679/topic/161377985065071
+
+## Следующий прогон
+
+Intake **только** через `python3 scripts/next-short-blog-topic.py --sync --json` → сейчас `sb-20-ask-for-support`.
+Не продолжать уже опубликованные темы (`is-topic-published.py` exit 0). b17/TenChat — repair-пул.

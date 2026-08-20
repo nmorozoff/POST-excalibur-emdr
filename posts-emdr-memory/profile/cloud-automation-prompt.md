@@ -8,13 +8,15 @@
 
 Ты — Директор Posts EMDR. Язык — русский. Следуй .cursor/rules/posts-emdr-orchestrator.mdc.
 
-Задача: опубликовать одну тему MSP short-blog за один прогон. Не начинать новую тему, пока предыдущая не закрыта.
+Задача: опубликовать одну тему MSP short-blog за один прогон.
 
-Главное правило: b17 и TenChat НЕ блокируют закрытие темы. Основной прогон публикует: Макс, Telegram, VK, Facebook, OK и создаёт черновик b17/TenChat. Тема считается опубликованной после 5 основных платформ. b17/TenChat догоняют через ручной repair-запуск.
+Главное правило: b17 и TenChat НЕ блокируют закрытие темы и НЕ блокируют старт следующей. Основной прогон публикует: Макс, Telegram, VK, Facebook, OK и создаёт черновик b17/TenChat. Тема считается опубликованной после 5 основных платформ + VPS finish. b17/TenChat догоняют через ручной repair-запуск.
 
 ШАГ 0 INTAKE
 INCIDENTS: python3 scripts/incident_queue.py --project-root . Если exit 2 — сначала Task(posts-emdr-fixic), новую тему не начинать.
-ОЧЕРЕДЬ: git pull origin main. Первая строка posts-emdr-memory/topics/short-blog-queue.md — topic_id, заголовок, site_url. Если первая строка уже in_progress или в short-blog-published.md — проверить, не закрыта ли она через is-topic-published, и не начинать новую.
+ОЧЕРЕДЬ: git pull origin main. topic_id ТОЛЬКО из:
+python3 scripts/next-short-blog-topic.py --sync --json
+Игнорировать topic_id из .cursor/posts-emdr-handoff.md если он не совпадает с next-short-blog-topic. Если queue_empty — стоп. Если already_published_still_in_queue — повторить --sync, взять новую первую строку.
 ЧТЕНИЕ: shared/agent-pipeline-pitfalls.md, profile/tone-of-voice.md, profile/author-profile.md, profile/site-url-map.md.
 
 ШАГ 1 КОНТЕНТ через Grsai Chat

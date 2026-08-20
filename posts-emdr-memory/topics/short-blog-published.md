@@ -2,13 +2,13 @@
 
 | topic_id | # MSP | дата | заголовок | site_url |
 |----------|-------|------|-----------|----------|
-| `sb-19-question-before-sleep` | 19 | 2026-08-20 | /anxiety | Один вопрос себе перед сном, который меняет качество утра | https://morozovanatalia.ru/микро-практика |
-| `sb-18-water-in-stone` | 18 | 2026-08-18 | Вода находит путь в самую твёрдую породу | in_progress | https://morozovanatalia.ru/anxiety |
+| `sb-19-question-before-sleep` | 19 | 2026-08-20 | Один вопрос себе перед сном, который меняет качество утра | https://morozovanatalia.ru/anxiety |
+| `sb-18-water-in-stone` | 18 | 2026-08-18 | Вода находит путь в самую твёрдую породу | https://morozovanatalia.ru/anxiety |
 | `sb-17-weed-unplanted` | 17 | 2026-08-15 | Почему сорняк растёт там, где ничего не сажали | https://morozovanatalia.ru/anxiety |
 | `sb-16-dog-present-moment` | 16 | 2026-08-14 | Мой пёс не делит время на «до» и «после» | https://morozovanatalia.ru/anxiety |
 | `sb-15-bending-tree` | 15 | 2026-08-13 | Дерево, которое гнётся, но не ломается | https://morozovanatalia.ru/anxiety |
 | `sb-14-morning-fog` | 14 | 2026-08-12 | Утренний туман и состояние «ничего не понятно, но спокойно» | https://morozovanatalia.ru/anxiety |
-| `sb-13-no-repot-in-storm` | 13 | 2026-08-10 | in_progress | Почему нельзя пересаживать растение в грозу | https://morozovanatalia.ru/anxiety |
+| `sb-13-no-repot-in-storm` | 13 | 2026-08-10 | Почему нельзя пересаживать растение в грозу | https://morozovanatalia.ru/anxiety |
 | `sb-12-stray-cat-trust` | 12 | 2026-08-09 | Что бездомная кошка во дворе научила про доверие | https://morozovanatalia.ru/anxiety |
 | `sb-11-plant-wrong-pot` | 11 | 2026-08-08 | Растение в неправильном горшке и человек не в своём темпе | https://morozovanatalia.ru/anxiety |
 | `sb-10-phrase-when-anxiety` | 10 | 2026-08-07 | Что я говорю себе, когда тревога зашкаливает | https://morozovanatalia.ru/anxiety |

@@ -1,6 +1,6 @@
 {
   "topic": "sb-18-water-in-stone",
-  "overall": "partial",
+  "overall": "pass",
   "platforms": {
     "max": {
       "ok": true,
@@ -12,8 +12,8 @@
       "ok": true,
       "delivery": "link_preview_single_message",
       "channels": [
-        "nmorozova_emdr",
-        "natalia_morozova_psy"
+        "natalia_morozova_psy",
+        "nmorozova_emdr"
       ],
       "missing_channels": [],
       "cover_source": "catbox",
@@ -51,17 +51,17 @@
       "format_ok": true
     },
     "b17": {
-      "ok": false,
+      "ok": true,
       "log": true,
-      "registry": false,
-      "status": "draft_saved",
-      "draft_saved": true
+      "registry": true,
+      "status": "published",
+      "draft_saved": false
     }
   },
   "covers": {
     "local_cover": {
       "ok": true,
-      "path": "/workspace/posts-emdr-memory/output/sb-18-water-in-stone/cover.png"
+      "path": "/Users/natala/Documents/Проекты СURSOR/Посты EMDR/posts-emdr-memory/output/sb-18-water-in-stone/cover.png"
     },
     "site_cover": {
       "url": "https://morozovanatalia.ru/social-covers/sb-18-water-in-stone.jpg",
@@ -71,19 +71,15 @@
     }
   },
   "queue": {
-    "published": false,
-    "still_in_queue": true
+    "published": true,
+    "still_in_queue": false
   },
   "vps": {
-    "finish_json": false,
-    "handoff_done": false,
-    "status": null
+    "finish_json": true,
+    "handoff_done": true,
+    "status": "browser_worker_finished"
   },
-  "issues": [
-    "b17: сохранено в черновик (rate limit), требуется повторный запуск",
-    "Тема всё ещё in_progress в очереди",
-    "VPS phase 3: нет finish (webhook/cron ещё не завершил)"
-  ],
+  "issues": [],
   "links": {
     "max": "https://max.ru/se13417616_biz/AaAJ12kzEEQ",
     "telegram": [
@@ -93,7 +89,6 @@
     "vk_profile": "https://vk.com/wall218367867_692",
     "vk_group": "https://vk.com/wall-224685309_169",
     "facebook": "https://www.facebook.com/632301483303094_122182326740837712",
-    "ok": "https://ok.ru/group/70000034253679/topic/161373073993839",
-    "b17": "https://www.b17.ru/my_blog.php?mod=edit"
+    "ok": "https://ok.ru/group/70000034253679/topic/161373073993839"
   }
 }

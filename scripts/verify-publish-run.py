@@ -272,13 +272,17 @@ def verify_topic(topic: str) -> dict:
             report["issues"].append("b17: не published (VPS мог ещё не отработать)")
 
     # Queue / VPS
-    published = MEMORY / "topics" / "short-blog-published.md"
-    in_queue = published.is_file() and f"`{topic}`" in published.read_text(encoding="utf-8")
-    still_pending = (MEMORY / "topics" / "short-blog-queue.md").is_file() and (
-        f"`{topic}`" in (MEMORY / "topics" / "short-blog-queue.md").read_text(encoding="utf-8")
+    published_path = MEMORY / "topics" / "short-blog-published.md"
+    queue_path = MEMORY / "topics" / "short-blog-queue.md"
+    in_published = published_path.is_file() and f"`{topic}`" in published_path.read_text(
+        encoding="utf-8"
     )
-    report["queue"] = {"published": in_queue, "still_in_queue": still_pending}
-    if still_pending and not in_queue:
+    still_in_queue = queue_path.is_file() and f"`{topic}`" in queue_path.read_text(encoding="utf-8")
+    report["queue"] = {
+        "published": in_published,
+        "still_in_queue": still_in_queue,
+    }
+    if still_in_queue and not in_published:
         report["issues"].append("Тема всё ещё in_progress в очереди")
 
     finish = _read_json(topic_dir / "browser-worker-finish.json")

@@ -60,8 +60,9 @@ python3 scripts/publish-topic.py --topic {id}
 
 ### Шаг 0 — Тема
 
-- Взять **первую** `pending` из `topics/short-blog-queue.md` (fallback: `blog-topics.md`)
-- Пометить `in_progress`
+- **topic_id только из** `python3 scripts/next-short-blog-topic.py --sync --json` (не из handoff, если расходится)
+- Fallback: **первая** `pending` из `topics/short-blog-queue.md` (или `blog-topics.md`)
+- Пометить `in_progress` в handoff, не блокировать следующую тему из‑за b17/TenChat
 - Выбрать `post_type` по `profile/post-types.md` (или из колонки таблицы)
 - Записать в handoff: topic_id, заголовок, post_type, site_url
 

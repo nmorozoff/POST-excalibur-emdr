@@ -66,6 +66,27 @@ def _platform_done(topic_dir: Path, key: str) -> bool:
     return _log_status(topic_dir / f"{key}-publish-log.json") == "published"
 
 
+def _worker_finished(topic_dir: Path) -> bool:
+    finish_path = topic_dir / "browser-worker-finish.json"
+    if not finish_path.is_file():
+        return False
+    try:
+        data = json.loads(finish_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return False
+    return data.get("status") == "browser_worker_finished"
+
+
+def _close_stale_handoff(topic_dir: Path) -> None:
+    """Если finish уже был, но handoff не переименован — закрыть, чтобы cron не крутил тему."""
+    handoff = topic_dir / "browser-local-handoff.md"
+    done = topic_dir / "browser-local-handoff.done.md"
+    if not handoff.is_file() or done.is_file():
+        return
+    if _worker_finished(topic_dir) or _msp_deferred_complete(topic_dir):
+        handoff.rename(done)
+
+
 def pending_topics(*, topic: str | None = None) -> list[str]:
     output = MEMORY / "output"
     if not output.is_dir():
@@ -77,12 +98,15 @@ def pending_topics(*, topic: str | None = None) -> list[str]:
         tid = topic_dir.name
         if topic and tid != topic:
             continue
+        _close_stale_handoff(topic_dir)
         handoff = topic_dir / "browser-local-handoff.md"
         done = topic_dir / "browser-local-handoff.done.md"
         # Need handoff OR explicit --topic, plus drafts
         has_drafts = (topic_dir / "telegram-post.md").is_file() or (
             topic_dir / "b17-blog-post.md"
         ).is_file()
+        if _worker_finished(topic_dir) and _msp_deferred_complete(topic_dir):
+            continue
         if topic:
             if has_drafts and not (_msp_deferred_complete(topic_dir) and done.is_file()):
                 topics.append(tid)
