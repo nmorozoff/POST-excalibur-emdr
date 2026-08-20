@@ -1,0 +1,26 @@
+{
+  "topic": "sb-19-question-before-sleep",
+  "steps": {
+    "site_cover": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"topic\": \"sb-19-question-before-sleep\",\n  \"profile_chars\": 4719,\n  \"group_chars\": 4530,\n  \"cover_local\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-19-question-before-sleep/cover.png\",\n  \"cover_jpeg_bytes\": 83690,\n  \"cover_public_url\": \"https://morozovanatalia.ru/social-covers/sb-19-question-before-sleep.jpg\",\n  \"cover_http_status\": 200,\n  \"cover_serves_image\": true,\n  \"cover_upload_method\": \"curl_active\"\n}\n",
+      "stderr_tail": "",
+      "cover_public_url": "https://morozovanatalia.ru/social-covers/sb-19-question-before-sleep.jpg",
+      "ok": true
+    },
+    "telegram": {
+      "skipped": true,
+      "reason": "already_published"
+    },
+    "tenchat": {
+      "skipped": true,
+      "reason": "out_of_msp_short_blog_pipeline"
+    },
+    "b17": {
+      "exit_code": 0,
+      "stdout_tail": "или одну простую микропрактику. Это всего один вопрос, который нужно задать себе в момент, когда ночная тревога начинает раскручивать воронку: «Что именно угрожает мне прямо сейчас, в этой физической реальности, в этой самой комнате?»\\n\\nЭтот вопрос заставляет мозг принудительно вернуться в настоящий момент. Вы чувствуете вес одеяла, опору матраса, слышите тиканье часов. Физическая реальность в эту секунду абсолютно безопасна. Такая осознанная сверка с реальностью помогает замедлить работу миндалины и снизить градус паники.\\n\\nНо как EMDR-терапевт добавлю важную деталь. Этот вопрос лишь временно снижает громкость симптома. Если внутренняя сигнализация срабатывает каждую ночь, значит, глубинный источник напряжения никуда не делся. О том, как эта невыраженная тревога всегда находит путь наружу, словно вода сквозь самую твердую породу, я писала в одной из прошлых заметок.\\n\\nКогда хочется разобрать свой случай, напишите мне в личные сообщения здесь на b17.\",\n  \"body_chars\": 2167,\n  \"cover_local\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-19-question-before-sleep/cover.png\",\n  \"cover_wordpress\": {\n    \"url\": \"https://morozova-natalya.ru/wp-content/uploads/2026/08/sb-19-question-before-sleep-1.jpg\",\n    \"id\": \"347\",\n    \"link\": \"https://morozova-natalya.ru/cover-sb-19-question-before-sleep-2/\"\n  },\n  \"utm_source\": \"b17\",\n  \"status\": \"draft_saved\",\n  \"compose_url\": \"https://www.b17.ru/my_blog.php?mod=edit\",\n  \"post_url\": \"https://www.b17.ru/my_blog.php?mod=edit\",\n  \"public_url\": null,\n  \"cover_url\": \"https://morozovanatalia.ru/social-covers/sb-19-question-before-sleep.jpg\",\n  \"filled\": [\n    \"title\",\n    \"latname\",\n    \"razdel\",\n    \"author\",\n    \"tinymce_body\",\n    \"cover:announcement_image_url_not_found\",\n    \"cover:https_tinymce\",\n    \"draft_kept_rate_limit\"\n  ],\n  \"fill_mode\": \"playwright-b17\",\n  \"cover_inline\": true,\n  \"auto_submit\": false,\n  \"backend\": \"playwright\",\n  \"note\": \"b17 rate limit: сохранено в черновик, нужен повторный запуск позже\"\n}\n",
+      "stderr_tail": ""
+    }
+  },
+  "status": "ok"
+}
