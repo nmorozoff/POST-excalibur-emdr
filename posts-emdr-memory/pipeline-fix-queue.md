@@ -7,7 +7,8 @@ Durable incident memory. Контракт: `shared/pipeline-incident-fix-contrac
 ---
 
 ## INC-20260821-0950-telegram-vps-proxy-timeout
-status: open
+status: fixed
+fixed_at: 2026-08-21
 run_date: 2026-08-21
 role: otchetik
 topic: sb-21-minute-silence
@@ -36,6 +37,26 @@ category: telegram
 - scripts/asocks_check.py
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
 - posts-emdr-memory/output/sb-21-minute-silence/vps-worker-last-run.json
+
+### Fixic resolution
+fix_summary:
+- send-telegram-post.py: _urlopen retry 3× (5/15/30s backoff) на URLError timeout/SSL; timeout 180s через proxy.
+- asocks_sync_proxy.py: sync_telegram_with_preflight() — curl к api.telegram.org + ротация KZ портов; флаг --preflight.
+- asocks_check.py: --target telegram, --rotate для preflight+sync.
+- publish-browser-deferred.py: preflight sync + publish_telegram_with_retries (2 попытки, resync proxy между).
+- Pitfall «Telegram ASocks: URLError timed out через KZ proxy»; browser.env.example: убран TELEGRAM_PROXY_CONNECT_PORT=443.
+needed_decision_or_secret:
+- VPS human: git pull origin main → `python3 scripts/asocks_check.py --target telegram --rotate` → один `trigger-vps-webhook.py --topic sb-21-minute-silence` (ожидать 202, не из Cloud send-telegram). Проверить verify + finish.
+files_changed:
+- scripts/send-telegram-post.py
+- scripts/asocks_sync_proxy.py
+- scripts/asocks_check.py
+- scripts/publish-browser-deferred.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/browser.env.example
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 -m py_compile scripts/send-telegram-post.py scripts/asocks_sync_proxy.py scripts/asocks_check.py scripts/publish-browser-deferred.py
 
 ---
 

@@ -162,6 +162,22 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Правильно:** для Telegram только `TELEGRAM_PROXY_CONNECT_PORT` (если задан); иначе порт из ASocks template.
 
+## Telegram ASocks: URLError timed out через KZ proxy
+
+**Симптом (2026-08-21, sb-21):** VPS webhook 202, `telegram_proxy` OK (ResKazakhstan — Turkestan), но `send-telegram-post.py` → `urllib.error.URLError: <urlopen error timed out>`; нет `telegram-publish-log.json`. b17 может быть уже published.
+
+**Причина:** transient timeout ASocks KZ порта; один вызов Bot API без retry; worker помечает `telegram_failed` сразу.
+
+**Правильно (2026-08-21):**
+- `send-telegram-post.py`: `_urlopen` — 3 retry с backoff 5/15/30 с; timeout **180s** через proxy.
+- `asocks_sync_proxy.py --target telegram --preflight` / `asocks_check.py --target telegram --rotate`: curl preflight к `api.telegram.org`, ротация других KZ портов ASocks.
+- `publish-browser-deferred.py`: preflight sync + до 2 попыток send с resync proxy между ними.
+- Recovery: один `trigger-vps-webhook.py --topic {id}` на VPS (не из Cloud напрямую `send-telegram-post.py`).
+
+**Gate:** `telegram-publish-log.json` + `delivery: link_preview_single_message`; `vps-worker-last-run.json` → `telegram.exit_code: 0`.
+
+**Не делать:** публиковать Telegram из Cloud; force-push; повторный webhook пока 409 lock.
+
 ## VPS webhook hangs (sync Playwright)
 
 **Симптом:** `POST /publish` не отвечает минутами; health connection reset.
