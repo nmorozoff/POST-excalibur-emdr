@@ -1,0 +1,38 @@
+{
+  "taskId": "2-c901d959-8905-46be-9286-566d2cf85931",
+  "imageURL": "https://file6.aitohumanize.com/file/2c8f730a370842d490f53679a9da76b6.png",
+  "reference_rotation": {
+    "topic": "sb-21-minute-silence",
+    "slot": 5,
+    "reference_path": "/workspace/posts-emdr-memory/assets/reference/portrait-05.jpg",
+    "backend": "grsai",
+    "aspect_ratio": "1280x1024",
+    "quality": "low",
+    "model": "gpt-image-2",
+    "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-05.jpg"
+  },
+  "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-05.jpg",
+  "model": "gpt-image-2",
+  "backend": "grsai",
+  "raw": {
+    "callback_url": "-1",
+    "end_time": 1787303848,
+    "error": "",
+    "failure_reason": "",
+    "height": 0,
+    "id": "2-c901d959-8905-46be-9286-566d2cf85931",
+    "progress": 100,
+    "results": [
+      {
+        "height": 0,
+        "url": "https://file6.aitohumanize.com/file/2c8f730a370842d490f53679a9da76b6.png",
+        "width": 0
+      }
+    ],
+    "start_time": 1787303714,
+    "status": "succeeded",
+    "task_id": "",
+    "url": "",
+    "width": 0
+  }
+}

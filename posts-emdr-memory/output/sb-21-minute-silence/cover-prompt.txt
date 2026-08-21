@@ -1,0 +1,22 @@
+YouTube thumbnail style editorial cover. Dark background (#0d0d0d or near-black), cinematic and clean.
+
+Photo-realistic portrait of the woman from the reference photo placed on the RIGHT side of the frame, upper body visible. Preserve her exact face, features, age, hair, and likeness from the reference — do NOT alter, retouch, rejuvenate, or change her face in any way. Natural, calm, professional expression — no wide smile, no dramatic pose. Soft studio lighting, slight vignette. Blurred warm therapy office background fading into dark.
+
+OUTFIT: dusty rose tailored blazer over a soft white shell top — one pastel accent, white underlayer, NO beige sweater.
+Do NOT use beige blazer with beige sweater. Do NOT stack two warm-neutral layers (beige + sand + cream). Do NOT copy clothing from the reference photo. Business professional only: high neckline, full sleeves, modest fit — no lingerie, no low cut, no evening wear. Solid colors, no prints, no logos.
+
+LEFT side typography — CRITICAL layout rules:
+- Headline block starts near the TOP of the frame (top margin only 5–8% of canvas height). Do NOT leave large empty dark area above the text.
+- Headline occupies ~65–75% of the LEFT half height. Large, bold, stacked tightly with minimal line gaps.
+- Text size: very large mobile headline scale — each line should feel like a poster title, not a subtitle.
+- Bold white Cyrillic text, clean modern sans-serif. Text content:
+Line 1: Минута тишины
+Line 2: без телефона
+Line 3: микро-практика
+- The phrase «тишины» must have a bright yellow (#F5C400) rectangle behind it.
+
+Bottom-left corner only (below headline block), small white signature — exactly two lines, no URLs:
+Морозова Наталья
+Психолог, EMDR терапевт
+
+Format: 5:4 horizontal landscape, 1280×1024px. Ultra realistic, cinematic color grading. No watermarks, no logos, no URLs, no extra text.
