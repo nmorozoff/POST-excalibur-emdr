@@ -2,9 +2,10 @@
   "topic": "sb-21-minute-silence",
   "profile_chars": 4573,
   "group_chars": 4159,
-  "cover_local": "/workspace/posts-emdr-memory/output/sb-21-minute-silence/cover.png",
-  "deleted_remote_files": [
-    "sb-21-minute-silence.jpg",
-    "sb-21-minute-silence-v2.jpg"
-  ]
+  "cover_local": "/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-21-minute-silence/cover.png",
+  "cover_jpeg_bytes": 64575,
+  "cover_public_url": "https://morozovanatalia.ru/social-covers/sb-21-minute-silence.jpg",
+  "cover_http_status": 200,
+  "cover_serves_image": true,
+  "cover_upload_method": "curl_active"
 }

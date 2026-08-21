@@ -1,0 +1,35 @@
+{
+  "topic": "sb-21-minute-silence",
+  "steps": {
+    "site_cover": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"topic\": \"sb-21-minute-silence\",\n  \"profile_chars\": 4573,\n  \"group_chars\": 4159,\n  \"cover_local\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-21-minute-silence/cover.png\",\n  \"cover_jpeg_bytes\": 64575,\n  \"cover_public_url\": \"https://morozovanatalia.ru/social-covers/sb-21-minute-silence.jpg\",\n  \"cover_http_status\": 200,\n  \"cover_serves_image\": true,\n  \"cover_upload_method\": \"curl_active\"\n}\n",
+      "stderr_tail": "",
+      "cover_public_url": "https://morozovanatalia.ru/social-covers/sb-21-minute-silence.jpg",
+      "ok": true
+    },
+    "telegram_proxy": {
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"target\": \"telegram\",\n  \"asocks_port_id\": 231489552,\n  \"asocks_port_name\": \"ResKazakhstan - Turkestan\",\n  \"TELEGRAM_PROXY_SERVER\": \"195.162.68.169:9999\",\n  \"TELEGRAM_PROXY_USERNAME\": \"zx5eh3xhho-res-country-KZ-state-1524787-city-1517945-hold-session-session-6a68ee56a829f\",\n  \"TELEGRAM_PROXY_PASSWORD\": \"SBuzvBfM8hm817J7\",\n  \"template\": \"http://zx5eh3xhho-res-country-KZ-state-1524787-city-1517945-hold-session-session-6a68ee56a829f:SBuzvBfM8hm817J7@195.162.68.169:9999\",\n  \"written\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/browser.env.local\"\n}\n",
+      "stderr_tail": "",
+      "ok": true
+    },
+    "telegram": {
+      "exit_code": 1,
+      "stdout_tail": "",
+      "stderr_tail": "^^^^^^^^^^^^^^^\n  File \"/home/ubuntu/POST-excalibur-emdr/scripts/send-telegram-post.py\", line 57, in _urlopen\n    return opener.open(req, timeout=timeout)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 515, in open\n    response = self._open(req, data)\n               ^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 532, in _open\n    result = self._call_chain(self.handle_open, protocol, protocol +\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 492, in _call_chain\n    result = func(*args)\n             ^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 1392, in https_open\n    return self.do_open(http.client.HTTPSConnection, req,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 1347, in do_open\n    raise URLError(err)\nurllib.error.URLError: <urlopen error timed out>\n",
+      "failed": true
+    },
+    "tenchat": {
+      "skipped": true,
+      "reason": "out_of_msp_short_blog_pipeline"
+    },
+    "b17": {
+      "exit_code": 0,
+      "stdout_tail": "о не в скуке. Это застрявший стрессовый заряд. Тело бьет тревогу, потому что внутри осталась боль, с которой психика не справляется.\\n\\nНедавно клиент поделился историей. Он случайно забыл смартфон дома. Дорога до офиса заняла сорок минут. По его словам, ему буквально не хватало воздуха. В груди образовался тяжелый ком. Как только он остался без связи, его накрыла паническая атака.\\n\\nПопробуйте микро-практику. Оставьте гаджет в другой комнате на шестьдесят секунд. Сядьте на стул. Прислушайтесь к тому, что происходит внутри. Сжимается ли горло? Появляется ли желание немедленно вскочить?\\n\\nПростое дыхание не снимает накопленный заряд. Здесь работает метод EMDR. Это доказательная нейрофизиология, рекомендованная ВОЗ. Метод перерабатывает застрявший заряд в нервной системе, чтобы тело перестало выдавать панику в моменты тишины.\\n\\nА как ваше тело реагирует на отсутствие телефона?\\n\\nЕсли хотите обсудить это лично, напишите мне в личные сообщения здесь на b17.\",\n  \"body_chars\": 1567,\n  \"cover_local\": \"/home/ubuntu/POST-excalibur-emdr/posts-emdr-memory/output/sb-21-minute-silence/cover.png\",\n  \"cover_wordpress\": {\n    \"url\": \"https://morozova-natalya.ru/wp-content/uploads/2026/08/sb-21-minute-silence-1.jpg\",\n    \"id\": \"352\",\n    \"link\": \"https://morozova-natalya.ru/cover-sb-21-minute-silence/\"\n  },\n  \"utm_source\": \"b17\",\n  \"status\": \"published\",\n  \"compose_url\": \"https://www.b17.ru/my_blog.php?mod=edit\",\n  \"post_url\": \"https://www.b17.ru/blog/minuta_tishiny_bez_telefona/\",\n  \"public_url\": \"https://www.b17.ru/blog/minuta_tishiny_bez_telefona/\",\n  \"cover_url\": \"https://morozovanatalia.ru/social-covers/sb-21-minute-silence.jpg\",\n  \"filled\": [\n    \"title\",\n    \"latname\",\n    \"razdel\",\n    \"author\",\n    \"tinymce_body\",\n    \"cover:announcement_image_url_not_found\",\n    \"cover:https_tinymce\",\n    \"draft_unchecked\"\n  ],\n  \"fill_mode\": \"playwright-b17\",\n  \"cover_inline\": true,\n  \"auto_submit\": true,\n  \"backend\": \"playwright\",\n  \"note\": \"Опубликовано автоматически (Сохранить)\"\n}\n",
+      "stderr_tail": ""
+    }
+  },
+  "telegram_failed": true,
+  "status": "failed"
+}
