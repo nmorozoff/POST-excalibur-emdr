@@ -19,6 +19,7 @@ import argparse
 import json
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -136,32 +137,117 @@ def write_worker_run_summary(topic: str, report: dict) -> None:
 
 
 def sync_telegram_proxy() -> dict:
-    """ASocks KZ → TELEGRAM_PROXY_* перед Bot API."""
-    proc = subprocess.run(
-        [sys.executable, str(SCRIPTS / "asocks_sync_proxy.py"), "--target", "telegram"],
-        cwd=PROJECT_ROOT,
-        capture_output=True,
-        text=True,
-    )
-    out: dict = {
-        "exit_code": proc.returncode,
-        "stdout_tail": (proc.stdout or "")[-800:],
-        "stderr_tail": (proc.stderr or "")[-400:],
-    }
-    if proc.returncode != 0:
-        # Не блокируем, если TELEGRAM_PROXY_* уже в browser.env.local
+    """ASocks KZ → TELEGRAM_PROXY_* перед Bot API, с curl preflight и ротацией KZ."""
+    try:
+        from asocks_sync_proxy import sync_telegram_with_preflight
+
+        data = sync_telegram_with_preflight(write=True)
+        return {
+            "exit_code": 0,
+            "stdout_tail": json.dumps(data, ensure_ascii=False)[-800:],
+            "stderr_tail": "",
+            "ok": bool(data.get("preflight_ok")),
+            "preflight_ok": bool(data.get("preflight_ok")),
+            "asocks_port_name": data.get("asocks_port_name"),
+            "attempts": data.get("attempts"),
+        }
+    except SystemExit as exc:
+        out = {
+            "exit_code": 1,
+            "stderr_tail": str(exc),
+            "ok": False,
+        }
         try:
             env = load_env("browser.env.local")
             if env.get("TELEGRAM_PROXY_SERVER"):
                 out["fallback"] = "existing_TELEGRAM_PROXY_SERVER"
                 out["ok"] = True
-                return out
+                out["preflight_ok"] = False
+                out["warning"] = "sync_failed_continue_with_existing_proxy_or_direct"
         except SystemExit:
             pass
-        out["ok"] = False
         return out
-    out["ok"] = True
-    return out
+    except Exception as exc:  # noqa: BLE001 — surface sync errors without killing worker
+        proc = subprocess.run(
+            [sys.executable, str(SCRIPTS / "asocks_sync_proxy.py"), "--target", "telegram"],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        out: dict = {
+            "exit_code": proc.returncode,
+            "stdout_tail": (proc.stdout or "")[-800:],
+            "stderr_tail": (proc.stderr or "")[-400:],
+            "sync_error": str(exc),
+        }
+        if proc.returncode != 0:
+            try:
+                env = load_env("browser.env.local")
+                if env.get("TELEGRAM_PROXY_SERVER"):
+                    out["fallback"] = "existing_TELEGRAM_PROXY_SERVER"
+                    out["ok"] = True
+                    out["preflight_ok"] = False
+                    return out
+            except SystemExit:
+                pass
+            out["ok"] = False
+            return out
+        out["ok"] = True
+        out["preflight_ok"] = False
+        return out
+
+
+def run_send_telegram(topic: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [
+            sys.executable,
+            str(SCRIPTS / "send-telegram-post.py"),
+            "--topic",
+            topic,
+            "--publish",
+            "--refresh-cover-url",
+        ],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+    )
+
+
+def publish_telegram_with_retries(topic: str, *, max_attempts: int = 2) -> dict:
+    """Telegram publish with proxy resync between attempts on transient proxy errors."""
+    step: dict = {"attempts": []}
+    last_proc: subprocess.CompletedProcess[str] | None = None
+
+    for attempt in range(1, max_attempts + 1):
+        if attempt > 1:
+            step["attempts"][-1]["retry_after_sec"] = 20
+            time.sleep(20)
+            step["telegram_proxy_retry"] = sync_telegram_proxy()
+        proc = run_send_telegram(topic)
+        last_proc = proc
+        attempt_info = {
+            "attempt": attempt,
+            "exit_code": proc.returncode,
+            "stderr_tail": (proc.stderr or "")[-500:],
+        }
+        step["attempts"].append(attempt_info)
+        if proc.returncode == 0:
+            break
+        err = (proc.stderr or proc.stdout or "").lower()
+        if "timed out" not in err and "unexpected_eof" not in err and "urlerror" not in err:
+            break
+
+    assert last_proc is not None
+    step.update(
+        {
+            "exit_code": last_proc.returncode,
+            "stdout_tail": last_proc.stdout[-2000:] if last_proc.stdout else "",
+            "stderr_tail": last_proc.stderr[-1000:] if last_proc.stderr else "",
+        }
+    )
+    if last_proc.returncode != 0:
+        step["failed"] = True
+    return step
 
 
 def ensure_site_cover(topic: str) -> dict:
@@ -220,29 +306,13 @@ def run_publish(topic: str, *, submit: bool) -> dict:
                 result["steps"]["telegram_proxy"]["warning"] = (
                     "sync_failed_continue_with_existing_proxy_or_direct"
                 )
-            proc = subprocess.run(
-                [
-                    sys.executable,
-                    str(SCRIPTS / "send-telegram-post.py"),
-                    "--topic",
-                    topic,
-                    "--publish",
-                    "--refresh-cover-url",
-                ],
-                cwd=PROJECT_ROOT,
-                capture_output=True,
-                text=True,
-            )
-            result["steps"]["telegram"] = {
-                "exit_code": proc.returncode,
-                "stdout_tail": proc.stdout[-2000:] if proc.stdout else "",
-                "stderr_tail": proc.stderr[-1000:] if proc.stderr else "",
-            }
-            if proc.returncode != 0:
-                result["steps"]["telegram"]["failed"] = True
-                # Continue to b17/TenChat — do not block the whole deferred pipeline on TG SSL/proxy blips
+            elif not result["steps"]["telegram_proxy"].get("preflight_ok"):
+                result["steps"]["telegram_proxy"]["warning"] = (
+                    "preflight_failed_continue_with_send_retries"
+                )
+            result["steps"]["telegram"] = publish_telegram_with_retries(topic)
+            if result["steps"]["telegram"].get("failed"):
                 result["telegram_failed"] = True
-                # previously: result["status"] = "failed"; return result
             else:
                 # Durable marker + immediate push so concurrent reset cannot re-send TG.
                 tg_log_path = topic_dir / "telegram-publish-log.json"

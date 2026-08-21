@@ -3,15 +3,15 @@
 
 from __future__ import annotations
 
+import argparse
 import json
-import subprocess
 import sys
 import urllib.parse
 import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from asocks_sync_proxy import sync_from_api
+from asocks_sync_proxy import sync_from_api, sync_telegram_with_preflight, test_proxy_tunnel
 from posts_emdr_env import load_env
 
 
@@ -30,40 +30,40 @@ def _api_get(path: str) -> dict:
         return json.loads(resp.read().decode("utf-8"))
 
 
-def _test_proxy(server: str, user: str, password: str) -> dict:
-    proxy = f"http://{user}:{password}@{server}"
-    cmd = [
-        "/usr/bin/curl",
-        "-sS",
-        "-o",
-        "/dev/null",
-        "-w",
-        "%{http_code}",
-        "--max-time",
-        "25",
-        "--proxy",
-        proxy,
-        "https://api.ipify.org?format=json",
-    ]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
-    code = (proc.stdout or "").strip()
-    err = (proc.stderr or "").strip()
-    return {
-        "http_code": code,
-        "ok": code == "200",
-        "error": err or None,
-        "proxy_server": server,
-    }
-
-
 def main() -> None:
-    balance = _api_get("/v2/user/balance")
-    synced = sync_from_api(write=True)
-    proxy_test = _test_proxy(
-        synced["B17_PROXY_SERVER"],
-        synced["B17_PROXY_USERNAME"],
-        synced["B17_PROXY_PASSWORD"],
+    parser = argparse.ArgumentParser(description="ASocks balance + proxy tunnel health check")
+    parser.add_argument(
+        "--target",
+        choices=["b17", "telegram"],
+        default="b17",
+        help="b17 = ipify via B17 proxy; telegram = api.telegram.org via TELEGRAM proxy",
     )
+    parser.add_argument(
+        "--rotate",
+        action="store_true",
+        help="For telegram: sync with KZ port rotation until preflight passes",
+    )
+    args = parser.parse_args()
+
+    balance = _api_get("/v2/user/balance")
+    if args.target == "telegram" and args.rotate:
+        synced = sync_telegram_with_preflight(write=True)
+        proxy_test = (synced.get("attempts") or [{}])[-1].get("proxy_test") or {}
+    elif args.target == "telegram":
+        synced = sync_from_api(write=True, target="telegram")
+        proxy_test = test_proxy_tunnel(
+            synced["TELEGRAM_PROXY_SERVER"],
+            synced["TELEGRAM_PROXY_USERNAME"],
+            synced["TELEGRAM_PROXY_PASSWORD"],
+        )
+    else:
+        synced = sync_from_api(write=True, target="b17")
+        proxy_test = test_proxy_tunnel(
+            synced["B17_PROXY_SERVER"],
+            synced["B17_PROXY_USERNAME"],
+            synced["B17_PROXY_PASSWORD"],
+            test_url="https://api.ipify.org?format=json",
+        )
 
     traffic = float(balance.get("all_available_traffic") or 0)
     money = float(balance.get("balance") or 0)
@@ -72,24 +72,31 @@ def main() -> None:
         hints.append(
             "На аккаунте есть деньги ($), но traffic=0 — в кабинете ASocks купите/активируйте трафик (Pay as you go)."
         )
-    if not proxy_test["ok"]:
+    if not proxy_test.get("ok"):
         hints.append(
             "407 = прокси не пускает. В кабинете ASocks: Whitelist → добавить 195.209.210.45; "
             "тип авторизации порта → Password Authorization."
         )
-        hints.append(
-            "Синхронизация: python3 scripts/asocks_sync_proxy.py && python3 scripts/asocks_check.py"
-        )
+        if args.target == "telegram":
+            hints.append(
+                "Telegram timeout/SSL: python3 scripts/asocks_sync_proxy.py --target telegram --preflight "
+                "или python3 scripts/asocks_check.py --target telegram --rotate"
+            )
+        else:
+            hints.append(
+                "Синхронизация: python3 scripts/asocks_sync_proxy.py && python3 scripts/asocks_check.py"
+            )
 
     result = {
+        "target": args.target,
         "balance": balance,
         "proxy": synced,
         "proxy_test": proxy_test,
         "hints": hints,
-        "ok": proxy_test["ok"] and traffic > 0,
+        "ok": proxy_test.get("ok") and traffic > 0,
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    sys.exit(0 if proxy_test["ok"] else 2)
+    sys.exit(0 if proxy_test.get("ok") else 2)
 
 
 if __name__ == "__main__":

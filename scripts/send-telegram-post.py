@@ -16,6 +16,8 @@ import argparse
 import json
 import re
 import ssl
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -45,18 +47,56 @@ def _normalize(text: str) -> str:
     return sanitize_post_text(text)
 
 
-def _urlopen(req: urllib.request.Request, *, timeout: int = 120, context=None):
+def _retryable_url_error(exc: BaseException) -> bool:
+    if isinstance(exc, TimeoutError):
+        return True
+    if isinstance(exc, urllib.error.URLError):
+        reason = exc.reason
+        if isinstance(reason, TimeoutError):
+            return True
+        msg = str(reason or exc).lower()
+        return any(
+            token in msg
+            for token in (
+                "timed out",
+                "timeout",
+                "unexpected_eof",
+                "eof occurred",
+                "connection reset",
+                "connection refused",
+                "temporary failure",
+            )
+        )
+    return False
+
+
+def _urlopen(req: urllib.request.Request, *, timeout: int | None = None, context=None):
     import sys
 
     sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
     from browser_playwright_utils import telegram_proxy_for_urllib
 
     proxies = telegram_proxy_for_urllib()
-    if proxies:
-        opener = urllib.request.build_opener(urllib.request.ProxyHandler(proxies))
-        return opener.open(req, timeout=timeout)
-    ctx = context or ssl.create_default_context()
-    return urllib.request.urlopen(req, timeout=timeout, context=ctx)
+    effective_timeout = timeout if timeout is not None else (180 if proxies else 120)
+    backoff_secs = (5, 15, 30)
+    last_exc: BaseException | None = None
+
+    for attempt, sleep_sec in enumerate(backoff_secs, start=1):
+        try:
+            if proxies:
+                opener = urllib.request.build_opener(urllib.request.ProxyHandler(proxies))
+                return opener.open(req, timeout=effective_timeout)
+            ctx = context or ssl.create_default_context()
+            return urllib.request.urlopen(req, timeout=effective_timeout, context=ctx)
+        except Exception as exc:  # noqa: BLE001 — classify retryable network errors
+            last_exc = exc
+            if attempt >= len(backoff_secs) or not _retryable_url_error(exc):
+                raise
+            time.sleep(sleep_sec)
+
+    if last_exc:
+        raise last_exc
+    raise RuntimeError("_urlopen failed without exception")
 
 
 def api_call_form(token: str, method: str, data: dict | None = None, files: dict | None = None) -> dict:
