@@ -6,6 +6,39 @@ Durable incident memory. Контракт: `shared/pipeline-incident-fix-contrac
 
 ---
 
+## INC-20260821-0950-telegram-vps-proxy-timeout
+status: open
+run_date: 2026-08-21
+role: otchetik
+topic: sb-21-minute-silence
+severity: high
+category: telegram
+
+### What went wrong
+- Cloud phase 1+2 OK: Max, VK×2 (MCP), Facebook, OK опубликованы.
+- VPS webhook 202 ×2; phase 3 worker отработал site_cover + telegram_proxy (asocks KZ ResKazakhstan — Turkestan), но `send-telegram-post.py` упал: `urllib.error.URLError: <urlopen error timed out>` через proxy.
+- `vps-worker-last-run.json`: `telegram.exit_code: 1`, `telegram_failed: true`, `status: failed`.
+- Нет `telegram-publish-log.json`, нет `browser-worker-finish.json`; каналы @nmorozova_emdr и @natalia_morozova_psy не получили пост.
+- b17 опубликован вручную/repair: https://www.b17.ru/blog/minuta_tishiny_bez_telefona/
+- `verify-publish-run.py --write`: overall `fail`; тема `in_progress` в очереди.
+
+### Durable fix needed before next run
+- Retry с backoff при `URLError timed out` в `send-telegram-post.py` (и/или в deferred worker перед fail).
+- Pre-flight: `asocks_check.py` + ротация proxy-региона если KZ Turkestan не отвечает в timeout.
+- Увеличить/настроить timeout для HTTPS через proxy; не помечать worker `failed` без retry.
+- После fix: re-trigger `trigger-vps-webhook.py --topic sb-21-minute-silence` только для Telegram (не из cloud).
+- VPS infra: `systemctl is-active posts-emdr-webhook`, cron `run-linux-browser-worker.sh`, `python3 scripts/asocks_check.py`.
+
+### Suggested files to inspect/change
+- scripts/send-telegram-post.py
+- scripts/publish-browser-deferred.py
+- scripts/asocks_sync_proxy.py
+- scripts/asocks_check.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/output/sb-21-minute-silence/vps-worker-last-run.json
+
+---
+
 ## INC-20260804-1800-telegram-wrong-channel-morozova-emdr
 status: fixed
 run_date: 2026-08-04
