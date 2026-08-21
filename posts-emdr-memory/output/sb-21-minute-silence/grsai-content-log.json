@@ -1,0 +1,104 @@
+{
+  "topic": "sb-21-minute-silence",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-08-21T09:05:44.504589+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11943,
+        "completion_tokens": 7872,
+        "total_tokens": 19815
+      },
+      "chars": 3695,
+      "contract_fixes": [
+        "truncated max body to hard max 4000"
+      ]
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11102,
+        "completion_tokens": 5729,
+        "total_tokens": 16831
+      },
+      "chars": 3245,
+      "contract_fixes": []
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11631,
+        "completion_tokens": 7347,
+        "total_tokens": 18978
+      },
+      "chars": 4783,
+      "contract_fixes": [
+        "auto-wrapped vk-profile sections"
+      ]
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11631,
+        "completion_tokens": 6783,
+        "total_tokens": 18414
+      },
+      "chars": 4374,
+      "contract_fixes": [
+        "auto-wrapped vk-group sections"
+      ]
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11475,
+        "completion_tokens": 4959,
+        "total_tokens": 16434
+      },
+      "chars": 1551,
+      "contract_fixes": []
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11986,
+        "completion_tokens": 8424,
+        "total_tokens": 20410
+      },
+      "chars": 5026,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11274,
+        "completion_tokens": 5509,
+        "total_tokens": 16783
+      },
+      "chars": 1896,
+      "contract_fixes": []
+    }
+  },
+  "cover_prompt": {
+    "chars": 1857,
+    "cover_meta": {
+      "line1": "Минута тишины",
+      "line2": "без телефона",
+      "line3": "микро-практика",
+      "yellow": "тишины"
+    }
+  }
+}

@@ -12,6 +12,7 @@
 
 ## Опубликованные
 
+| sb-21-minute-silence | 2026-08-21 | Минута тишины без телефона | 172 | https://vk.com/wall-224685309_172 | https://morozovanatalia.ru/anxiety?utm_source=vk_group | тревога,микро-практика,EMDR,тишина,психология |
 | sb-20-ask-for-support | 2026-08-20 | Фраза-стартер, чтобы попросить о поддержке | 171 | https://vk.com/wall-224685309_171 | https://morozovanatalia.ru/anxiety?utm_source=vk_group | тревога,микро-практика,EMDR,поддержка,психология |
 | sb-19-question-before-sleep | 2026-08-19 | Ночная тревога: один вопрос себе перед сном, который меняет качество утра | 170 | https://vk.com/wall-224685309_170 | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,сон |
 | sb-18-water-in-stone | 2026-08-16 | Вода находит путь в самую твёрдую породу | 169 | https://vk.com/wall-224685309_169 | https://morozovanatalia.ru/anxiety?utm_source=vk_group | тревога,метафора,EMDR |
