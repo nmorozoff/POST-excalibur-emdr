@@ -158,12 +158,34 @@ CLIENT_STORY_DISCLAIMER_TEXT = (
 
 MD_LINK_RE = re.compile(r"\[([^\]]+)\]\((https?://[^)\s]+)\)")
 
-MAX_LS_URL = "https://max.ru/se13417616_biz/AZ9H9rFePFc"
+# НЕ путать с постом канала AZ9H9rFePFc (старый баг) — это пост про EMDR.
+MAX_LS_URL_DEFAULT = "https://max.ru/id771605638595_bot"
+MAX_LS_URL_LEGACY_WRONG = "https://max.ru/se13417616_biz/AZ9H9rFePFc"
+
+
+def get_max_ls_url() -> str:
+    """Deep link в ЛС бота канала (комментарии/личные сообщения)."""
+    try:
+        env = load_env("max.env.local")
+    except SystemExit:
+        return MAX_LS_URL_DEFAULT
+    explicit = (env.get("MAX_LS_URL") or "").strip()
+    if explicit:
+        return explicit
+    username = (env.get("MAX_BOT_USERNAME") or "").strip().lstrip("@")
+    if username:
+        return f"https://max.ru/{username}"
+    return MAX_LS_URL_DEFAULT
+
+
+# Back-compat for imports
+MAX_LS_URL = MAX_LS_URL_DEFAULT
 
 
 def fix_max_markdown_links(text: str) -> str:
-    """Max messenger: duplicate [ТУТ] anchors collapse to the first URL (often EMDR, not ЛС)."""
-    ls = MAX_LS_URL
+    """Max: уникальные якоря + правильный URL лички (бот, не пост канала)."""
+    ls = get_max_ls_url()
+    text = text.replace(MAX_LS_URL_LEGACY_WRONG, ls)
 
     patterns: list[tuple[re.Pattern[str], str]] = [
         (
@@ -208,7 +230,11 @@ def fix_max_markdown_links(text: str) -> str:
 
     def _unique_tut(m: re.Match[str]) -> str:
         label, url = m.group(1), m.group(2)
+        if url.rstrip("/") == MAX_LS_URL_LEGACY_WRONG.rstrip("/"):
+            url = ls
         if label != "ТУТ":
+            if url.rstrip("/") == ls.rstrip("/"):
+                return f"[{label}]({url})"
             return m.group(0)
         if url.rstrip("/") == ls.rstrip("/"):
             return f"[в личных сообщениях]({url})"

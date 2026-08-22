@@ -56,7 +56,7 @@ EMDR - метод, при котором мозг перерабатывает �
 
 О панических атаках: [на моём сайте](https://morozovanatalia.ru/panic-attacks?utm_source=max).
 
-Записаться на бесплатную пробную сессию [на моём сайте](https://morozovanatalia.ru/phobias?utm_source=max) или написать мне [в личных сообщениях](https://max.ru/se13417616_biz/AZ9H9rFePFc).
+Записаться на бесплатную пробную сессию [на моём сайте](https://morozovanatalia.ru/phobias?utm_source=max) или написать мне [в личных сообщениях](https://max.ru/id771605638595_bot).
 
 А у вас бывало: до полёта всё нормально, а в воздухе накрывает? 👇
 
@@ -69,4 +69,4 @@ EMDR - метод, при котором мозг перерабатывает �
 | ТУТ (EMDR) | https://morozovanatalia.ru/emdr-therapy?utm_source=max |
 | ТУТ (фобии) | https://morozovanatalia.ru/phobias?utm_source=max |
 | ТУТ (панические атаки) | https://morozovanatalia.ru/panic-attacks?utm_source=max |
-| ЛС ТУТ | https://max.ru/se13417616_biz/AZ9H9rFePFc |
+| ЛС ТУТ | https://max.ru/id771605638595_bot |

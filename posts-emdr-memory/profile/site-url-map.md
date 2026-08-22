@@ -40,11 +40,11 @@ https://morozovanatalia.ru/emdr-therapy
 
 ## Личка Макс
 
-https://max.ru/se13417616_biz/AZ9H9rFePFc
+https://max.ru/id771605638595_bot
 
 В тексте поста (Макс):
 ```markdown
-Записаться на бесплатную пробную сессию можно на моем сайте [ТУТ]({url темы}?utm_source=max) или написать мне в ЛС [ТУТ](https://max.ru/se13417616_biz/AZ9H9rFePFc).
+Записаться на бесплатную пробную сессию можно на моем сайте [ТУТ]({url темы}?utm_source=max) или написать мне в ЛС [ТУТ](https://max.ru/id771605638595_bot).
 ```
 
 ## Перелинковка постов Макс
@@ -68,7 +68,7 @@ https://max.ru/se13417616_biz/AZ9H9rFePFc
 
 Ещё подробнее о методе EMDR можно почитать [ТУТ](https://morozovanatalia.ru/emdr-therapy?utm_source=max).
 
-Записаться на бесплатную пробную сессию можно на моем сайте [ТУТ]({URL по таблице}?utm_source=max) или написать мне в ЛС [ТУТ](https://max.ru/se13417616_biz/AZ9H9rFePFc).
+Записаться на бесплатную пробную сессию можно на моем сайте [ТУТ]({URL по таблице}?utm_source=max) или написать мне в ЛС [ТУТ](https://max.ru/id771605638595_bot).
 ```
 
 ## Шаблон блока в конце поста (Telegram / LI / FB)

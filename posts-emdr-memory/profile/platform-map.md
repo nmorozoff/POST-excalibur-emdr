@@ -24,7 +24,7 @@ TenChat снят с пайплайна (2026-08-03). LinkedIn отменён.
 |------|---------|
 | Кружок | 30–60 сек устного текста, разговорно, как в TG; без чтения с листа |
 | Пост | **3500–3800 символов**; промпт `profile/max-post-prompt.md`; абзацы 1–3 строки |
-| CTA | [ЛС](https://max.ru/se13417616_biz/AZ9H9rFePFc) + сайт с `?utm_source=max` + [ТУТ](https://morozovanatalia.ru/emdr-therapy?utm_source=max) при темах тревоги/травмы |
+| CTA | [ЛС](https://max.ru/id771605638595_bot) + сайт с `?utm_source=max` + [ТУТ](https://morozovanatalia.ru/emdr-therapy?utm_source=max) при темах тревоги/травмы |
 | Доставка | Текст кружка + пост + обложка → **бот в Макс** (ручная запись пользователем) |
 
 ### Структура текста для кружка
