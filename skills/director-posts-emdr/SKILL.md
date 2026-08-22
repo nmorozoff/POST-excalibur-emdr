@@ -52,7 +52,7 @@ description: Директор Посты EMDR — мультиплатформе
 ### max-post.md
 
 Пост для канала Макс. **3500–3800 символов.**  
-CTA: «на моем сайте [ТУТ]» + `[ЛС](https://max.ru/id771605638595_bot)` отдельной строкой.  
+CTA: «на моем сайте [ТУТ]» + `[ЛС](https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk)` отдельной строкой.  
 Заголовок: профессиональный термин «паническая атака»; на обложке — 3 строки, без дубля слов.
 
 ### cover-prompt.txt + cover.png
@@ -85,7 +85,7 @@ Runware → `cover.png` → все остальные платформы без 
 ```
 
 - Сайт «ТУТ» → `{site_url}?utm_source={platform}` (VK: без «ТУТ», строка `на моем сайте: {url}`)
-- ЛС «ТУТ» → Макс: `https://max.ru/id771605638595_bot`; остальное: `https://t.me/natalyamorozovaa`
+- ЛС «ТУТ» → Макс: `https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk`; остальное: `https://t.me/natalyamorozovaa`
 
 ## Telegram publish
 

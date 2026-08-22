@@ -31,7 +31,7 @@ OUTFIT: dark green tailored blazer, black turtleneck
 
 Жизнь происходит только в настоящем моменте. Мы вполне способны научить нервную систему оставаться в нем, не проваливаясь в катастрофы будущего.
 
-Если хотите обсудить это лично, напишите мне [в личных сообщениях](https://max.ru/id771605638595_bot).
+Если хотите обсудить это лично, напишите мне [в личных сообщениях](https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk).
 
 Подробности о проведении сессии, стоимости и записи [читайте на сайте](https://morozovanatalia.ru/anxiety?utm_source=max).
 

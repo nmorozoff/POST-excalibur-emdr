@@ -44,7 +44,7 @@
 
 Подробнее о методе EMDR [на моём сайте](https://morozovanatalia.ru/emdr-therapy?utm_source=max).
 
-Если тема про вас — можно написать [в личку](https://max.ru/id771605638595_bot), разберём аккуратно.
+Если тема про вас — можно написать [в личку](https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk), разберём аккуратно.
 
 А у вас что труднее всего «не знать» до конца: работу, отношения, здоровье или деньги? 👇
 

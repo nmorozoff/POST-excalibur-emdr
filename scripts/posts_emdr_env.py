@@ -158,13 +158,18 @@ CLIENT_STORY_DISCLAIMER_TEXT = (
 
 MD_LINK_RE = re.compile(r"\[([^\]]+)\]\((https?://[^)\s]+)\)")
 
-# НЕ путать с постом канала AZ9H9rFePFc (старый баг) — это пост про EMDR.
-MAX_LS_URL_DEFAULT = "https://max.ru/id771605638595_bot"
-MAX_LS_URL_LEGACY_WRONG = "https://max.ru/se13417616_biz/AZ9H9rFePFc"
+# НЕ путать: AZ9H9rFePFc = пост канала про EMDR; id771605638595_bot = бот комментариев (не ЛС).
+MAX_LS_URL_DEFAULT = (
+    "https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk"
+)
+MAX_LS_URL_LEGACY_WRONG = (
+    "https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk",
+    "https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk",
+)
 
 
 def get_max_ls_url() -> str:
-    """Deep link в ЛС бота канала (комментарии/личные сообщения)."""
+    """Личные сообщения Наталье в MAX (/u/…), не бот и не пост канала."""
     try:
         env = load_env("max.env.local")
     except SystemExit:
@@ -172,9 +177,6 @@ def get_max_ls_url() -> str:
     explicit = (env.get("MAX_LS_URL") or "").strip()
     if explicit:
         return explicit
-    username = (env.get("MAX_BOT_USERNAME") or "").strip().lstrip("@")
-    if username:
-        return f"https://max.ru/{username}"
     return MAX_LS_URL_DEFAULT
 
 
@@ -185,7 +187,8 @@ MAX_LS_URL = MAX_LS_URL_DEFAULT
 def fix_max_markdown_links(text: str) -> str:
     """Max: уникальные якоря + правильный URL лички (бот, не пост канала)."""
     ls = get_max_ls_url()
-    text = text.replace(MAX_LS_URL_LEGACY_WRONG, ls)
+    for legacy in MAX_LS_URL_LEGACY_WRONG:
+        text = text.replace(legacy, ls)
 
     patterns: list[tuple[re.Pattern[str], str]] = [
         (
@@ -230,7 +233,7 @@ def fix_max_markdown_links(text: str) -> str:
 
     def _unique_tut(m: re.Match[str]) -> str:
         label, url = m.group(1), m.group(2)
-        if url.rstrip("/") == MAX_LS_URL_LEGACY_WRONG.rstrip("/"):
+        if url.rstrip("/") in {u.rstrip("/") for u in MAX_LS_URL_LEGACY_WRONG}:
             url = ls
         if label != "ТУТ":
             if url.rstrip("/") == ls.rstrip("/"):

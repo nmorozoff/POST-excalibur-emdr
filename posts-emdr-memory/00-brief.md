@@ -27,7 +27,7 @@
 
 | Платформа | Личка |
 |-----------|-------|
-| Макс | [ЛС](https://max.ru/id771605638595_bot) |
+| Макс | [ЛС](https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk) |
 | Telegram, ВК, LinkedIn, Facebook | ЛС в Telegram @natalyamorozovaa |
 
 ## Запись на пробную сессию

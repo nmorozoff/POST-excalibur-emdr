@@ -41,7 +41,7 @@ OUTFIT: slot 3
 
 Ещё подробнее о методе EMDR [на моём сайте](https://morozovanatalia.ru/emdr-therapy?utm_source=max).
 
-Если хотите обсудить это лично, напишите мне [в личных сообщениях](https://max.ru/id771605638595_bot).
+Если хотите обсудить это лично, напишите мне [в личных сообщениях](https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk).
 
 Подробности о проведении сессии, стоимости и записи [читайте на сайте](https://morozovanatalia.ru/anxiety?utm_source=max).
 

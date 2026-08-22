@@ -40,9 +40,9 @@
 
 Подробнее о методе EMDR [на моём сайте](https://morozovanatalia.ru/emdr-therapy?utm_source=max).
 
-Когда хочется разобрать свой случай - напишите мне [в ЛС](https://max.ru/id771605638595_bot).
+Когда хочется разобрать свой случай - напишите мне [в ЛС](https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk).
 
-Записаться на бесплатную пробную сессию [на моём сайте](https://morozovanatalia.ru/anxiety?utm_source=max) или написать мне [в личных сообщениях](https://max.ru/id771605638595_bot).
+Записаться на бесплатную пробную сессию [на моём сайте](https://morozovanatalia.ru/anxiety?utm_source=max) или написать мне [в личных сообщениях](https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk).
 
 А у вас «а вдруг» чаще про работу, близких, здоровье или деньги? Какой сценарий крутится у вас первым, когда эта фраза включается? 👇
 

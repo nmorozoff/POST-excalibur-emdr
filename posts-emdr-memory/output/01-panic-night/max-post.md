@@ -57,7 +57,7 @@ EMDR (десенсибилизация и переработка движени�
 
 Подробнее о панических атаках на моем сайте [на моём сайте](https://morozovanatalia.ru/panic-attacks?utm_source=max).
 
-Записаться на бесплатную пробную сессию [на моём сайте](https://morozovanatalia.ru/panic-attacks?utm_source=max) или написать мне [в личных сообщениях](https://max.ru/id771605638595_bot).
+Записаться на бесплатную пробную сессию [на моём сайте](https://morozovanatalia.ru/panic-attacks?utm_source=max) или написать мне [в личных сообщениях](https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk).
 
 А у вас бывало: днём вроде нормально, а в три-четыре ночи накрывает? 👇
 
@@ -70,7 +70,7 @@ EMDR (десенсибилизация и переработка движени�
 | ТУТ (EMDR) | https://morozovanatalia.ru/emdr-therapy?utm_source=max |
 | ТУТ (панические атаки) | https://morozovanatalia.ru/panic-attacks?utm_source=max |
 | ТУТ (пробная сессия, сайт) | https://morozovanatalia.ru/panic-attacks?utm_source=max |
-| ЛС ТУТ | https://max.ru/id771605638595_bot |
+| ЛС ТУТ | https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk |
 
 ## Обложка
 

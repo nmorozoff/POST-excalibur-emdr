@@ -165,7 +165,7 @@ def cta_context(post_number: int) -> str:
         f"Номер поста MSP: {post_number}\n"
         f"Мягкий контакт (short-blog-cta-rules): слот {soft_slot} (sb-NN % 3)\n"
         f"Полный CTA пробной сессии: {'да (#NN % 4 == 0)' if full_session else 'нет'}\n"
-        "ЛС Макс: https://max.ru/id771605638595_bot\n"
+        "ЛС Макс: https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk\n"
         "ЛС TG/VK/FB/OK: https://t.me/natalyamorozovaa\n"
     )
 

@@ -51,6 +51,7 @@
 
 ## Контакты (не менять)
 
-- ЛС Макс (бот, не пост канала): https://max.ru/id771605638595_bot
-- ~~ЛС Макс: https://max.ru/se13417616_biz/AZ9H9rFePFc~~ — **устарело**, это пост про EMDR
+- ЛС Макс (профиль /u/…, не бот и не пост канала): https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk
+- ~~ЛС Макс: https://max.ru/se13417616_biz/AZ9H9rFePFc~~ — пост про EMDR
+- ~~ЛС Макс: https://max.ru/id771605638595_bot~~ — бот комментариев, не личка
 - EMDR лендинг: https://morozovanatalia.ru/emdr-therapy

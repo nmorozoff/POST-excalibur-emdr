@@ -195,7 +195,7 @@ Gate: форма заполнена, `b17-publish-prep.json`. Опциональ
 - **Ссылка на сайт и EMDR** — только в самом конце, **после** CTA-фразы «Если хотите обсудить это лично,…».
 - **Перед вопросом в конце:** «Если хотите обсудить это лично, напишите мне в ЛС [ТУТ]» → затем «Подробности о проведении сессии, стоимости и записи читайте ТУТ [ссылка на сайт]».
 - **ВК:** перелинковка `[wall_url|здесь]`; CTA — `в ЛС: https://t.me/natalyamorozovaa` и только после него `Подробности... читайте ТУТ: {url}` (полный URL, без markdown-анкора).
-- Макс ЛС: `https://max.ru/id771605638595_bot`; остальные: `https://t.me/natalyamorozovaa`
+- Макс ЛС: `https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk`; остальные: `https://t.me/natalyamorozovaa`
 - Ссылки на страницу темы и EMDR — с `?utm_source` платформы (`profile/utm-sources.md`).
 - При тревоге/травме: EMDR-блок по `profile/emdr-evidence.md` + ссылка [ТУТ](https://morozovanatalia.ru/emdr-therapy) с UTM.
 - Объём поста Макс: **3500–3800** символов (`profile/max-post-prompt.md`).
