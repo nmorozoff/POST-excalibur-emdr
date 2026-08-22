@@ -187,7 +187,12 @@ def _write_env_updates(updates: dict[str, str]) -> None:
     ENV_PATH.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
 
 
-def sync_telegram_with_preflight(*, write: bool = True, max_time_sec: int = 25) -> dict:
+def sync_telegram_with_preflight(
+    *,
+    write: bool = True,
+    max_time_sec: int = 25,
+    exclude_port_ids: set[str] | None = None,
+) -> dict:
     """Sync TELEGRAM_PROXY_* and rotate KZ ASocks ports until curl preflight passes."""
     env = load_env("browser.env.local")
     api_key = env.get("ASOCKS_API_KEY", "").strip()
@@ -205,7 +210,11 @@ def sync_telegram_with_preflight(*, write: bool = True, max_time_sec: int = 25) 
 
     attempts: list[dict] = []
     last_result: dict | None = None
+    skip_ids = exclude_port_ids or set()
     for port in candidates:
+        pid = str(port.get("id") or "")
+        if pid and pid in skip_ids:
+            continue
         result = _build_sync_result(port, target="telegram", env=env)
         last_result = result
         proxy_test = test_proxy_tunnel(
