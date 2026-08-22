@@ -568,6 +568,9 @@ def validate_platform_output(platform: str, text: str) -> list[str]:
             warnings.append("missing cover Line 1/2/3 in max header")
         if _cover_leaked_into_body(text):
             warnings.append("cover meta leaked into ## Текст поста body")
+        from posts_emdr_env import validate_max_ls_cta
+
+        warnings.extend(validate_max_ls_cta(body))
     if platform == "b17":
         if not re.search(r"^## Заголовок\s*$", text, re.M):
             warnings.append("missing ## Заголовок for b17")

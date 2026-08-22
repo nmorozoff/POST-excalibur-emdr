@@ -439,6 +439,8 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Причина:** неверные URL: пост `AZ9H9rFePFc`, бот `id771605638595_bot`. Плюс дубли `[ТУТ]` в markdown.
 
-**Правильно:** ЛС Макс = `get_max_ls_url()` → `https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk`. Уникальные якоря. Автофикс: `fix_max_markdown_links()`.
+**Правильно:** ЛС Макс = **только** `get_max_ls_url()` в `scripts/posts_emdr_env.py` (или `MAX_LS_URL` в `max.env.local`). Уникальные якоря. Автофикс: `fix_max_markdown_links()`. **Gate:** `validate_max_ls_cta()` — без прохождения `send-max-draft.py --publish` не шлёт в канал. Тест: `python3 scripts/test_max_ls_gate.py`.
+
+**Не делать:** агенту **вручную** менять URL ЛС в md/реестрах/коммитах «по догадке»; не подставлять бот (`id771605638595_bot`) или пост канала (`AZ9H9rFePFc`) вместо `/u/…`.
 
 **Не делать:** тащить `##` / `**Обложка**` / Line 1 в OK text.

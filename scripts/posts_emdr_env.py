@@ -163,8 +163,20 @@ MAX_LS_URL_DEFAULT = (
     "https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk"
 )
 MAX_LS_URL_LEGACY_WRONG = (
-    "https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk",
-    "https://max.ru/u/f9LHodD0cOLMWn4dwsfNLXttuTDjJTF4cCK2MJPjCfNpeKrbfQ6RlQy3dLk",
+    "https://max.ru/se13417616_biz/AZ9H9rFePFc",
+    "https://max.ru/id771605638595_bot",
+)
+
+# Фрагменты URL, которые нельзя в якоре «личные сообщения» (gate).
+MAX_LS_FORBIDDEN_FRAGMENTS = (
+    "AZ9H9rFePFc",
+    "id771605638595_bot",
+)
+
+_LS_ANCHOR_HINTS = ("личн", "лс")
+_LS_CTA_RE = re.compile(
+    r"обсудить\s+это\s+лично|напишите\s+мне|в\s+личных\s+сообщениях|написать\s+мне",
+    re.I,
 )
 
 
@@ -185,7 +197,7 @@ MAX_LS_URL = MAX_LS_URL_DEFAULT
 
 
 def fix_max_markdown_links(text: str) -> str:
-    """Max: уникальные якоря + правильный URL лички (бот, не пост канала)."""
+    """Max: уникальные якоря + правильный URL лички (/u/… профиль, не бот и не пост)."""
     ls = get_max_ls_url()
     for legacy in MAX_LS_URL_LEGACY_WRONG:
         text = text.replace(legacy, ls)
@@ -248,6 +260,34 @@ def fix_max_markdown_links(text: str) -> str:
         return f"[здесь]({url})"
 
     return MD_LINK_RE.sub(_unique_tut, text)
+
+
+def validate_max_ls_cta(text: str) -> list[str]:
+    """Жёсткий gate: CTA «личные сообщения» только на get_max_ls_url()."""
+    issues: list[str] = []
+    ls = get_max_ls_url().rstrip("/")
+
+    for label, url in MD_LINK_RE.findall(text):
+        url_norm = url.rstrip("/")
+        label_l = label.lower()
+        is_ls_anchor = any(h in label_l for h in _LS_ANCHOR_HINTS)
+        if not is_ls_anchor:
+            continue
+        for frag in MAX_LS_FORBIDDEN_FRAGMENTS:
+            if frag in url:
+                issues.append(
+                    f"MAX LS gate: якорь «{label}» содержит запрещённый URL {frag!r}"
+                )
+        if url_norm != ls:
+            issues.append(
+                f"MAX LS gate: якорь «{label}» ведёт на {url}, нужно {ls}"
+            )
+
+    if _LS_CTA_RE.search(text):
+        if ls not in text and f"{ls}/" not in text:
+            issues.append(f"MAX LS gate: в тексте нет ссылки ЛС {ls}")
+
+    return issues
 
 
 def markdown_links_to_ok_plain(text: str) -> str:

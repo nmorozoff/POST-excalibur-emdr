@@ -29,7 +29,7 @@ from urllib.request import Request, urlopen
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import fix_max_markdown_links, sanitize_post_text
+from posts_emdr_env import fix_max_markdown_links, sanitize_post_text, validate_max_ls_cta
 
 API_BASE = "https://platform-api2.max.ru"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -347,6 +347,13 @@ def main() -> None:
 
     post_text = extract_post_body(text_file)
     post_text = fix_max_markdown_links(post_text)
+
+    ls_issues = validate_max_ls_cta(post_text)
+    if ls_issues and mode == "publish":
+        raise SystemExit(
+            "Публикация в Макс заблокирована (неверная ссылка ЛС):\n"
+            + "\n".join(f"  • {i}" for i in ls_issues)
+        )
 
     if mode == "publish":
         full_text = post_text

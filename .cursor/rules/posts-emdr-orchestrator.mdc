@@ -202,7 +202,7 @@ Gate: форма заполнена, `b17-publish-prep.json`. Опциональ
 
 ## Запреты
 
-- НЕ Ядрышко/Core для старта
+- НЕ менять URL лички Макс в md/реестрах «на глаз» — единственный источник: `get_max_ls_url()`; gate `validate_max_ls_cta()` блокирует publish
 - НЕ просить пользователя «скопируйте example в local» — агент создаёт `max.env.local`, `grsai.env.local` сам
 - НЕ вызывать Runware API без согласованного пайплайна short-blog (обложка на каждый пост — автоматически)
 - НЕ запускать `grsai-cover.py`, `kie-cover.py`, `runware-cover.py` локально для тестов — только live через Cloud Automation (`publish-topic.py` → `ensure_cover`)

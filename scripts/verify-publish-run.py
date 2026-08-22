@@ -17,7 +17,7 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env, publish_text_format_issues
+from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env, publish_text_format_issues, validate_max_ls_cta, fix_max_markdown_links, extract_post_body_from_md
 
 PROFILE = MEMORY / "profile"
 EXPECTED_TG_CHANNELS = ("nmorozova_emdr", "natalia_morozova_psy")
@@ -109,6 +109,17 @@ def verify_topic(topic: str) -> dict:
             report["links"]["max"] = m.group(1)
     if not report["platforms"]["max"]["ok"]:
         report["issues"].append("Макс: нет publish-log или реестра")
+
+    max_post = topic_dir / "max-post.md"
+    if max_post.is_file():
+        try:
+            max_body = fix_max_markdown_links(extract_post_body_from_md(max_post.read_text(encoding="utf-8")))
+            ls_issues = validate_max_ls_cta(max_body)
+            report["platforms"]["max"]["ls_gate"] = {"ok": not ls_issues, "issues": ls_issues}
+            for issue in ls_issues:
+                report["issues"].append(issue)
+        except ValueError as exc:
+            report["issues"].append(f"Макс max-post.md: {exc}")
 
     # Telegram
     tg_log = _read_json(topic_dir / "telegram-publish-log.json")
