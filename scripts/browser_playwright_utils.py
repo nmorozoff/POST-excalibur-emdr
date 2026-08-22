@@ -76,6 +76,10 @@ def b17_proxy_for_urllib() -> dict[str, str] | None:
 
 def telegram_proxy_for_urllib() -> dict[str, str] | None:
     """Telegram Bot API через residential (ASocks KZ и т.п.), не с Mac."""
+    import os
+
+    if os.environ.get("TELEGRAM_SKIP_PROXY", "").strip().lower() in {"1", "true", "yes"}:
+        return None
     return _urllib_proxies_from_prefix("TELEGRAM_") or b17_proxy_for_urllib()
 
 

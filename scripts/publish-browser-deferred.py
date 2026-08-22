@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -136,12 +137,12 @@ def write_worker_run_summary(topic: str, report: dict) -> None:
     path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def sync_telegram_proxy() -> dict:
+def sync_telegram_proxy(*, exclude_port_ids: set[str] | None = None) -> dict:
     """ASocks KZ → TELEGRAM_PROXY_* перед Bot API, с curl preflight и ротацией KZ."""
     try:
         from asocks_sync_proxy import sync_telegram_with_preflight
 
-        data = sync_telegram_with_preflight(write=True)
+        data = sync_telegram_with_preflight(write=True, exclude_port_ids=exclude_port_ids)
         return {
             "exit_code": 0,
             "stdout_tail": json.dumps(data, ensure_ascii=False)[-800:],
@@ -197,7 +198,18 @@ def sync_telegram_proxy() -> dict:
         return out
 
 
-def run_send_telegram(topic: str) -> subprocess.CompletedProcess[str]:
+def _current_telegram_port_id() -> str:
+    try:
+        env = load_env("browser.env.local")
+        return env.get("TELEGRAM_ASOCKS_PORT_ID", "").strip()
+    except SystemExit:
+        return ""
+
+
+def run_send_telegram(topic: str, *, skip_proxy: bool = False) -> subprocess.CompletedProcess[str]:
+    env = os.environ.copy()
+    if skip_proxy:
+        env["TELEGRAM_SKIP_PROXY"] = "1"
     return subprocess.run(
         [
             sys.executable,
@@ -210,32 +222,52 @@ def run_send_telegram(topic: str) -> subprocess.CompletedProcess[str]:
         cwd=PROJECT_ROOT,
         capture_output=True,
         text=True,
+        env=env,
     )
 
 
-def publish_telegram_with_retries(topic: str, *, max_attempts: int = 2) -> dict:
+def publish_telegram_with_retries(topic: str, *, max_attempts: int = 3) -> dict:
     """Telegram publish with proxy resync between attempts on transient proxy errors."""
     step: dict = {"attempts": []}
     last_proc: subprocess.CompletedProcess[str] | None = None
+    failed_port_ids: set[str] = set()
 
     for attempt in range(1, max_attempts + 1):
         if attempt > 1:
             step["attempts"][-1]["retry_after_sec"] = 20
             time.sleep(20)
-            step["telegram_proxy_retry"] = sync_telegram_proxy()
+            step["telegram_proxy_retry"] = sync_telegram_proxy(exclude_port_ids=failed_port_ids)
         proc = run_send_telegram(topic)
         last_proc = proc
+        port_id = _current_telegram_port_id()
         attempt_info = {
             "attempt": attempt,
             "exit_code": proc.returncode,
+            "asocks_port_id": port_id or None,
             "stderr_tail": (proc.stderr or "")[-500:],
         }
         step["attempts"].append(attempt_info)
         if proc.returncode == 0:
             break
+        if port_id:
+            failed_port_ids.add(port_id)
         err = (proc.stderr or proc.stdout or "").lower()
         if "timed out" not in err and "unexpected_eof" not in err and "urlerror" not in err:
             break
+
+    if last_proc is not None and last_proc.returncode != 0:
+        step["attempts"][-1]["retry_after_sec"] = 15
+        time.sleep(15)
+        step["direct_fallback"] = True
+        last_proc = run_send_telegram(topic, skip_proxy=True)
+        step["attempts"].append(
+            {
+                "attempt": "direct_fallback",
+                "exit_code": last_proc.returncode,
+                "skip_proxy": True,
+                "stderr_tail": (last_proc.stderr or "")[-500:],
+            }
+        )
 
     assert last_proc is not None
     step.update(
