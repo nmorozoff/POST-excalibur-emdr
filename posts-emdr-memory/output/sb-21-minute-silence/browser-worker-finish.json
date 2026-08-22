@@ -1,0 +1,13 @@
+{
+  "topic": "sb-21-minute-silence",
+  "status": "browser_worker_finished",
+  "date": "2026-08-22",
+  "b17_url": "https://www.b17.ru/blog/minuta_tishiny_bez_telefona/",
+  "tenchat_url": null,
+  "site_url": "https://morozovanatalia.ru/anxiety",
+  "queue": {
+    "exit_code": 0,
+    "stdout": "OK marked published: sb-21-minute-silence → short-blog-published.md",
+    "stderr": ""
+  }
+}

@@ -1,6 +1,6 @@
 {
   "topic": "sb-21-minute-silence",
-  "overall": "fail",
+  "overall": "pass",
   "platforms": {
     "max": {
       "ok": true,
@@ -9,15 +9,18 @@
       "url": null
     },
     "telegram": {
-      "ok": false,
-      "delivery": null,
-      "channels": [],
-      "missing_channels": [
+      "ok": true,
+      "delivery": "link_preview_single_message",
+      "channels": [
         "nmorozova_emdr",
         "natalia_morozova_psy"
       ],
-      "cover_source": null,
-      "urls": []
+      "missing_channels": [],
+      "cover_source": "max",
+      "urls": [
+        "https://t.me/nmorozova_emdr/138",
+        "https://t.me/natalia_morozova_psy/2048"
+      ]
     },
     "vk_profile": {
       "ok": true,
@@ -50,7 +53,7 @@
     "b17": {
       "ok": true,
       "log": true,
-      "registry": false,
+      "registry": true,
       "status": "published",
       "draft_saved": false
     }
@@ -68,21 +71,21 @@
     }
   },
   "queue": {
-    "published": false,
-    "still_in_queue": true
+    "published": true,
+    "still_in_queue": false
   },
   "vps": {
-    "finish_json": false,
-    "handoff_done": false,
-    "status": null
+    "finish_json": true,
+    "handoff_done": true,
+    "status": "browser_worker_finished"
   },
-  "issues": [
-    "Telegram: не отправлен (или VPS ещё не отработал)",
-    "Тема всё ещё in_progress в очереди",
-    "VPS phase 3: Telegram ещё не отработал"
-  ],
+  "issues": [],
   "links": {
     "max": "https://max.ru/se13417616_biz/AaAjnqKxMNY",
+    "telegram": [
+      "https://t.me/nmorozova_emdr/138",
+      "https://t.me/natalia_morozova_psy/2048"
+    ],
     "vk_profile": "https://vk.com/wall218367867_695",
     "vk_group": "https://vk.com/wall-224685309_172",
     "facebook": "https://www.facebook.com/632301483303094_122182845002837712",

@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-21-minute-silence | 2026-08-22 | Минута тишины без телефона | https://www.b17.ru/blog/minuta_tishiny_bez_telefona/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-20-ask-for-support | 2026-08-20 | Фраза-стартер, чтобы попросить о поддержке | https://www.b17.ru/blog/frazastarter_chtoby_poprosit_o_podderzhke/ | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-18-water-in-stone | 2026-08-18 | Вода находит путь в самую твёрдую породу | https://www.b17.ru/my_blog.php?mod=edit | https://morozovanatalia.ru/anxiety | b17,психология |
 | sb-17-weed-unplanted | 2026-08-15 | Почему сорняк растёт там, где ничего не сажали | https://www.b17.ru/blog/pochemu_sornyak_rastet_tam_gde_nichego_ne_sazhali/ | https://morozovanatalia.ru/anxiety | b17,психология |

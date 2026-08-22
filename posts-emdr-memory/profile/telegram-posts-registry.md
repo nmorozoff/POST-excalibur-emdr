@@ -11,6 +11,8 @@
 
 ## Опубликованные
 
+| sb-21-minute-silence | 2026-08-22 | электронная соска для взрослой нервной системы | @natalia_morozova_psy | 2048 | https://t.me/natalia_morozova_psy/2048 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
+| sb-21-minute-silence | 2026-08-22 | электронная соска для взрослой нервной системы | @nmorozova_emdr | 138 | https://t.me/nmorozova_emdr/138 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-20-ask-for-support | 2026-08-20 | Во-первых | @natalia_morozova_psy | 2047 | https://t.me/natalia_morozova_psy/2047 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-20-ask-for-support | 2026-08-20 | Во-первых | @nmorozova_emdr | 137 | https://t.me/nmorozova_emdr/137 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-19-question-before-sleep | 2026-08-19 | Один вопрос себе перед сном, который меняет качество утра | @natalia_morozova_psy | 2046 | https://t.me/natalia_morozova_psy/2046 | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,сон |
