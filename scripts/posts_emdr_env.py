@@ -158,6 +158,68 @@ CLIENT_STORY_DISCLAIMER_TEXT = (
 
 MD_LINK_RE = re.compile(r"\[([^\]]+)\]\((https?://[^)\s]+)\)")
 
+MAX_LS_URL = "https://max.ru/se13417616_biz/AZ9H9rFePFc"
+
+
+def fix_max_markdown_links(text: str) -> str:
+    """Max messenger: duplicate [ТУТ] anchors collapse to the first URL (often EMDR, not ЛС)."""
+    ls = MAX_LS_URL
+
+    patterns: list[tuple[re.Pattern[str], str]] = [
+        (
+            re.compile(
+                r"Если хотите обсудить это лично, напишите мне в ЛС \[ТУТ\]\([^)]+\)",
+                re.I,
+            ),
+            f"Если хотите обсудить это лично, напишите мне [в личных сообщениях]({ls})",
+        ),
+        (
+            re.compile(
+                r"Подробности о проведении сессии, стоимости и записи читайте \[ТУТ\]\(([^)]+)\)",
+                re.I,
+            ),
+            r"Подробности о проведении сессии, стоимости и записи [читайте на сайте](\1)",
+        ),
+        (
+            re.compile(
+                r"Ещё подробнее о методе EMDR(?: можно почитать)? на моем сайте \[ТУТ\]\(([^)]+)\)",
+                re.I,
+            ),
+            r"Подробнее о методе EMDR [на моём сайте](\1)",
+        ),
+        (
+            re.compile(
+                r"Записаться на бесплатную пробную сессию можно на моем сайте \[ТУТ\]\(([^)]+)\) или написать мне в ЛС \[ТУТ\]\([^)]+\)",
+                re.I,
+            ),
+            rf"Записаться на бесплатную пробную сессию [на моём сайте](\1) или написать мне [в личных сообщениях]({ls})",
+        ),
+        (
+            re.compile(r"написать мне в ЛС \[ТУТ\]\([^)]+\)", re.I),
+            f"написать мне [в личных сообщениях]({ls})",
+        ),
+        (
+            re.compile(r"пишите мне в личные сообщения \[ТУТ\]\([^)]+\)", re.I),
+            f"пишите мне [в личные сообщения]({ls})",
+        ),
+    ]
+    for pat, repl in patterns:
+        text = pat.sub(repl, text)
+
+    def _unique_tut(m: re.Match[str]) -> str:
+        label, url = m.group(1), m.group(2)
+        if label != "ТУТ":
+            return m.group(0)
+        if url.rstrip("/") == ls.rstrip("/"):
+            return f"[в личных сообщениях]({url})"
+        if "emdr-therapy" in url:
+            return f"[на моём сайте об EMDR]({url})"
+        if "morozovanatalia.ru" in url:
+            return f"[на моём сайте]({url})"
+        return f"[здесь]({url})"
+
+    return MD_LINK_RE.sub(_unique_tut, text)
+
 
 def markdown_links_to_ok_plain(text: str) -> str:
     """OK MCP text field is plain: keep anchor word + URL (OK auto-linkifies URL)."""

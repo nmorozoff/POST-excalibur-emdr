@@ -216,6 +216,10 @@ def postprocess_platform(platform: str, text: str) -> str:
             else:
                 text = text.rstrip() + "\n\n<!-- END_POST -->"
     text = ensure_client_story_disclaimer(text, platform)
+    if platform == "max":
+        from posts_emdr_env import fix_max_markdown_links
+
+        text = fix_max_markdown_links(text)
     return text
 
 

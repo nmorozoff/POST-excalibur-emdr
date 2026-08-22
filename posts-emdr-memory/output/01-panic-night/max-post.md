@@ -53,11 +53,11 @@ EMDR (десенсибилизация и переработка движени�
 
 По паническим атакам задача та же: снизить телесную реакцию на триггер, чтобы мозг перестал будить без причины.
 
-Ещё подробнее о методе EMDR можно почитать на моем сайте [ТУТ](https://morozovanatalia.ru/emdr-therapy?utm_source=max).
+Подробнее о методе EMDR [на моём сайте](https://morozovanatalia.ru/emdr-therapy?utm_source=max).
 
-Подробнее о панических атаках на моем сайте [ТУТ](https://morozovanatalia.ru/panic-attacks?utm_source=max).
+Подробнее о панических атаках на моем сайте [на моём сайте](https://morozovanatalia.ru/panic-attacks?utm_source=max).
 
-Записаться на бесплатную пробную сессию можно на моем сайте [ТУТ](https://morozovanatalia.ru/panic-attacks?utm_source=max) или написать мне в ЛС [ТУТ](https://max.ru/se13417616_biz/AZ9H9rFePFc).
+Записаться на бесплатную пробную сессию [на моём сайте](https://morozovanatalia.ru/panic-attacks?utm_source=max) или написать мне [в личных сообщениях](https://max.ru/se13417616_biz/AZ9H9rFePFc).
 
 А у вас бывало: днём вроде нормально, а в три-четыре ночи накрывает? 👇
 

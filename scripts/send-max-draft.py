@@ -29,7 +29,7 @@ from urllib.request import Request, urlopen
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import sanitize_post_text
+from posts_emdr_env import fix_max_markdown_links, sanitize_post_text
 
 API_BASE = "https://platform-api2.max.ru"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -346,6 +346,7 @@ def main() -> None:
         cover = topic_dir / "cover-runware.png"
 
     post_text = extract_post_body(text_file)
+    post_text = fix_max_markdown_links(post_text)
 
     if mode == "publish":
         full_text = post_text

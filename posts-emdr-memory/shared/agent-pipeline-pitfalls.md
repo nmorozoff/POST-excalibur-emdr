@@ -433,4 +433,12 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Правильно сейчас:** в `ok-post.md` писать markdown `[ТУТ](url)`; `format_ok_publish_text` → `ТУТ https://url` для MCP; `text_tokens` класть в handoff на апгрейд MCP.
 
+## Max: дубли `[ТУТ]` → ЛС ведёт на EMDR
+
+**Симптом:** в посте Макс фраза «напишите в ЛС [ТУТ]» открывает страницу EMDR или сайт, не личку `AZ9H9rFePFc`.
+
+**Причина:** клиент Макс схлопывает одинаковые якоря `[ТУТ]` в первый URL в тексте (часто блок EMDR выше CTA).
+
+**Правильно:** уникальные якоря — `[в личных сообщениях]({ls})`, `[на моём сайте об EMDR](...)`, `[читайте на сайте](...)`. Автофикс: `fix_max_markdown_links()` в `send-max-draft.py` и `grsai-generate-topic.py` postprocess.
+
 **Не делать:** тащить `##` / `**Обложка**` / Line 1 в OK text.

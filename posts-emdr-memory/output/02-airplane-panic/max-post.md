@@ -50,13 +50,13 @@ EMDR - метод, при котором мозг перерабатывает �
 
 По авиафобии и панике в самолёте задача та же: снизить реакцию на триггер, чтобы мозг перестал включать режим «катастрофа» без причины.
 
-Ещё подробнее о методе EMDR можно почитать на моем сайте [ТУТ](https://morozovanatalia.ru/emdr-therapy?utm_source=max).
+Подробнее о методе EMDR [на моём сайте](https://morozovanatalia.ru/emdr-therapy?utm_source=max).
 
-Подробнее о фобиях и страхах на моем сайте [ТУТ](https://morozovanatalia.ru/phobias?utm_source=max).
+Подробнее о фобиях и страхах на моем сайте [на моём сайте](https://morozovanatalia.ru/phobias?utm_source=max).
 
-О панических атаках: [ТУТ](https://morozovanatalia.ru/panic-attacks?utm_source=max).
+О панических атаках: [на моём сайте](https://morozovanatalia.ru/panic-attacks?utm_source=max).
 
-Записаться на бесплатную пробную сессию можно на моем сайте [ТУТ](https://morozovanatalia.ru/phobias?utm_source=max) или написать мне в ЛС [ТУТ](https://max.ru/se13417616_biz/AZ9H9rFePFc).
+Записаться на бесплатную пробную сессию [на моём сайте](https://morozovanatalia.ru/phobias?utm_source=max) или написать мне [в личных сообщениях](https://max.ru/se13417616_biz/AZ9H9rFePFc).
 
 А у вас бывало: до полёта всё нормально, а в воздухе накрывает? 👇
 
