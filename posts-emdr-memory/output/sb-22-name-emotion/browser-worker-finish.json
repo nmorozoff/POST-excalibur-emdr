@@ -1,0 +1,12 @@
+{
+  "topic": "sb-22-name-emotion",
+  "status": "browser_worker_finished",
+  "date": "2026-08-23",
+  "b17_url": "https://www.b17.ru/blog/kak_nazvat_emociyu_odnim_slovom/",
+  "tenchat_url": null,
+  "site_url": "https://morozovanatalia.ru/Как назвать эмоцию одним словом",
+  "queue": {
+    "skipped": true,
+    "reason": "topic_not_in_queue"
+  }
+}

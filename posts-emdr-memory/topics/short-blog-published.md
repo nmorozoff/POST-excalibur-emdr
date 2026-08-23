@@ -2,6 +2,7 @@
 
 | topic_id | # MSP | дата | заголовок | site_url |
 |----------|-------|------|-----------|----------|
+| `sb-22-name-emotion` | 22 | 2026-08-23 | Как назвать эмоцию одним словом | https://morozovanatalia.ru/anxiety |
 | `sb-21-minute-silence` | 21 | 2026-08-22 | Минута тишины без телефона | https://morozovanatalia.ru/anxiety |
 | `sb-20-ask-for-support` | 20 | 2026-08-20 | Фраза-стартер, чтобы попросить о поддержке | https://morozovanatalia.ru/anxiety |
 | `sb-19-question-before-sleep` | 19 | 2026-08-20 | Один вопрос себе перед сном, который меняет качество утра | https://morozovanatalia.ru/anxiety |
