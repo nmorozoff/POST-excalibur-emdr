@@ -1,0 +1,19 @@
+{
+  "topic": "sb-22-name-emotion",
+  "platform": "vk",
+  "status": "published",
+  "method": "mcp-kv",
+  "profile": {
+    "post_id": 696,
+    "url": "https://vk.com/wall218367867_696",
+    "photo_id": "photo218367867_457247796"
+  },
+  "group": {
+    "post_id": 173,
+    "group_id": "224685309",
+    "url": "https://vk.com/wall-224685309_173",
+    "photo_id": "photo218367867_457247797"
+  },
+  "date": "2026-08-23",
+  "format_vk_publish_text": true
+}

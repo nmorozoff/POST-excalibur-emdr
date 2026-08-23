@@ -1,0 +1,104 @@
+{
+  "topic": "sb-22-name-emotion",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-08-23T09:03:47.579098+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12135,
+        "completion_tokens": 12801,
+        "total_tokens": 24936
+      },
+      "chars": 4162,
+      "contract_fixes": [
+        "validation: max body outside target 3500-3800: 3998"
+      ]
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11318,
+        "completion_tokens": 5174,
+        "total_tokens": 16492
+      },
+      "chars": 3853,
+      "contract_fixes": []
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11863,
+        "completion_tokens": 7335,
+        "total_tokens": 19198
+      },
+      "chars": 5133,
+      "contract_fixes": [
+        "auto-wrapped vk-profile sections"
+      ]
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11864,
+        "completion_tokens": 6024,
+        "total_tokens": 17888
+      },
+      "chars": 4425,
+      "contract_fixes": []
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11706,
+        "completion_tokens": 6014,
+        "total_tokens": 17720
+      },
+      "chars": 4704,
+      "contract_fixes": [
+        "auto-wrapped facebook sections"
+      ]
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12212,
+        "completion_tokens": 5137,
+        "total_tokens": 17349
+      },
+      "chars": 5090,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11479,
+        "completion_tokens": 6180,
+        "total_tokens": 17659
+      },
+      "chars": 3083,
+      "contract_fixes": []
+    }
+  },
+  "cover_prompt": {
+    "chars": 1831,
+    "cover_meta": {
+      "line1": "Как назвать эмоцию",
+      "line2": "одним словом",
+      "line3": "и снизить тревогу",
+      "yellow": "одним словом"
+    }
+  }
+}

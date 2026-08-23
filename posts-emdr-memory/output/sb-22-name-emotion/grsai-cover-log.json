@@ -1,0 +1,38 @@
+{
+  "taskId": "16-da24c553-f624-4a26-bfab-6ae2c1a5ecdb",
+  "imageURL": "https://file1.aitohumanize.com/file/4f895e16928d4252b379d7dfd645e3da.png",
+  "reference_rotation": {
+    "topic": "sb-22-name-emotion",
+    "slot": 6,
+    "reference_path": "/workspace/posts-emdr-memory/assets/reference/portrait-06.jpg",
+    "backend": "grsai",
+    "aspect_ratio": "1280x1024",
+    "quality": "low",
+    "model": "gpt-image-2",
+    "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-06.jpg"
+  },
+  "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-06.jpg",
+  "model": "gpt-image-2",
+  "backend": "grsai",
+  "raw": {
+    "callback_url": "-1",
+    "end_time": 1787476287,
+    "error": "",
+    "failure_reason": "",
+    "height": 0,
+    "id": "16-da24c553-f624-4a26-bfab-6ae2c1a5ecdb",
+    "progress": 100,
+    "results": [
+      {
+        "height": 0,
+        "url": "https://file1.aitohumanize.com/file/4f895e16928d4252b379d7dfd645e3da.png",
+        "width": 0
+      }
+    ],
+    "start_time": 1787476244,
+    "status": "succeeded",
+    "task_id": "",
+    "url": "",
+    "width": 0
+  }
+}

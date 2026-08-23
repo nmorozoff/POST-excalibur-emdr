@@ -10,6 +10,7 @@
 
 ## Опубликованные
 
+| sb-22-name-emotion | 2026-08-23 | Как назвать эмоцию одним словом | ? | https://www.facebook.com/632301483303094_122183049890837712 | https://morozovanatalia.ru/anxiety | тревога,эмоции,EMDR |
 | sb-21-minute-silence | 2026-08-21 | Минута тишины без телефона | 632301483303094_122182845002837712 | https://www.facebook.com/632301483303094_122182845002837712 | https://morozovanatalia.ru/anxiety?utm_source=facebook | тревога,микро-практика,EMDR,тишина,психология |
 | sb-20-ask-for-support | 2026-08-20 | Фраза-стартер, чтобы попросить о поддержке | 632301483303094_122182747154837712 | https://www.facebook.com/632301483303094_122182747154837712 | https://morozovanatalia.ru/anxiety?utm_source=facebook | тревога,микро-практика,EMDR,поддержка,психология |
 | sb-19-question-before-sleep | 2026-08-19 | Ночная тревога: один вопрос себе перед сном, который меняет качество утра | ? | https://www.facebook.com/632301483303094_122182671764837712 | https://morozovanatalia.ru/anxiety | тревога,микро-практика,EMDR,сон |
