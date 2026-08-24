@@ -1206,3 +1206,26 @@ category: platform
 - scripts/publish-b17-blog.py
 - VPS cron `run-linux-browser-worker.sh`
 
+---
+
+## INC-20260824-0956-sb23-vps-pending
+status: open
+run_date: 2026-08-24
+role: otchetik
+topic: sb-23-grounding-exercise
+severity: medium
+category: vps
+
+### What went wrong
+- Cloud phase 1+2 OK: Max, VK×2, Facebook, OK опубликованы.
+- VPS webhook принят (HTTP 202) до verify; phase 3 ещё не завершил: нет `telegram-publish-log.json`, `b17-publish-log.json`, `browser-worker-finish.json`.
+- verify-publish-run → overall `fail` (Telegram pending); тема `in_progress` в очереди.
+
+### Durable fix needed before next run
+- Дождаться VPS worker (Telegram + b17) или проверить `output/sb-23-grounding-exercise/vps-webhook-run.log` на VPS.
+- При зависании: `python3 scripts/trigger-vps-webhook.py --topic sb-23-grounding-exercise` или ручной `publish-browser-deferred.py --finish --git-push`.
+
+### Suggested files to inspect/change
+- VPS: `output/sb-23-grounding-exercise/vps-webhook-run.log`, `browser-worker-finish.json`
+- `scripts/publish-browser-deferred.py`
+
