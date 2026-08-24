@@ -10,6 +10,7 @@
 
 ## Опубликованные
 
+| sb-23-grounding-exercise | 2026-08-24 | Простое заземление, когда «уносит» в тревожные мысли | 161387583271023 | https://ok.ru/group/70000034253679/topic/161387583271023 | https://morozovanatalia.ru/anxiety?utm_source=ok | тревога,микро-практика,EMDR,заземление,психология |
 | sb-22-name-emotion | 2026-08-23 | Как назвать эмоцию одним словом | 161386281988207 | https://ok.ru/group/70000034253679/topic/161386281988207 | https://morozovanatalia.ru/anxiety | тревога,эмоции,EMDR |
 | sb-21-minute-silence | 2026-08-21 | Минута тишины без телефона | 161383725297775 | https://ok.ru/group/70000034253679/topic/161383725297775 | https://morozovanatalia.ru/anxiety?utm_source=ok | тревога,микро-практика,EMDR,тишина,психология |
 | sb-20-ask-for-support | 2026-08-20 | Фраза-стартер, чтобы попросить о поддержке | 161380557025391 | https://ok.ru/group/70000034253679/topic/161380557025391 | https://morozovanatalia.ru/anxiety?utm_source=ok | тревога,микро-практика,EMDR,поддержка,психология |
