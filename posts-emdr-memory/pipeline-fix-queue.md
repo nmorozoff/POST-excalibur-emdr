@@ -1209,7 +1209,7 @@ category: platform
 ---
 
 ## INC-20260824-0956-sb23-vps-pending
-status: open
+status: needs-human
 run_date: 2026-08-24
 role: otchetik
 topic: sb-23-grounding-exercise
@@ -1220,12 +1220,36 @@ category: vps
 - Cloud phase 1+2 OK: Max, VK×2, Facebook, OK опубликованы.
 - VPS webhook принят (HTTP 202) до verify; phase 3 ещё не завершил: нет `telegram-publish-log.json`, `b17-publish-log.json`, `browser-worker-finish.json`.
 - verify-publish-run → overall `fail` (Telegram pending); тема `in_progress` в очереди.
+- После 30+ мин ожидания: повторный `trigger-vps-webhook.py` → HTTP **409** `publish_lock_held` (worker держит flock, не стартовать второй TG send).
+- Fixic probe (2026-08-24 10:12 UTC): VPS `/health` OK; dry-run auth OK; на `main` нет commit `browser-worker: published sb-23`.
 
 ### Durable fix needed before next run
-- Дождаться VPS worker (Telegram + b17) или проверить `output/sb-23-grounding-exercise/vps-webhook-run.log` на VPS.
-- При зависании: `python3 scripts/trigger-vps-webhook.py --topic sb-23-grounding-exercise` или ручной `publish-browser-deferred.py --finish --git-push`.
+- Владелец VPS: SSH → runbook `profile/browser-autonomous-vps.md` § «Phase 3 зависла».
+- Проверить marker `/tmp/posts-emdr-state/platforms/sb-23-grounding-exercise/telegram.json` **до** kill/re-run.
+- Один ручной прогон `vps_publish_guard.py run -- publish-browser-deferred.py --topic sb-23-grounding-exercise --submit --finish --git-push` после освобождения lock.
+- **Не** вызывать `send-telegram-post.py` из Cloud.
 
 ### Suggested files to inspect/change
-- VPS: `output/sb-23-grounding-exercise/vps-webhook-run.log`, `browser-worker-finish.json`
-- `scripts/publish-browser-deferred.py`
+- VPS: `output/sb-23-grounding-exercise/vps-webhook-run.log`, `vps-worker-last-run.json`
+- `scripts/vps_publish_guard.py`
+- `posts-emdr-memory/profile/browser-autonomous-vps.md`
+
+### Fixic resolution
+fixed_at: 2026-08-24
+fix_summary:
+- Root cause (вероятно): VPS background worker завис/долго выполняется под flock; 409 — штатная защита от дубля TG, не баг Cloud.
+- Runbook § «Phase 3 зависла» в browser-autonomous-vps.md; pitfall «publish_lock_held >30 мин без git commit».
+- Cloud probe: health OK, dry-run OK; Fixic не триггерит повторный webhook (409 / риск дубля).
+needed_decision_or_secret:
+- Владелец VPS (SSH): диагностика lock + log → kill hung worker при необходимости → один deferred run → verify с Cloud.
+files_changed:
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/profile/browser-autonomous-vps.md
+- posts-emdr-memory/pipeline-fix-queue.md
+- posts-emdr-memory/fragments/fixic-sb-23-vps-pending.md
+checks_run:
+- python3 scripts/incident_queue.py --project-root . (OPEN_INCIDENTS=1 → needs-human)
+- python3 scripts/verify-publish-run.py --topic sb-23-grounding-exercise (fail, TG+b17 pending)
+- curl http://195.209.210.45:8787/health → ok
+- python3 scripts/trigger-vps-webhook.py --topic sb-23-grounding-exercise --dry-run → 200
 

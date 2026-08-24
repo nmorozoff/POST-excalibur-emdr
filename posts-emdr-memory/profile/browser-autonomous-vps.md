@@ -167,6 +167,44 @@ python3 scripts/vps_publish_guard.py run -- \
   python3 scripts/publish-browser-deferred.py --topic sb-19-question-before-sleep --submit --finish --git-push
 ```
 
+<a id="vps-phase3-stuck"></a>
+
+## Phase 3 зависла (publish_lock_held >30 мин)
+
+**Симптом с Cloud:** первый webhook → HTTP **202**; через 30+ мин нет commit `browser-worker: published {topic}` на `main`; повторный `trigger-vps-webhook.py` → HTTP **409** `publish_lock_held`.
+
+**Важно:** 409 = worker ещё жив (или lock не освобождён). **Не** слать Telegram из Cloud/Mac — риск дубля. **Не** долбить webhook.
+
+**Диагностика на VPS (SSH):**
+
+```bash
+cd ~/POST-excalibur-emdr && source .venv-browser/bin/activate
+python3 scripts/vps_publish_guard.py status
+# lock_held: true → смотрим pid в /tmp/posts-emdr-state/repo-publish.lock
+
+# TG уже ушёл? (durable marker вне git)
+cat /tmp/posts-emdr-state/platforms/sb-23-grounding-exercise/telegram.json 2>/dev/null || echo "no tg marker"
+
+tail -100 posts-emdr-memory/output/sb-23-grounding-exercise/vps-webhook-run.log
+cat posts-emdr-memory/output/sb-23-grounding-exercise/vps-worker-last-run.json 2>/dev/null
+ps aux | grep -E 'publish-browser-deferred|playwright' | grep -v grep
+```
+
+**Восстановление (один раз на тему):**
+
+1. Если marker `telegram.json` уже `sent` — **не** перезапускать TG; дождаться `git push` или вручную `git_push_logs`.
+2. Если worker завис >45 мин (Playwright/b17/ASocks): найти pid из lock/log, `kill` только worker-процесс (lock освободится при exit).
+3. После освобождения lock — **один** прогон:
+
+```bash
+python3 scripts/vps_publish_guard.py run -- \
+  python3 scripts/publish-browser-deferred.py --topic sb-23-grounding-exercise --submit --finish --git-push
+```
+
+4. С Cloud: `git pull origin main` → `python3 scripts/verify-publish-run.py --topic sb-23-grounding-exercise`.
+
+Если lock свободен, но артефактов нет — можно один раз с Cloud: `python3 scripts/trigger-vps-webhook.py --topic sb-23-grounding-exercise` (ожидать 202, не 409).
+
 ## Почему Mac больше не нужен
 
 | Проблема Mac | Решение VPS |

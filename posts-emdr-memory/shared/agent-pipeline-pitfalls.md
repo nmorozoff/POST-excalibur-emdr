@@ -232,6 +232,27 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Gate:** commit `browser-worker: published {topic}` на `main` + `browser-worker-finish.json` в output.
 
+## VPS phase 3: publish_lock_held >30 мин без git commit
+
+**Симптом (2026-08-24, sb-23):** webhook HTTP **202** принят; через 30+ мин нет `telegram-publish-log.json`, `b17-publish-log.json`, `browser-worker-finish.json` на `main`; повторный `trigger-vps-webhook.py` → HTTP **409** `publish_lock_held`.
+
+**Причина:** background worker на VPS всё ещё держит flock (`repo-publish.lock`) — Playwright/b17/ASocks зависли или очень долгий прогон; **не** означает, что TG уже ушёл (проверить marker).
+
+**Правильно (Cloud / Fixic / Отчётик):**
+- **Не** вызывать `send-telegram-post.py` из Cloud — риск дубля.
+- **Не** долбить webhook при 409.
+- `needs-human` + runbook `profile/browser-autonomous-vps.md` § «Phase 3 зависла».
+
+**Правильно (recovery на VPS, владелец):**
+1. `python3 scripts/vps_publish_guard.py status` — `lock_held: true`.
+2. Проверить marker **до** kill: `cat /tmp/posts-emdr-state/platforms/{topic}/telegram.json` (если `status: sent` — TG уже ушёл, только дождаться `git push` или восстановить log).
+3. `tail -100 posts-emdr-memory/output/{topic}/vps-webhook-run.log` и `vps-worker-last-run.json`.
+4. Если pid в lock мёртв или завис >45 мин: `kill` worker (не webhook), lock освободится.
+5. Один раз: `vps_publish_guard.py run -- publish-browser-deferred.py --topic {id} --submit --finish --git-push` (deferred пропустит TG если marker есть).
+6. С Cloud: `git pull` → `verify-publish-run.py --topic {id}`.
+
+**Gate:** commit `browser-worker: published {topic}` + `telegram-publish-log.json` + `b17-publish-log.json` (или `draft_saved` для b17 rate-limit).
+
 ## Telegram: дубль поста в одном канале (webhook race)
 
 **Симптом:** один и тот же short-blog текст дважды в `@nmorozova_emdr` / `@natalia_morozova_psy` без ручного «перезалей».
