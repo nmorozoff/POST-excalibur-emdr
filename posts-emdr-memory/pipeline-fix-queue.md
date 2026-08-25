@@ -1213,18 +1213,20 @@ status: needs-human
 run_date: 2026-08-24
 role: otchetik
 topic: sb-23-grounding-exercise
-severity: medium
+severity: high
 category: vps
 
 ### What went wrong
 - Cloud phase 1+2 OK: Max, VK×2, Facebook, OK опубликованы.
-- VPS webhook принят (HTTP 202) до verify; phase 3 ещё не завершил: нет `telegram-publish-log.json`, `b17-publish-log.json`, `browser-worker-finish.json`.
+- VPS webhook принят (HTTP 202) до verify; phase 3 не завершил: нет `telegram-publish-log.json`, `b17-publish-log.json`, `browser-worker-finish.json`.
 - verify-publish-run → overall `fail` (Telegram pending); тема `in_progress` в очереди.
 - После 30+ мин ожидания: повторный `trigger-vps-webhook.py` → HTTP **409** `publish_lock_held` (worker держит flock, не стартовать второй TG send).
 - Fixic probe (2026-08-24 10:12 UTC): VPS `/health` OK; dry-run auth OK; на `main` нет commit `browser-worker: published sb-23`.
+- **Otchetik follow-up 2026-08-25:** lock held **>45 мин**; повторный webhook по-прежнему 409. `vps-worker-last-run.json`: Telegram fail — `catbox.moe` DNS (`curl: (6) Could not resolve host`) после proxy timeout; b17 — `Page.goto: net::ERR_TIMED_OUT` на `b17.ru/my.php?mod=blog`. Fix **e5f52b1** в `main` (`send-telegram-post.py`: site/max mirror перед catbox на `--refresh-cover-url`) — VPS **не подхватил** из‑за зависшего worker под flock.
 
 ### Durable fix needed before next run
-- Владелец VPS: SSH → runbook `profile/browser-autonomous-vps.md` § «Phase 3 зависла».
+- Владелец VPS: SSH → runbook `profile/browser-autonomous-vps.md` § «Phase 3 зависла» — kill hung worker, освободить flock.
+- `git pull origin main` на VPS (подтянуть e5f52b1) **до** re-run.
 - Проверить marker `/tmp/posts-emdr-state/platforms/sb-23-grounding-exercise/telegram.json` **до** kill/re-run.
 - Один ручной прогон `vps_publish_guard.py run -- publish-browser-deferred.py --topic sb-23-grounding-exercise --submit --finish --git-push` после освобождения lock.
 - **Не** вызывать `send-telegram-post.py` из Cloud.
@@ -1252,4 +1254,5 @@ checks_run:
 - python3 scripts/verify-publish-run.py --topic sb-23-grounding-exercise (fail, TG+b17 pending)
 - curl http://195.209.210.45:8787/health → ok
 - python3 scripts/trigger-vps-webhook.py --topic sb-23-grounding-exercise --dry-run → 200
+- otchetik 2026-08-25: verify-publish-run --write --json → fail; send-max-publish-report.py → sent; vps-worker-last-run.json catbox DNS + b17 timeout; fix e5f52b1 on main pending VPS recovery
 

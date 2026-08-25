@@ -10,16 +10,16 @@
         "chat_type": "dialog",
         "user_id": 12014678
       },
-      "timestamp": 1787565505288,
+      "timestamp": 1787651219419,
       "body": {
-        "mid": "mid.0000000016b6922b01a03334fb084209",
-        "seq": 117149892954571273,
+        "mid": "mid.0000000016b6922b01a03850dfdb1e09",
+        "seq": 117155510315851273,
         "text": "❌ Posts EMDR — sb-23-grounding-exercise\nСтатус: fail\n\nСсылки:\n• max: https://max.ru/se13417616_biz/AaAzD65TCJg\n• vk_profile: https://vk.com/wall218367867_698\n• vk_group: https://vk.com/wall-224685309_174\n• facebook: https://www.facebook.com/632301483303094_122183148686837712\n• ok: https://ok.ru/group/70000034253679/topic/161387583271023\n\nПроблемы:\n• Telegram: не отправлен (или VPS ещё не отработал)\n• b17: не published (VPS мог ещё не отработать)\n• Тема всё ещё in_progress в очереди\n• VPS phase 3: Telegram ещё не отработал\n\nНужна помощь: откройте Cursor / проверьте VPS логи.",
         "attachments": [
           {
             "payload": {
               "url": "https://max.ru/se13417616_biz/AaAzD65TCJg",
-              "token": "f9LHodD0cOJe6k2-OhaGY9oG-e7DbQcxmUT4ObH9fX8A0teKhp3bMc--14dQXGBkO7u1Zhr9HdFob1ons1sl"
+              "token": "f9LHodD0cOL-v33t6fP5DnZmsGF-4zd7Grk-KTe42Fsce9KE8Y5nFBa3XpN6PzuA8R9H4l5swaDxhQ2bf-d7"
             },
             "title": "Психолог | EMDR терапевт | Морозова Наталья",
             "description": "За 2-4 сессии избавляю от фобий, страхов, ОКР, панических атак, ПТСР.\nЗапись на сайте www.morozovanatalia.ru?utm_source=max",
@@ -60,7 +60,7 @@
         "first_name": "КАРУСЕЛЬКА",
         "username": "id771605638595_bot",
         "is_bot": true,
-        "last_activity_time": 1787565505309,
+        "last_activity_time": 1787651219438,
         "name": "КАРУСЕЛЬКА"
       }
     }
