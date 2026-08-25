@@ -202,7 +202,7 @@ def url_is_reachable(image_url: str) -> bool:
     return False
 
 
-def upload_cover_to_catbox(cover: Path) -> str:
+def upload_cover_to_catbox(cover: Path) -> str | None:
     import subprocess
 
     result = subprocess.run(
@@ -223,7 +223,51 @@ def upload_cover_to_catbox(cover: Path) -> str:
     public_url = (result.stdout or "").strip()
     if public_url.startswith("https://"):
         return public_url
-    raise SystemExit(f"catbox upload failed: {(result.stderr or public_url or 'empty response').strip()}")
+    return None
+
+
+def _cover_url_candidates(topic_dir: Path, cover: Path) -> list[tuple[str, str]]:
+    candidates: list[tuple[str, str]] = []
+    cover_url_file = topic_dir / "cover.url"
+
+    max_url = extract_max_cover_url(topic_dir)
+    if max_url:
+        candidates.append(("max", max_url))
+
+    site_cover = f"https://morozovanatalia.ru/social-covers/{topic_dir.name}.jpg"
+    candidates.append(("morozovanatalia", site_cover))
+
+    vk_meta = topic_dir / "vk-cover-public-url.json"
+    if vk_meta.exists():
+        vk_data = json.loads(vk_meta.read_text(encoding="utf-8"))
+        vk_url = (vk_data.get("url") or "").strip()
+        vk_source = (vk_data.get("source") or "vk").strip()
+        if vk_url:
+            candidates.append((vk_source, vk_url))
+
+    if cover_url_file.exists():
+        candidates.append(("runware", cover_url_file.read_text(encoding="utf-8").strip()))
+
+    legacy_runware = topic_dir / "cover-runware.url"
+    if legacy_runware.exists() and cover.name == "cover-runware.png":
+        candidates.append(("runware", legacy_runware.read_text(encoding="utf-8").strip()))
+
+    return candidates
+
+
+def _resolve_cover_from_candidates(
+    topic_dir: Path,
+    cover: Path,
+    meta_path: Path,
+) -> str | None:
+    for source, candidate in _cover_url_candidates(topic_dir, cover):
+        if candidate and url_is_reachable(candidate):
+            meta_path.write_text(
+                json.dumps({"url": candidate, "source": source}, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            return candidate
+    return None
 
 
 def extract_max_cover_url(topic_dir: Path) -> str | None:
@@ -271,53 +315,37 @@ def load_cover_public_url(
             if cached_url and url_is_reachable(cached_url):
                 return cached_url
 
+    # VPS --refresh-cover-url: site FTP mirror is uploaded before send; catbox often blocked on VPS.
+    if refresh and not force_catbox:
+        resolved = _resolve_cover_from_candidates(topic_dir, cover, meta_path)
+        if resolved:
+            return resolved
+
     if force_catbox or refresh:
         public_url = upload_cover_to_catbox(cover)
+        if public_url:
+            meta_path.write_text(
+                json.dumps({"url": public_url, "source": "catbox"}, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            return public_url
+        resolved = _resolve_cover_from_candidates(topic_dir, cover, meta_path)
+        if resolved:
+            return resolved
+        raise SystemExit("catbox upload failed and no reachable cover mirror (morozovanatalia/max/vk)")
+
+    resolved = _resolve_cover_from_candidates(topic_dir, cover, meta_path)
+    if resolved:
+        return resolved
+
+    public_url = upload_cover_to_catbox(cover)
+    if public_url:
         meta_path.write_text(
             json.dumps({"url": public_url, "source": "catbox"}, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
         return public_url
-
-    candidates: list[tuple[str, str]] = []
-    cover_url_file = topic_dir / "cover.url"
-
-    max_url = extract_max_cover_url(topic_dir)
-    if max_url:
-        candidates.append(("max", max_url))
-
-    site_cover = f"https://morozovanatalia.ru/social-covers/{topic_dir.name}.jpg"
-    candidates.append(("morozovanatalia", site_cover))
-
-    vk_meta = topic_dir / "vk-cover-public-url.json"
-    if vk_meta.exists():
-        vk_data = json.loads(vk_meta.read_text(encoding="utf-8"))
-        vk_url = (vk_data.get("url") or "").strip()
-        vk_source = (vk_data.get("source") or "vk").strip()
-        if vk_url:
-            candidates.append((vk_source, vk_url))
-
-    if cover_url_file.exists():
-        candidates.append(("runware", cover_url_file.read_text(encoding="utf-8").strip()))
-
-    legacy_runware = topic_dir / "cover-runware.url"
-    if legacy_runware.exists() and cover.name == "cover-runware.png":
-        candidates.append(("runware", legacy_runware.read_text(encoding="utf-8").strip()))
-
-    for source, candidate in candidates:
-        if candidate and url_is_reachable(candidate):
-            meta_path.write_text(
-                json.dumps({"url": candidate, "source": source}, ensure_ascii=False, indent=2) + "\n",
-                encoding="utf-8",
-            )
-            return candidate
-
-    public_url = upload_cover_to_catbox(cover)
-    meta_path.write_text(
-        json.dumps({"url": public_url, "source": "catbox"}, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
-    return public_url
+    raise SystemExit("catbox upload failed and no reachable cover mirror (morozovanatalia/max/vk)")
 
 
 def send_photo_only(token: str, chat_id: str, cover: Path) -> dict:
