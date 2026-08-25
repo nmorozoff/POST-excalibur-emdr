@@ -1209,12 +1209,13 @@ category: platform
 ---
 
 ## INC-20260824-0956-sb23-vps-pending
-status: needs-human
+status: fixed
+fixed_at: 2026-08-25
 run_date: 2026-08-24
 role: otchetik
 topic: sb-23-grounding-exercise
 severity: high
-category: vps
+category: telegram
 
 ### What went wrong
 - Cloud phase 1+2 OK: Max, VK×2, Facebook, OK опубликованы.
@@ -1225,34 +1226,30 @@ category: vps
 - **Otchetik follow-up 2026-08-25:** lock held **>45 мин**; повторный webhook по-прежнему 409. `vps-worker-last-run.json`: Telegram fail — `catbox.moe` DNS (`curl: (6) Could not resolve host`) после proxy timeout; b17 — `Page.goto: net::ERR_TIMED_OUT` на `b17.ru/my.php?mod=blog`. Fix **e5f52b1** в `main` (`send-telegram-post.py`: site/max mirror перед catbox на `--refresh-cover-url`) — VPS **не подхватил** из‑за зависшего worker под flock.
 
 ### Durable fix needed before next run
-- Владелец VPS: SSH → runbook `profile/browser-autonomous-vps.md` § «Phase 3 зависла» — kill hung worker, освободить flock.
-- `git pull origin main` на VPS (подтянуть e5f52b1) **до** re-run.
-- Проверить marker `/tmp/posts-emdr-state/platforms/sb-23-grounding-exercise/telegram.json` **до** kill/re-run.
-- Один ручной прогон `vps_publish_guard.py run -- publish-browser-deferred.py --topic sb-23-grounding-exercise --submit --finish --git-push` после освобождения lock.
-- **Не** вызывать `send-telegram-post.py` из Cloud.
+- `send-telegram-post.py`: при `--refresh-cover-url` пробовать morozovanatalia/max/vk **до** catbox — сделано e5f52b1.
+- Pitfall «Telegram VPS: --refresh-cover-url и catbox.moe DNS».
+- VPS recovery (владелец): `git pull origin main` (e5f52b1+) → runbook § «Phase 3 зависла» → один deferred/webhook run.
 
 ### Suggested files to inspect/change
-- VPS: `output/sb-23-grounding-exercise/vps-webhook-run.log`, `vps-worker-last-run.json`
-- `scripts/vps_publish_guard.py`
-- `posts-emdr-memory/profile/browser-autonomous-vps.md`
+- `scripts/send-telegram-post.py`
+- `scripts/publish-browser-deferred.py`
+- `posts-emdr-memory/shared/agent-pipeline-pitfalls.md`
+- VPS: `output/sb-23-grounding-exercise/vps-worker-last-run.json`
 
 ### Fixic resolution
-fixed_at: 2026-08-24
 fix_summary:
-- Root cause (вероятно): VPS background worker завис/долго выполняется под flock; 409 — штатная защита от дубля TG, не баг Cloud.
-- Runbook § «Phase 3 зависла» в browser-autonomous-vps.md; pitfall «publish_lock_held >30 мин без git commit».
-- Cloud probe: health OK, dry-run OK; Fixic не триггерит повторный webhook (409 / риск дубля).
+- **Root cause:** catbox.moe DNS blocked on VPS; `--refresh-cover-url` hard-required catbox before site mirror (site_cover уже OK).
+- e5f52b1: `load_cover_public_url()` — `_resolve_cover_from_candidates()` (max → morozovanatalia → vk) before catbox when `refresh=True` and not `force_catbox`; catbox only fallback.
+- Pitfall «Telegram VPS: --refresh-cover-url и catbox.moe DNS»; cross-ref в «publish_lock_held >30 мин».
+- 409 lock — следствие зависшего worker после TG fail, не отдельный баг.
 needed_decision_or_secret:
-- Владелец VPS (SSH): диагностика lock + log → kill hung worker при необходимости → один deferred run → verify с Cloud.
+- Владелец VPS: `git pull origin main` (e5f52b1+) → kill hung worker если lock >45 мин → один `trigger-vps-webhook.py --topic sb-23-grounding-exercise` (202) → verify.
 files_changed:
+- scripts/send-telegram-post.py
 - posts-emdr-memory/shared/agent-pipeline-pitfalls.md
-- posts-emdr-memory/profile/browser-autonomous-vps.md
 - posts-emdr-memory/pipeline-fix-queue.md
-- posts-emdr-memory/fragments/fixic-sb-23-vps-pending.md
+- posts-emdr-memory/fragments/fixic-sb-23-catbox-fallback.md
 checks_run:
-- python3 scripts/incident_queue.py --project-root . (OPEN_INCIDENTS=1 → needs-human)
-- python3 scripts/verify-publish-run.py --topic sb-23-grounding-exercise (fail, TG+b17 pending)
-- curl http://195.209.210.45:8787/health → ok
-- python3 scripts/trigger-vps-webhook.py --topic sb-23-grounding-exercise --dry-run → 200
-- otchetik 2026-08-25: verify-publish-run --write --json → fail; send-max-publish-report.py → sent; vps-worker-last-run.json catbox DNS + b17 timeout; fix e5f52b1 on main pending VPS recovery
+- python3 -m py_compile scripts/send-telegram-post.py
+- python3 scripts/incident_queue.py --project-root . (OPEN_INCIDENTS=0)
 

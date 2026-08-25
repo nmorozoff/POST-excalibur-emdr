@@ -253,6 +253,29 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Gate:** commit `browser-worker: published {topic}` + `telegram-publish-log.json` + `b17-publish-log.json` (или `draft_saved` для b17 rate-limit).
 
+**Связанный root cause (sb-23):** worker мог зависнуть **после** fail Telegram из‑за catbox DNS — см. «Telegram VPS: --refresh-cover-url и catbox.moe DNS».
+
+## Telegram VPS: --refresh-cover-url и catbox.moe DNS
+
+**Симптом (2026-08-25, sb-23):** VPS `publish-browser-deferred.py` → `send-telegram-post.py --refresh-cover-url` падает: `catbox upload failed: curl: (6) Could not resolve host: catbox.moe`; `vps-worker-last-run.json` → `telegram.exit_code: 1`, `telegram_failed: true`. site_cover уже OK (`morozovanatalia.ru/social-covers/{topic}.jpg`). Worker держит flock → 409 `publish_lock_held` при повторном webhook.
+
+**Причина:** старый `load_cover_public_url()` при `--refresh-cover-url` **сначала** звал catbox.moe; на VPS DNS/egress к catbox.moe заблокирован. Зеркала morozovanatalia / max / vk не пробовались до fail.
+
+**Правильно (2026-08-25, commit e5f52b1):**
+- `send-telegram-post.py`: при `refresh=True` и `force_catbox=False` — сначала `_resolve_cover_from_candidates()` (max → morozovanatalia social-covers → vk-cover-public-url.json); catbox — только fallback.
+- `publish-browser-deferred.py` вызывает `--refresh-cover-url` после `ensure_site_cover` — зеркало сайта уже есть, catbox не обязателен.
+- При fail catbox — повторный проход candidates, не `SystemExit` без fallback.
+
+**Recovery (VPS, владелец):**
+1. `git pull origin main` (нужен e5f52b1+).
+2. Если lock >45 мин: runbook § «Phase 3 зависла» → kill hung worker.
+3. Один `trigger-vps-webhook.py --topic {id}` (202) **или** `vps_publish_guard.py run -- publish-browser-deferred.py --topic {id} --submit --finish --git-push`.
+4. С Cloud: `verify-publish-run.py --topic {id}`.
+
+**Gate:** `telegram-publish-log.json` + `delivery: link_preview_single_message`; `link-preview-cover.json` → `source` ∈ {`morozovanatalia`, `max`, `vk`, …}, не обязательно `catbox`.
+
+**Не делать:** публиковать Telegram из Cloud; force catbox на VPS при `--refresh-cover-url`; повторный webhook при 409.
+
 ## Telegram: дубль поста в одном канале (webhook race)
 
 **Симптом:** один и тот же short-blog текст дважды в `@nmorozova_emdr` / `@natalia_morozova_psy` без ручного «перезалей».
