@@ -28,6 +28,21 @@ def _api_get(path: str, api_key: str, base: str) -> dict:
         return json.loads(resp.read().decode("utf-8"))
 
 
+def _refresh_port_ips(port_ids: set[str], api_key: str, base: str) -> list[str]:
+    """ASocks GET /v2/proxy/refresh/{portId} — new external IP on sticky port."""
+    refreshed: list[str] = []
+    for pid in port_ids:
+        if not pid:
+            continue
+        try:
+            payload = _api_get(f"/v2/proxy/refresh/{pid}", api_key, base)
+            if payload.get("success"):
+                refreshed.append(pid)
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError):
+            continue
+    return refreshed
+
+
 def _proxy_ports(payload: dict) -> list[dict]:
     message = payload.get("message") or {}
     return message.get("proxies") or payload.get("data") or []
@@ -208,58 +223,86 @@ def sync_telegram_with_preflight(
     if not candidates:
         raise SystemExit("ASocks: no telegram proxy candidates")
 
-    attempts: list[dict] = []
-    last_result: dict | None = None
-    skip_ids = exclude_port_ids or set()
-    for port in candidates:
-        pid = str(port.get("id") or "")
-        if pid and pid in skip_ids:
-            continue
-        result = _build_sync_result(port, target="telegram", env=env)
-        last_result = result
-        proxy_test = test_proxy_tunnel(
-            result["TELEGRAM_PROXY_SERVER"],
-            result["TELEGRAM_PROXY_USERNAME"],
-            result["TELEGRAM_PROXY_PASSWORD"],
-            max_time_sec=max_time_sec,
-        )
-        attempts.append(
-            {
-                "asocks_port_name": result.get("asocks_port_name"),
-                "proxy_test": proxy_test,
-            }
-        )
-        if proxy_test["ok"]:
-            if write and ENV_PATH.is_file():
-                _write_env_updates(
-                    {
-                        "TELEGRAM_PROXY_SERVER": result["TELEGRAM_PROXY_SERVER"],
-                        "TELEGRAM_PROXY_USERNAME": result["TELEGRAM_PROXY_USERNAME"],
-                        "TELEGRAM_PROXY_PASSWORD": result["TELEGRAM_PROXY_PASSWORD"],
-                        "TELEGRAM_ASOCKS_PORT_ID": str(result["asocks_port_id"] or ""),
-                        "TELEGRAM_ASOCKS_PORT_NAME": str(result["asocks_port_name"] or ""),
-                    }
-                )
-                result["written"] = str(ENV_PATH)
-            result["preflight_ok"] = True
-            result["attempts"] = attempts
-            return result
+    skip_ids = set(exclude_port_ids or set())
+    refreshed_port_ids: list[str] = []
+    refreshed_once = False
 
-    assert last_result is not None
-    if write and ENV_PATH.is_file():
-        _write_env_updates(
-            {
-                "TELEGRAM_PROXY_SERVER": last_result["TELEGRAM_PROXY_SERVER"],
-                "TELEGRAM_PROXY_USERNAME": last_result["TELEGRAM_PROXY_USERNAME"],
-                "TELEGRAM_PROXY_PASSWORD": last_result["TELEGRAM_PROXY_PASSWORD"],
-                "TELEGRAM_ASOCKS_PORT_ID": str(last_result["asocks_port_id"] or ""),
-                "TELEGRAM_ASOCKS_PORT_NAME": str(last_result["asocks_port_name"] or ""),
-            }
-        )
-        last_result["written"] = str(ENV_PATH)
-    last_result["preflight_ok"] = False
-    last_result["attempts"] = attempts
-    return last_result
+    while True:
+        attempts: list[dict] = []
+        last_result: dict | None = None
+        tried_any = False
+
+        for port in candidates:
+            pid = str(port.get("id") or "")
+            if pid and pid in skip_ids:
+                continue
+            tried_any = True
+            result = _build_sync_result(port, target="telegram", env=env)
+            last_result = result
+            proxy_test = test_proxy_tunnel(
+                result["TELEGRAM_PROXY_SERVER"],
+                result["TELEGRAM_PROXY_USERNAME"],
+                result["TELEGRAM_PROXY_PASSWORD"],
+                max_time_sec=max_time_sec,
+            )
+            attempts.append(
+                {
+                    "asocks_port_id": pid or None,
+                    "asocks_port_name": result.get("asocks_port_name"),
+                    "proxy_test": proxy_test,
+                }
+            )
+            if proxy_test["ok"]:
+                if write and ENV_PATH.is_file():
+                    _write_env_updates(
+                        {
+                            "TELEGRAM_PROXY_SERVER": result["TELEGRAM_PROXY_SERVER"],
+                            "TELEGRAM_PROXY_USERNAME": result["TELEGRAM_PROXY_USERNAME"],
+                            "TELEGRAM_PROXY_PASSWORD": result["TELEGRAM_PROXY_PASSWORD"],
+                            "TELEGRAM_ASOCKS_PORT_ID": str(result["asocks_port_id"] or ""),
+                            "TELEGRAM_ASOCKS_PORT_NAME": str(result["asocks_port_name"] or ""),
+                        }
+                    )
+                    result["written"] = str(ENV_PATH)
+                result["preflight_ok"] = True
+                result["attempts"] = attempts
+                if refreshed_port_ids:
+                    result["refreshed_port_ids"] = refreshed_port_ids
+                return result
+
+        if not tried_any and skip_ids and not refreshed_once:
+            refreshed_port_ids = _refresh_port_ips(skip_ids, api_key, base)
+            if refreshed_port_ids:
+                refreshed_once = True
+                payload = _api_get("/v2/proxy/ports", api_key, base)
+                if not payload.get("success"):
+                    raise SystemExit(f"ASocks API error after refresh: {payload}")
+                candidates = _telegram_port_candidates(payload, env)
+                skip_ids -= set(refreshed_port_ids)
+                continue
+
+        if last_result is None:
+            raise SystemExit(
+                "ASocks: no telegram proxy candidates after exclude"
+                + (f" (refreshed: {refreshed_port_ids})" if refreshed_port_ids else "")
+            )
+
+        if write and ENV_PATH.is_file():
+            _write_env_updates(
+                {
+                    "TELEGRAM_PROXY_SERVER": last_result["TELEGRAM_PROXY_SERVER"],
+                    "TELEGRAM_PROXY_USERNAME": last_result["TELEGRAM_PROXY_USERNAME"],
+                    "TELEGRAM_PROXY_PASSWORD": last_result["TELEGRAM_PROXY_PASSWORD"],
+                    "TELEGRAM_ASOCKS_PORT_ID": str(last_result["asocks_port_id"] or ""),
+                    "TELEGRAM_ASOCKS_PORT_NAME": str(last_result["asocks_port_name"] or ""),
+                }
+            )
+            last_result["written"] = str(ENV_PATH)
+        last_result["preflight_ok"] = False
+        last_result["attempts"] = attempts
+        if refreshed_port_ids:
+            last_result["refreshed_port_ids"] = refreshed_port_ids
+        return last_result
 
 
 def sync_from_api(
@@ -326,9 +369,20 @@ def main() -> None:
         action="store_true",
         help="For --target telegram: rotate KZ ports until curl preflight to api.telegram.org passes",
     )
+    parser.add_argument(
+        "--exclude-port-ids",
+        metavar="IDS",
+        help="Comma-separated ASocks port IDs to skip (telegram --preflight); triggers IP refresh if all excluded",
+    )
     args = parser.parse_args()
+    exclude_ids: set[str] = set()
+    if args.exclude_port_ids:
+        exclude_ids = {item.strip() for item in args.exclude_port_ids.split(",") if item.strip()}
     if args.target == "telegram" and args.preflight:
-        result = sync_telegram_with_preflight(write=not args.dry_run)
+        result = sync_telegram_with_preflight(
+            write=not args.dry_run,
+            exclude_port_ids=exclude_ids or None,
+        )
     else:
         result = sync_from_api(port_name=args.name, write=not args.dry_run, target=args.target)
     print(json.dumps(result, ensure_ascii=False, indent=2))
