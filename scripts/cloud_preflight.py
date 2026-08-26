@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from posts_emdr_env import (
     MEMORY,
     PROJECT_ROOT,
+    apply_cloud_secret_aliases,
     browser_backend_name,
     browser_headless,
     is_cloud_runtime,
@@ -23,6 +24,21 @@ from browser_backend import browser_ready
 
 AUTO_PLATFORMS = ("max", "telegram", "vk", "facebook")
 BROWSER_PLATFORMS = ("b17",)
+POSTS_EMDR_AUTOMATION_REPO = "nmorozoff/POST-excalibur-emdr"
+ZERNIO_BLOCKER_HINT = (
+    f"BLOCKER: Facebook (Zernio) — нет ZERNIO_API_KEY / ZERNIO_FACEBOOK_ACCOUNT_ID. "
+    f"Добавьте в Cursor Cloud Secrets automation репозитория {POSTS_EMDR_AUTOMATION_REPO} "
+    "(НЕ nmorozoff/STATYA-excalibur-emdr). Алиасы из Excalibur не подставляют Zernio — нужны явные ключи."
+)
+
+
+def _zernio_blocker_message(check: dict) -> str | None:
+    if check.get("ok"):
+        return None
+    err = str(check.get("error") or "")
+    if "ZERNIO" in err.upper() or "zernio" in err:
+        return ZERNIO_BLOCKER_HINT
+    return ZERNIO_BLOCKER_HINT
 
 
 def _check_file(name: str, required_keys: list[str]) -> dict:
@@ -35,6 +51,7 @@ def _check_file(name: str, required_keys: list[str]) -> dict:
 
 
 def run_preflight(*, strict: bool = True) -> dict:
+    alias_report = apply_cloud_secret_aliases()
     checks: dict[str, dict] = {}
 
     checks["max"] = _check_file("max.env.local", ["MAX_BOT_TOKEN", "MAX_CHAT_ID"])
@@ -68,6 +85,9 @@ def run_preflight(*, strict: bool = True) -> dict:
         "zernio.env.local",
         ["ZERNIO_API_KEY", "ZERNIO_FACEBOOK_ACCOUNT_ID"],
     )
+    zernio_blocker = _zernio_blocker_message(checks["zernio"])
+    if not checks["zernio"]["ok"]:
+        checks["zernio"]["blocker_message"] = zernio_blocker
     checks["grsai"] = _check_file("grsai.env.local", ["GRSAI_API_KEY"])
     grsai_data = load_env("grsai.env.local") if checks["grsai"]["ok"] else {}
     checks["grsai_chat"] = {
@@ -180,6 +200,7 @@ def run_preflight(*, strict: bool = True) -> dict:
 
     report = {
         "runtime": "cloud" if is_cloud_runtime() else "local",
+        "cloud_secret_aliases": alias_report,
         "checks": checks,
         "ready_for_auto_publish": auto_ok,
         "vk_publish_mode": checks["vk"].get("mode", "missing"),
@@ -187,7 +208,11 @@ def run_preflight(*, strict: bool = True) -> dict:
         "auto_platforms": ["max", "telegram", "facebook"],
         "vk_platform": "mcp" if checks["vk"].get("mode") == "mcp" else "script",
         "browser_platforms_deferred": not checks["browser"]["ok"],
+        "automation_repo_required": POSTS_EMDR_AUTOMATION_REPO,
     }
+
+    if not checks["zernio"]["ok"]:
+        report["zernio_blocker"] = zernio_blocker
 
     if strict and not auto_ok:
         missing = [k for k, v in checks.items() if isinstance(v, dict) and v.get("ok") is False]
@@ -208,6 +233,8 @@ def main() -> None:
     else:
         status = "READY" if report["ready_for_auto_publish"] else "NOT READY"
         print(f"Posts EMDR preflight: {status} ({report['runtime']})")
+        if report.get("zernio_blocker"):
+            print(report["zernio_blocker"])
         for name, check in report["checks"].items():
             ok = check.get("ok")
             mark = "✓" if ok else "✗"

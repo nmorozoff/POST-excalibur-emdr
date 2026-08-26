@@ -3,6 +3,16 @@
 Три фазы: см. **`profile/cloud-publish-phases.md`**.  
 Утренний прогон: **`.cursor/posts-emdr-handoff.md`**.
 
+## 0. Automation repository (критично)
+
+Cursor automation для **Posts EMDR** MUST использовать репозиторий:
+
+**`nmorozoff/POST-excalibur-emdr`**
+
+Не **`nmorozoff/STATYA-excalibur-emdr`** (Excalibur BLOG): там другие Telegram/MAX каналы, нет `ZERNIO_*` для Facebook MSP, и `MAX_NOTIFY_CHAT_ID` — это ЛС Отчётика, не канал.
+
+При install: `scripts/materialize_cloud_env.py` подставляет алиасы из общих Excalibur/React secrets — см. **`cloud-secrets-checklist.txt`**.
+
 ## 1. Cursor Cloud Secrets + MCP
 
 **Secrets:** [cursor.com/dashboard/cloud-agents](https://cursor.com/dashboard/cloud-agents) → Runtime Secrets.
@@ -15,20 +25,37 @@
 | Переменная | Назначение |
 |------------|------------|
 | `MAX_BOT_TOKEN` | API Макс |
-| `MAX_CHAT_ID` | ID канала Макс |
+| `MAX_CHAT_ID` | ID **канала** Макс (алиас `MAX_CHANNEL_CHAT_ID` / `EXCALIBUR_MAX_CHANNEL_CHAT_ID`; не `MAX_NOTIFY_CHAT_ID`) |
 | `TELEGRAM_BOT_TOKEN` | Бот Telegram (Cloud: шаг 2b; VPS: materialize) |
 | `TELEGRAM_CHANNEL_CHAT_IDS` | `@nmorozova_emdr` (один канал) |
 | `TELEGRAM_CHANNEL_UTM_SOURCES` | `tg1` |
 | `ASOCKS_API_KEY` | Telegram из Cloud (прокси к api.telegram.org) |
-| `ZERNIO_API_KEY` | Facebook |
-| `ZERNIO_FACEBOOK_ACCOUNT_ID` | ID страницы FB |
+| `ZERNIO_API_KEY` | Facebook — **только** в automation `POST-excalibur-emdr` (не алиас) |
+| `ZERNIO_FACEBOOK_ACCOUNT_ID` | ID страницы FB — **только** в automation `POST-excalibur-emdr` |
 | `RUNWARE_API_KEY` | Обложки (legacy, опционально) |
 | `KIE_API_KEY` | Обложки (legacy fallback) |
 | `GRSAI_API_KEY` | **Тексты** (`gemini-3.1-pro`, Chat API) + **обложки** (`gpt-image-2`) — один ключ |
-| `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_SERVER_DIR` | Обложка для VK/TG preview |
+| `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_SERVER_DIR` | Обложка для VK/TG preview (или алиас `REACT_FTP_*`) |
 | `VPS_WEBHOOK_SECRET` | Триггер фазы 3 на VPS |
 
-Список имён: `cloud-secrets-checklist.txt`
+Список имён и alias mapping: `cloud-secrets-checklist.txt`
+
+### Alias mapping (общие secrets → Posts EMDR)
+
+`materialize_cloud_env.py` вызывает `apply_cloud_secret_aliases()`:
+
+| Posts EMDR | Источник (если целевой пуст) |
+|------------|------------------------------|
+| `MAX_CHAT_ID` | `MAX_CHANNEL_CHAT_ID`, `EXCALIBUR_MAX_CHANNEL_CHAT_ID` |
+| `TELEGRAM_BOT_TOKEN` | `EXCALIBUR_TELEGRAM_BOT_TOKEN` |
+| `TELEGRAM_CHANNEL_CHAT_IDS` | valid list или `EXCALIBUR_TELEGRAM_CHANNEL_CHAT_IDS`; default `@nmorozova_emdr` |
+| `FTP_*` | `REACT_FTP_*` |
+| `WORDPRESS_URL` | `WP_HOME`, `WP_SITE_URL`, `PUBLIC_SITE_URL` |
+| `WORDPRESS_USER` | `WP_USER`, `WP_ADMIN_USER` |
+| `WORDPRESS_APP_PASSWORD` | `WP_APP_PASSWORD` |
+| `VPS_WEBHOOK_SECRET` | `EXCALIBUR_VPS_WEBHOOK_SECRET` |
+
+`ZERNIO_*` не алиасится — добавить в Secrets automation `POST-excalibur-emdr`. Preflight: явный `BLOCKER` если Zernio missing.
 
 ### VK (фаза 2 — MCP, не Secrets)
 

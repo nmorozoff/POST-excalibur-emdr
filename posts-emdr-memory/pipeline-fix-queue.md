@@ -1329,7 +1329,7 @@ category: vps
 ---
 
 ## INC-20260826-1610-sb24-facebook-zernio-missing
-status: open
+status: needs-human
 run_date: 2026-08-26
 role: otchetik
 topic: sb-24-body-gesture
@@ -1348,4 +1348,21 @@ category: facebook
 - scripts/verify-publish-run.py
 - scripts/publish-facebook-zernio.py (если есть)
 - Cloud Secrets: ZERNIO_API_KEY, ZERNIO_FACEBOOK_ACCOUNT_ID
+
+### Fixic resolution
+fixed_at: 2026-08-26
+fix_summary:
+- posts_emdr_env.py: apply_cloud_secret_aliases() — MAX/FTP/WORDPRESS/TELEGRAM из Excalibur/React; Zernio не алиасится.
+- cloud_preflight.py: явный BLOCKER + hint automation repo POST-excalibur-emdr при missing Zernio.
+- CLOUD-SETUP.md + cloud-secrets-checklist.txt: automation MUST be POST-excalibur-emdr; alias table.
+needed_decision_or_secret:
+- Владелец: перенести/создать automation на nmorozoff/POST-excalibur-emdr; добавить ZERNIO_API_KEY + ZERNIO_FACEBOOK_ACCOUNT_ID; ручной retry Facebook для sb-24.
+files_changed:
+- scripts/posts_emdr_env.py
+- scripts/cloud_preflight.py
+- posts-emdr-memory/CLOUD-SETUP.md
+- posts-emdr-memory/cloud-secrets-checklist.txt
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 -m py_compile scripts/posts_emdr_env.py scripts/cloud_preflight.py
 

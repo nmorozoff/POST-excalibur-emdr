@@ -572,7 +572,12 @@ def extract_post_body_from_md(text: str) -> str:
 
 # Each .env.local file: list of keys (also read from os.environ in cloud).
 ENV_SPECS: dict[str, list[str]] = {
-    "max.env.local": ["MAX_BOT_TOKEN", "MAX_CHAT_ID", "MAX_PREVIEW_CHAT_ID"],
+    "max.env.local": [
+        "MAX_BOT_TOKEN",
+        "MAX_CHAT_ID",
+        "MAX_CHANNEL_CHAT_ID",
+        "MAX_PREVIEW_CHAT_ID",
+    ],
     "telegram.env.local": [
         "TELEGRAM_BOT_TOKEN",
         "TELEGRAM_CHANNEL_CHAT_IDS",
@@ -615,11 +620,6 @@ ENV_SPECS: dict[str, list[str]] = {
         "FTP_USERNAME",
         "FTP_PASSWORD",
         "FTP_SERVER_DIR",
-    ],
-    "wordpress.env.local": [
-        "WORDPRESS_URL",
-        "WORDPRESS_USER",
-        "WORDPRESS_APP_PASSWORD",
     ],
     "wordpress.env.local": [
         "WORDPRESS_URL",
@@ -670,6 +670,29 @@ ENV_SPECS: dict[str, list[str]] = {
 ALLOWED_TELEGRAM_CHANNELS = frozenset({"nmorozova_emdr"})
 BANNED_TELEGRAM_CHANNELS = frozenset({"morozova_emdr", "natalia_morozova_psy"})
 TELEGRAM_CHANNELS_CHECKLIST = "posts-emdr-memory/cloud-secrets-checklist.txt"
+DEFAULT_TELEGRAM_CHANNEL = "@n[REDACTED]"  # @nmorozova_emdr — единственный канал MSP (с 2026-08-26)
+
+# Shared Cursor secrets (Excalibur / React) → Posts EMDR names. See cloud-secrets-checklist.txt.
+CLOUD_SECRET_ALIASES: list[tuple[str, str]] = [
+    ("MAX_CHANNEL_CHAT_ID", "MAX_CHAT_ID"),
+    ("EXCALIBUR_MAX_CHANNEL_CHAT_ID", "MAX_CHAT_ID"),
+    ("EXCALIBUR_TELEGRAM_BOT_TOKEN", "TELEGRAM_BOT_TOKEN"),
+    ("EXCALIBUR_TELEGRAM_CHANNEL_UTM_SOURCES", "TELEGRAM_CHANNEL_UTM_SOURCES"),
+    ("EXCALIBUR_VPS_WEBHOOK_SECRET", "VPS_WEBHOOK_SECRET"),
+    ("REACT_FTP_SERVER", "FTP_SERVER"),
+    ("REACT_FTP_USERNAME", "FTP_USERNAME"),
+    ("REACT_FTP_PASSWORD", "FTP_PASSWORD"),
+    ("REACT_FTP_SERVER_DIR", "FTP_SERVER_DIR"),
+    ("WP_HOME", "WORDPRESS_URL"),
+    ("WP_SITE_URL", "WORDPRESS_URL"),
+    ("PUBLIC_SITE_URL", "WORDPRESS_URL"),
+    ("WP_USER", "WORDPRESS_USER"),
+    ("WP_ADMIN_USER", "WORDPRESS_USER"),
+    ("WP_APP_PASSWORD", "WORDPRESS_APP_PASSWORD"),
+    ("PUBLIC_SITE_URL", "WORDPRESS_SITE_URL"),
+    ("WP_HOME", "WORDPRESS_SITE_URL"),
+    ("WP_SITE_URL", "WORDPRESS_SITE_URL"),
+]
 
 
 def parse_telegram_channel_ids(env: dict[str, str]) -> list[str]:
@@ -802,6 +825,88 @@ def load_env(
 TELEGRAM_ENV_TRIGGER_KEYS = ("TELEGRAM_BOT_TOKEN", "TELEGRAM_CHANNEL_CHAT_IDS")
 
 
+def _env_first(*keys: str) -> str:
+    for key in keys:
+        val = os.environ.get(key, "").strip()
+        if val:
+            return val
+    return ""
+
+
+def _set_env_if_missing(target: str, value: str) -> bool:
+    if value and not os.environ.get(target, "").strip():
+        os.environ[target] = value
+        return True
+    return False
+
+
+def resolve_telegram_channel_chat_ids() -> tuple[str, str | None]:
+    """Pick TELEGRAM_CHANNEL_CHAT_IDS: valid explicit → valid Excalibur → default channel."""
+    candidates: list[tuple[str, str]] = []
+    explicit = os.environ.get("TELEGRAM_CHANNEL_CHAT_IDS", "").strip()
+    if explicit:
+        candidates.append(("TELEGRAM_CHANNEL_CHAT_IDS", explicit))
+    exc = os.environ.get("EXCALIBUR_TELEGRAM_CHANNEL_CHAT_IDS", "").strip()
+    if exc:
+        candidates.append(("EXCALIBUR_TELEGRAM_CHANNEL_CHAT_IDS", exc))
+    exc_one = os.environ.get("EXCALIBUR_TELEGRAM_CHANNEL_CHAT_ID", "").strip()
+    if exc_one:
+        candidates.append(("EXCALIBUR_TELEGRAM_CHANNEL_CHAT_ID", exc_one))
+
+    for src, value in candidates:
+        guard = validate_telegram_channels({"TELEGRAM_CHANNEL_CHAT_IDS": value})
+        if guard["ok"]:
+            return value, src
+
+    return DEFAULT_TELEGRAM_CHANNEL, "default"
+
+
+def apply_cloud_secret_aliases() -> dict[str, object]:
+    """Map shared Excalibur/React Cursor secrets into Posts EMDR env names (os.environ).
+
+    MAX_CHAT_ID: MAX_CHANNEL_CHAT_ID or EXCALIBUR_MAX_CHANNEL_CHAT_ID — never MAX_NOTIFY_CHAT_ID.
+  TELEGRAM: skip lists with снятые каналы; default @nmorozova_emdr.
+    """
+    applied: list[str] = []
+
+    if not os.environ.get("MAX_CHAT_ID", "").strip():
+        for src in ("MAX_CHANNEL_CHAT_ID", "EXCALIBUR_MAX_CHANNEL_CHAT_ID"):
+            val = os.environ.get(src, "").strip()
+            if val:
+                os.environ["MAX_CHAT_ID"] = val
+                applied.append(f"{src}→MAX_CHAT_ID")
+                break
+
+    if _set_env_if_missing("TELEGRAM_BOT_TOKEN", _env_first("EXCALIBUR_TELEGRAM_BOT_TOKEN")):
+        applied.append("EXCALIBUR_TELEGRAM_BOT_TOKEN→TELEGRAM_BOT_TOKEN")
+
+    channel_ids, channel_src = resolve_telegram_channel_chat_ids()
+    prev = os.environ.get("TELEGRAM_CHANNEL_CHAT_IDS", "").strip()
+    if channel_ids != prev:
+        os.environ["TELEGRAM_CHANNEL_CHAT_IDS"] = channel_ids
+        if channel_src == "default":
+            applied.append(f"default→TELEGRAM_CHANNEL_CHAT_IDS={channel_ids}")
+        elif channel_src:
+            applied.append(f"{channel_src}→TELEGRAM_CHANNEL_CHAT_IDS")
+
+    if _set_env_if_missing(
+        "TELEGRAM_CHANNEL_UTM_SOURCES",
+        _env_first("EXCALIBUR_TELEGRAM_CHANNEL_UTM_SOURCES") or "tg1",
+    ):
+        applied.append("EXCALIBUR_TELEGRAM_CHANNEL_UTM_SOURCES→TELEGRAM_CHANNEL_UTM_SOURCES")
+
+    for src, dst in CLOUD_SECRET_ALIASES:
+        if dst in ("MAX_CHAT_ID", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHANNEL_CHAT_IDS", "TELEGRAM_CHANNEL_UTM_SOURCES"):
+            continue
+        if _set_env_if_missing(dst, os.environ.get(src, "").strip()):
+            applied.append(f"{src}→{dst}")
+
+    if _set_env_if_missing("VPS_WEBHOOK_SECRET", _env_first("EXCALIBUR_VPS_WEBHOOK_SECRET")):
+        applied.append("EXCALIBUR_VPS_WEBHOOK_SECRET→VPS_WEBHOOK_SECRET")
+
+    return {"applied": applied, "telegram_channel": channel_ids, "max_chat_id": os.environ.get("MAX_CHAT_ID", "")}
+
+
 def materialize_telegram_env_from_os(
     *,
     memory_dir: Path | None = None,
@@ -813,6 +918,8 @@ def materialize_telegram_env_from_os(
     os.environ — avoids overwriting a hand-maintained file on dev machines.
     Validates channel list when TELEGRAM_CHANNEL_CHAT_IDS is present after merge.
     """
+    apply_cloud_secret_aliases()
+
     if not any(os.environ.get(k, "").strip() for k in TELEGRAM_ENV_TRIGGER_KEYS):
         return {"written": False, "reason": "no_telegram_env_in_os"}
 
@@ -862,6 +969,7 @@ def materialize_vps_runtime_env(*, memory_dir: Path | None = None) -> dict[str, 
 
 def materialize_env_files(*, memory_dir: Path | None = None, force: bool = False) -> list[str]:
     """Write .env.local from os.environ — for Cloud Agent startup."""
+    apply_cloud_secret_aliases()
     base = memory_dir or MEMORY
     written: list[str] = []
     for filename, keys in ENV_SPECS.items():
