@@ -73,8 +73,8 @@
     }
   },
   "queue": {
-    "published": false,
-    "still_in_queue": true
+    "published": true,
+    "still_in_queue": false
   },
   "vps": {
     "finish_json": false,
@@ -84,7 +84,6 @@
   "issues": [
     "Telegram: cover_source пуст — возможно без превью",
     "b17: сохранено в черновик (rate limit), требуется повторный запуск",
-    "Тема всё ещё in_progress в очереди",
     "b17: сохранено в черновик (rate limit). Тема считается опубликованной; b17 выйдет через ручной repair-запуск."
   ],
   "links": {
