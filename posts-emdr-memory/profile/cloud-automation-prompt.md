@@ -58,8 +58,8 @@ git push
 Проверка секрета: python3 scripts/verify-vps-webhook-secret.py
 Проверка Telegram env (cloud): python3 scripts/materialize_cloud_env.py && python3 scripts/verify-telegram-env.py — exit 0 обязателен.
 Проверка Telegram-каналов: TELEGRAM_CHANNEL_CHAT_IDS = @nmorozova_emdr,@natalia_morozova_psy (на VPS те же значения в telegram.env.local или browser.env.local + materialize_vps_env). Канал @morozova_emdr снят.
-Запуск: python3 scripts/trigger-vps-webhook.py --topic {id}
-Ожидать HTTP 202. VPS: materialize_vps_env → publish-browser-deferred --submit --finish --git-push (Telegram + b17 черновик).
+Запуск: python3 scripts/trigger-vps-webhook.py --topic {id} --wait-for-lock
+Ожидать HTTP 202 (при 409 publish_lock_held скрипт ждёт до 40 мин, не считать успехом). VPS: materialize_vps_env → publish-browser-deferred --submit --finish --git-push (Telegram + b17 черновик).
 Gate: telegram-publish-log.json + browser-worker-finish.json в output/{id}/ после git pull. b17 draft_saved НЕ блокирует finish.
 Если send-telegram-post.py упал с BLOCKER по каналам — остановиться, исправить env на VPS (systemctl restart posts-emdr-webhook).
 

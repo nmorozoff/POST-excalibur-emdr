@@ -29,7 +29,7 @@ WORKER = SCRIPTS / "run-linux-browser-worker.sh"
 
 sys.path.insert(0, str(SCRIPTS))
 from posts_emdr_env import materialize_telegram_env_from_os
-from vps_publish_guard import lock_held
+from vps_publish_guard import lock_held, release_stale_lock
 
 
 def _ensure_telegram_env() -> dict[str, object]:
@@ -91,6 +91,7 @@ class WebhookHandler(BaseHTTPRequestHandler):
             return
 
         # Reject concurrent publish before spawning (flock also held inside guard run).
+        stale = release_stale_lock()
         if lock_held():
             self._json(
                 409,
@@ -100,7 +101,8 @@ class WebhookHandler(BaseHTTPRequestHandler):
                     "status": "busy",
                     "error": "publish_lock_held",
                     "topic": topic or None,
-                    "note": "another VPS publish is running; retry later — do not force a second TG send",
+                    "stale_lock_check": stale,
+                    "note": "another VPS publish is running; retry with trigger-vps-webhook --wait-for-lock",
                 },
             )
             return

@@ -117,6 +117,62 @@ def restore_telegram_log_from_marker(topic_dir: Path, topic: str) -> bool:
     return True
 
 
+def _pid_alive(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    return True
+
+
+def lock_metadata() -> dict:
+    """Age and pid from lock file (best-effort)."""
+    state_dir()
+    meta: dict = {"lock_file": str(LOCK_FILE), "exists": LOCK_FILE.is_file()}
+    if not LOCK_FILE.is_file():
+        return meta
+    try:
+        meta["age_sec"] = int(time.time() - LOCK_FILE.stat().st_mtime)
+        text = LOCK_FILE.read_text(encoding="utf-8", errors="replace")
+        for line in text.splitlines():
+            if line.startswith("pid="):
+                try:
+                    meta["pid"] = int(line.split("=", 1)[1].strip().split()[0])
+                except ValueError:
+                    pass
+    except OSError:
+        pass
+    pid = meta.get("pid")
+    if isinstance(pid, int):
+        meta["pid_alive"] = _pid_alive(pid)
+    return meta
+
+
+def release_stale_lock(*, max_age_sec: int = 2700) -> dict:
+    """Снять зависший flock: мёртвый pid или lock старше max_age_sec (default 45 мин)."""
+    meta = lock_metadata()
+    if not meta.get("exists"):
+        return {"released": False, "reason": "no_lock_file"}
+    if not lock_held():
+        try:
+            LOCK_FILE.unlink(missing_ok=True)
+        except OSError:
+            pass
+        return {"released": True, "reason": "lock_not_held_unlinked", **meta}
+    age = int(meta.get("age_sec") or 0)
+    pid_alive = meta.get("pid_alive")
+    stale = age >= max_age_sec or pid_alive is False
+    if not stale:
+        return {"released": False, "reason": "lock_active", **meta}
+    try:
+        LOCK_FILE.unlink(missing_ok=True)
+    except OSError as exc:
+        return {"released": False, "reason": "unlink_failed", "error": str(exc), **meta}
+    return {"released": True, "reason": "stale_lock_removed", **meta}
+
+
 def lock_held() -> bool:
     state_dir()
     fd = os.open(str(LOCK_FILE), os.O_RDWR | os.O_CREAT, 0o644)

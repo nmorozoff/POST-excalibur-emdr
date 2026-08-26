@@ -203,8 +203,13 @@ def run_send_telegram(topic: str, *, skip_proxy: bool = False) -> subprocess.Com
     )
 
 
-def publish_telegram_with_retries(topic: str, *, max_attempts: int = 3) -> dict:
-    """Telegram publish with proxy resync between attempts on transient proxy errors."""
+def _telegram_direct_fallback_allowed() -> bool:
+    flag = os.environ.get("TELEGRAM_ALLOW_DIRECT_FALLBACK", "0").strip().lower()
+    return flag in ("1", "true", "yes")
+
+
+def publish_telegram_with_retries(topic: str, *, max_attempts: int = 5) -> dict:
+    """Telegram publish: refresh ASocks IP + proxy resync между попытками."""
     step: dict = {"attempts": []}
     last_proc: subprocess.CompletedProcess[str] | None = None
     failed_port_ids: set[str] = set()
@@ -212,8 +217,17 @@ def publish_telegram_with_retries(topic: str, *, max_attempts: int = 3) -> dict:
 
     for attempt in range(1, max_attempts + 1):
         if attempt > 1:
-            step["attempts"][-1]["retry_after_sec"] = 20
-            time.sleep(20)
+            step["attempts"][-1]["retry_after_sec"] = 25
+            time.sleep(25)
+            port_id = _current_telegram_port_id()
+            if port_id:
+                try:
+                    from asocks_sync_proxy import refresh_telegram_proxy_ip
+
+                    refresh_info = refresh_telegram_proxy_ip(port_id)
+                    proxy_retries.append({"refresh_ip": refresh_info})
+                except SystemExit as exc:
+                    proxy_retries.append({"refresh_ip_error": str(exc)})
             retry_sync = sync_telegram_proxy(exclude_port_ids=failed_port_ids)
             proxy_retries.append(retry_sync)
             step["telegram_proxy_retries"] = proxy_retries
@@ -236,7 +250,11 @@ def publish_telegram_with_retries(topic: str, *, max_attempts: int = 3) -> dict:
         if "timed out" not in err and "unexpected_eof" not in err and "urlerror" not in err:
             break
 
-    if last_proc is not None and last_proc.returncode != 0:
+    if (
+        last_proc is not None
+        and last_proc.returncode != 0
+        and _telegram_direct_fallback_allowed()
+    ):
         step["attempts"][-1]["retry_after_sec"] = 15
         time.sleep(15)
         step["direct_fallback"] = True
@@ -249,6 +267,8 @@ def publish_telegram_with_retries(topic: str, *, max_attempts: int = 3) -> dict:
                 "stderr_tail": (last_proc.stderr or "")[-500:],
             }
         )
+    elif last_proc is not None and last_proc.returncode != 0:
+        step["direct_fallback_skipped"] = "TELEGRAM_ALLOW_DIRECT_FALLBACK not set (VPS default)"
 
     assert last_proc is not None
     step.update(
@@ -321,8 +341,17 @@ def run_publish(topic: str, *, submit: bool) -> dict:
                 )
             elif not result["steps"]["telegram_proxy"].get("preflight_ok"):
                 result["steps"]["telegram_proxy"]["warning"] = (
-                    "preflight_failed_continue_with_send_retries"
+                    "preflight_failed_refresh_ip_before_send"
                 )
+                try:
+                    from asocks_sync_proxy import refresh_telegram_proxy_ip
+
+                    port_id = _current_telegram_port_id()
+                    result["steps"]["telegram_proxy_refresh"] = refresh_telegram_proxy_ip(
+                        port_id or None
+                    )
+                except SystemExit as exc:
+                    result["steps"]["telegram_proxy_refresh"] = {"error": str(exc)}
             result["steps"]["telegram"] = publish_telegram_with_retries(topic)
             if result["steps"]["telegram"].get("failed"):
                 result["telegram_failed"] = True

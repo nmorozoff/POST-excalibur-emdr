@@ -504,4 +504,23 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Не делать:** агенту **вручную** менять URL ЛС в md/реестрах/коммитах «по догадке»; не подставлять бот (`id771605638595_bot`) или пост канала (`AZ9H9rFePFc`) вместо `/u/…`.
 
+## VPS phase 3: Telegram timeout + publish_lock_held
+
+**Симптом:** cloud 5/5 OK, VPS partial — `telegram_failed`, `ASocks timed out`, повторный webhook → `409 publish_lock_held`.
+
+**Причины:**
+1. Один KZ-порт ASocks — retry без refresh IP крутит тот же proxy.
+2. `direct_fallback` на VPS всегда `Network unreachable` — теряет 15+ сек.
+3. `trigger-vps-webhook` при 409 exit 0 — automation думает, что всё OK.
+4. Зависший worker держит flock >45 мин.
+
+**Правильно (после fix):**
+- `refresh_telegram_proxy_ip()` перед каждым retry send-telegram.
+- `TELEGRAM_ALLOW_DIRECT_FALLBACK=0` (default на VPS).
+- `trigger-vps-webhook.py --wait-for-lock` — ждёт lock, exit 4 если не освободился.
+- `release_stale_lock()` в webhook при мёртвом pid / lock >45 мин.
+- Второй KZ-порт в ASocks: `TELEGRAM_ASOCKS_FALLBACK_NAMES` в browser.env.local.
+
+**Recovery sb-XX:** `git pull` на VPS → один `trigger-vps-webhook.py --topic sb-XX --wait-for-lock`. Не слать webhook повторно, пока первый worker жив (<45 мин).
+
 **Не делать:** тащить `##` / `**Обложка**` / Line 1 в OK text.

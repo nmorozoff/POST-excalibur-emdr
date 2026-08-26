@@ -202,6 +202,24 @@ def _write_env_updates(updates: dict[str, str]) -> None:
     ENV_PATH.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
 
 
+def refresh_telegram_proxy_ip(port_id: str | None = None, *, write: bool = True) -> dict:
+    """Обновить внешний IP на sticky-порте ASocks и пересинхронизировать TELEGRAM_PROXY_*."""
+    env = load_env("browser.env.local")
+    api_key = env.get("ASOCKS_API_KEY", "").strip()
+    base = env.get("ASOCKS_API_BASE", "https://api.asocks.com").strip()
+    pid = (port_id or env.get("TELEGRAM_ASOCKS_PORT_ID", "")).strip()
+    if not api_key:
+        return {"ok": False, "reason": "missing_ASOCKS_API_KEY"}
+    if not pid:
+        return {"ok": False, "reason": "missing_port_id"}
+
+    refreshed = _refresh_port_ips({pid}, api_key, base)
+    result = sync_telegram_with_preflight(write=write)
+    result["refreshed_port_ids"] = refreshed
+    result["refresh_requested_for"] = pid
+    return result
+
+
 def sync_telegram_with_preflight(
     *,
     write: bool = True,

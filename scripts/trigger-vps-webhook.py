@@ -3,6 +3,7 @@
 
 Usage:
   python3 scripts/trigger-vps-webhook.py --topic sb-06-cant-sleep-anxiety
+  python3 scripts/trigger-vps-webhook.py --topic sb-06 --wait-for-lock
   python3 scripts/trigger-vps-webhook.py --topic sb-06 --dry-run
 
 Читает секрет из:
@@ -39,6 +40,16 @@ def load_secret() -> str:
     )
 
 
+def _post_publish(
+    base: str,
+    secret: str,
+    payload: dict,
+    *,
+    timeout: float,
+) -> tuple[int, dict]:
+    return post_json(f"{base}/publish", secret, payload, timeout=timeout)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Trigger VPS webhook with safe JSON")
     parser.add_argument("--topic", required=True)
@@ -48,6 +59,30 @@ def main() -> None:
     parser.add_argument("--timeout", type=int, default=90, help="POST /publish timeout seconds")
     parser.add_argument("--health-timeout", type=int, default=10, help="GET /health timeout seconds")
     parser.add_argument("--skip-health", action="store_true", help="Skip GET /health pre-check")
+    parser.add_argument(
+        "--wait-for-lock",
+        action="store_true",
+        default=True,
+        help="При 409 publish_lock_held ждать и повторять (default: on)",
+    )
+    parser.add_argument(
+        "--no-wait-for-lock",
+        action="store_false",
+        dest="wait_for_lock",
+        help="Сразу fail при 409",
+    )
+    parser.add_argument(
+        "--lock-wait-sec",
+        type=int,
+        default=2400,
+        help="Макс. ожидание освобождения lock при 409 (сек)",
+    )
+    parser.add_argument(
+        "--lock-poll-sec",
+        type=int,
+        default=60,
+        help="Интервал опроса при 409 (сек)",
+    )
     args = parser.parse_args()
 
     secret = load_secret()
@@ -65,10 +100,13 @@ def main() -> None:
     if args.dry_run:
         payload["dry_run"] = True
 
+    deadline = time.time() + max(args.lock_wait_sec, 0)
     last_err: dict = {}
-    for attempt in range(1, 4):
-        status, data = post_json(
-            f"{base}/publish",
+    lock_waits = 0
+
+    while True:
+        status, data = _post_publish(
+            base,
             secret,
             payload,
             timeout=float(args.timeout),
@@ -79,26 +117,38 @@ def main() -> None:
                 sys.exit(0)
             sys.exit(2)
         if status == 409:
+            last_err = {"status": 409, "accepted": False, "busy": True, **data}
+            if not args.wait_for_lock or time.time() >= deadline:
+                print(json.dumps(last_err, ensure_ascii=False, indent=2))
+                sys.exit(4)
+            lock_waits += 1
             print(
                 json.dumps(
-                    {"status": 409, "accepted": False, "busy": True, **data},
+                    {
+                        **last_err,
+                        "action": "wait_for_lock",
+                        "lock_wait_attempt": lock_waits,
+                        "sleep_sec": args.lock_poll_sec,
+                    },
                     ensure_ascii=False,
                     indent=2,
                 )
             )
-            sys.exit(0)
+            time.sleep(args.lock_poll_sec)
+            continue
         if status in (401, 403):
             print(json.dumps({"status": status, **data}, ensure_ascii=False, indent=2))
             sys.exit(2)
         last_err = {"status": status, **data} if status else data
         if data.get("vps_down"):
             break
-        if attempt < 3:
-            wait = 10 * attempt
-            print(json.dumps({"attempt": attempt, "wait_seconds": wait, **last_err}, ensure_ascii=False, indent=2))
-            time.sleep(wait)
+        # transient network — short retry
+        if time.time() < deadline:
+            time.sleep(15)
+            continue
+        break
 
-    print(json.dumps({"status": "failed", "attempts": 3, **last_err}, ensure_ascii=False, indent=2))
+    print(json.dumps({"status": "failed", **last_err}, ensure_ascii=False, indent=2))
     sys.exit(3 if last_err.get("vps_down") else 2)
 
 
