@@ -1,0 +1,75 @@
+{
+  "topic": "sb-24-body-gesture",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-08-26T14:41:20.171728+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "skipped": true,
+      "chars": 4032
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "skipped": true,
+      "chars": 4127
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "skipped": true,
+      "chars": 4468
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11778,
+        "completion_tokens": 7624,
+        "total_tokens": 19402
+      },
+      "chars": 4871,
+      "contract_fixes": [
+        "auto-wrapped vk-group sections"
+      ]
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11574,
+        "completion_tokens": 8671,
+        "total_tokens": 20245
+      },
+      "chars": 4923,
+      "contract_fixes": [
+        "auto-wrapped facebook sections"
+      ]
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12117,
+        "completion_tokens": 8261,
+        "total_tokens": 20378
+      },
+      "chars": 4538,
+      "contract_fixes": []
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11363,
+        "completion_tokens": 6616,
+        "total_tokens": 17979
+      },
+      "chars": 2326,
+      "contract_fixes": [
+        "fixed b17 blank lines after headers"
+      ]
+    }
+  }
+}

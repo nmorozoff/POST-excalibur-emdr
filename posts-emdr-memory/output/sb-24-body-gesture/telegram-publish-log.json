@@ -1,0 +1,17 @@
+{
+  "status": "sent",
+  "mode": "publish",
+  "delivery": "link_preview_single_message",
+  "via": "mcp-kv",
+  "channels": [
+    {
+      "chat_id": "@nmorozova_emdr",
+      "message_id": 141,
+      "post_url": "https://t.me/nmorozova_emdr/141",
+      "utm_source": "tg1",
+      "via": "mcp-kv"
+    }
+  ],
+  "chat_id": "@nmorozova_emdr",
+  "message_id": 141
+}

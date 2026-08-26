@@ -6,6 +6,7 @@
 
 ## Опубликованные
 
+| sb-24-body-gesture | 2026-08-26 | Один жест телу вместо «соберись» | https://max.ru/se13417616_biz/AaA-xCAde0U | https://morozovanatalia.ru/anxiety?utm_source=max | тревога,микро-практика,EMDR,тело,психология |
 | sb-23-grounding-exercise | 2026-08-24 | Простое заземление, когда «уносит» в тревожные мысли | https://max.ru/se13417616_biz/AaAzD65TCJg | https://morozovanatalia.ru/anxiety?utm_source=max | тревога,микро-практика,EMDR,заземление,психология |
 | sb-22-name-emotion | 2026-08-23 | Как назвать эмоцию одним словом | https://max.ru/se13417616_biz/AaAt5YcWGjY | https://morozovanatalia.ru/anxiety | тревога,эмоции,EMDR |
 | sb-21-minute-silence | 2026-08-22 | Минута тишины без телефона | https://max.ru/se13417616_biz/AaApfTwbY38 | https://morozovanatalia.ru/anxiety?utm_source=max | тревога,микро-практика,EMDR,тишина,психология |

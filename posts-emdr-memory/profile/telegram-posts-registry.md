@@ -12,6 +12,7 @@
 
 ## Опубликованные
 
+| sb-24-body-gesture | 2026-08-26 | sb-24-body-gesture | @nmorozova_emdr | ? | https://t.me/nmorozova_emdr/141 | https://morozovanatalia.ru/anxiety |  |
 | sb-23-grounding-exercise | 2026-08-26 | sb-23-grounding-exercise | @nmorozova_emdr | 140 | https://t.me/nmorozova_emdr/140 | https://morozovanatalia.ru/anxiety |  |
 | sb-22-name-emotion | 2026-08-23 | Шаг первый: | @natalia_morozova_psy | 2049 | https://t.me/natalia_morozova_psy/2049 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-22-name-emotion | 2026-08-23 | Шаг первый: | @nmorozova_emdr | 139 | https://t.me/nmorozova_emdr/139 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
