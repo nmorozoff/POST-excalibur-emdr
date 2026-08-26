@@ -1,6 +1,6 @@
 {
   "topic": "sb-23-grounding-exercise",
-  "overall": "fail",
+  "overall": "pass_b17_pending",
   "platforms": {
     "max": {
       "ok": true,
@@ -13,15 +13,16 @@
       }
     },
     "telegram": {
-      "ok": false,
-      "delivery": null,
-      "channels": [],
-      "missing_channels": [
-        "nmorozova_emdr",
-        "natalia_morozova_psy"
+      "ok": true,
+      "delivery": "link_preview_single_message",
+      "channels": [
+        "nmorozova_emdr"
       ],
+      "missing_channels": [],
       "cover_source": null,
-      "urls": []
+      "urls": [
+        "https://t.me/nmorozova_emdr/140"
+      ]
     },
     "vk_profile": {
       "ok": true,
@@ -62,7 +63,7 @@
   "covers": {
     "local_cover": {
       "ok": true,
-      "path": "/workspace/posts-emdr-memory/output/sb-23-grounding-exercise/cover.png"
+      "path": "/Users/natala/Documents/Проекты СURSOR/Посты EMDR/posts-emdr-memory/output/sb-23-grounding-exercise/cover.png"
     },
     "site_cover": {
       "url": "https://morozovanatalia.ru/social-covers/sb-23-grounding-exercise.jpg",
@@ -81,13 +82,16 @@
     "status": null
   },
   "issues": [
-    "Telegram: не отправлен (или VPS ещё не отработал)",
+    "Telegram: cover_source пуст — возможно без превью",
     "b17: сохранено в черновик (rate limit), требуется повторный запуск",
     "Тема всё ещё in_progress в очереди",
-    "VPS phase 3: Telegram ещё не отработал"
+    "b17: сохранено в черновик (rate limit). Тема считается опубликованной; b17 выйдет через ручной repair-запуск."
   ],
   "links": {
     "max": "https://max.ru/se13417616_biz/AaAzD65TCJg",
+    "telegram": [
+      "https://t.me/nmorozova_emdr/140"
+    ],
     "vk_profile": "https://vk.com/wall218367867_698",
     "vk_group": "https://vk.com/wall-224685309_174",
     "facebook": "https://www.facebook.com/632301483303094_122183148686837712",

@@ -515,7 +515,7 @@ def main() -> None:
             )
         from posts_emdr_env import assert_telegram_channels
 
-        assert_telegram_channels(env, context="send-telegram-post --publish", require_two=True)
+        assert_telegram_channels(env, context="send-telegram-post --publish", require_two=False)
         chat_ids = parse_channel_ids(env)
         if args.delivery == "photo_then_text":
             raise SystemExit(

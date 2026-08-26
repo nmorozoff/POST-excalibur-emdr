@@ -107,7 +107,7 @@ curl -fsS -X POST "http://195.209.210.45:8787/publish" \
 VPS worker делает:
 1. `git pull`
 2. `ensure_site_cover` → FTP обложка на `social-covers/{topic}.jpg`
-3. `asocks_sync_proxy.py --target telegram` → Telegram ×2 (`@nmorozova_emdr`, `@natalia_morozova_psy`, `link_preview`)
+3. `asocks_sync_proxy.py --target telegram` → Telegram `@nmorozova_emdr` (`link_preview`)
 4. b17 (Playwright + RU proxy, HTTPS cover, verify list)
 5. `--finish` (реестры + очередь) + `--git-push`
 

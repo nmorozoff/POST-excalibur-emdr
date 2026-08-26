@@ -667,8 +667,8 @@ ENV_SPECS: dict[str, list[str]] = {
     "github.env.local": ["GITHUB_TOKEN"],
 }
 
-ALLOWED_TELEGRAM_CHANNELS = frozenset({"nmorozova_emdr", "natalia_morozova_psy"})
-BANNED_TELEGRAM_CHANNELS = frozenset({"morozova_emdr"})
+ALLOWED_TELEGRAM_CHANNELS = frozenset({"nmorozova_emdr"})
+BANNED_TELEGRAM_CHANNELS = frozenset({"morozova_emdr", "natalia_morozova_psy"})
 TELEGRAM_CHANNELS_CHECKLIST = "posts-emdr-memory/cloud-secrets-checklist.txt"
 
 
@@ -697,8 +697,8 @@ def validate_telegram_channels(
             "ok": False,
             "channels": channels,
             "error": (
-                "канал @morozova_emdr снят с публикации; "
-                f"получено: {channels}"
+                f"каналы {', '.join(f'@{b}' for b in banned)} сняты с публикации; "
+                f"разрешён только @nmorozova_emdr; получено: {channels}"
             ),
         }
     if require_two and len(channels) != 2:
@@ -848,7 +848,7 @@ def materialize_telegram_env_from_os(
         assert_telegram_channels(
             values,
             context="materialize telegram.env.local from os.environ",
-            require_two=True,
+            require_two=False,
         )
     return {"written": True, "path": rel, "keys": sorted(values.keys())}
 
@@ -897,7 +897,7 @@ def materialize_env_files(*, memory_dir: Path | None = None, force: bool = False
                 assert_telegram_channels(
                     merged,
                     context="materialize telegram.env.local",
-                    require_two=True,
+                    require_two=False,
                 )
     return written
 

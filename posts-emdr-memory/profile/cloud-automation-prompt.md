@@ -39,8 +39,8 @@ Telegram из cloud не публиковать — только VPS.
 Если в output/{id}/ уже есть telegram-publish-log.json — пропустить.
 Иначе (один из путей, по порядку):
 1) python3 scripts/publish-telegram-from-handoff.py --topic {id}  (ASocks из Secrets → ~10 сек, синхронно)
-2) MCP telegram_send_message ×2 по telegram-mcp-handoff.json (если шаг 1 не прошёл; нужен Bot Token в mcp-kv.ru)
-Gate: telegram-publish-log.json, delivery link_preview_single_message, 2 канала.
+2) MCP telegram_send_message ×1 по telegram-mcp-handoff.json (если шаг 1 не прошёл; нужен Bot Token в mcp-kv.ru)
+Gate: telegram-publish-log.json, delivery link_preview_single_message, канал @nmorozova_emdr.
 VPS webhook — только b17, Telegram НЕ ждать.
 
 ШАГ 3 VK MCP фаза 2
@@ -65,7 +65,7 @@ git push
 ШАГ 5 VPS WEBHOOK фаза 3
 Проверка секрета: python3 scripts/verify-vps-webhook-secret.py
 Проверка Telegram env (cloud): python3 scripts/materialize_cloud_env.py && python3 scripts/verify-telegram-env.py — exit 0 обязателен.
-Проверка Telegram-каналов: TELEGRAM_CHANNEL_CHAT_IDS = @nmorozova_emdr,@natalia_morozova_psy (на VPS те же значения в telegram.env.local или browser.env.local + materialize_vps_env). Канал @morozova_emdr снят.
+Проверка Telegram-каналов: TELEGRAM_CHANNEL_CHAT_IDS = @nmorozova_emdr (только один канал). @morozova_emdr и @natalia_morozova_psy сняты.
 Запуск: python3 scripts/trigger-vps-webhook.py --topic {id} --wait-for-lock
 Ожидать HTTP 202 (при 409 publish_lock_held скрипт ждёт до 40 мин, не считать успехом). VPS: materialize_vps_env → publish-browser-deferred --submit --finish --git-push (Telegram + b17 черновик).
 Gate: telegram-publish-log.json + browser-worker-finish.json в output/{id}/ после git pull. b17 draft_saved НЕ блокирует finish.

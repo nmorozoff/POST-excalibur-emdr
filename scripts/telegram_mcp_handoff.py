@@ -84,7 +84,7 @@ def build_channel_calls(topic: str, cover_url: str) -> list[dict]:
         raise SystemExit(f"Missing {post_file}")
 
     env = load_env("telegram.env.local")
-    assert_telegram_channels(env, context="telegram MCP handoff", require_two=True)
+    assert_telegram_channels(env, context="telegram MCP handoff", require_two=False)
     chat_ids = parse_channel_ids(env)
     utm_sources = parse_channel_utm_sources(env, len(chat_ids))
 

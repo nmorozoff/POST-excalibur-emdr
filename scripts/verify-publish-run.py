@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env, publish_text_format_issues, validate_max_ls_cta, fix_max_markdown_links, extract_post_body_from_md
 
 PROFILE = MEMORY / "profile"
-EXPECTED_TG_CHANNELS = ("nmorozova_emdr", "natalia_morozova_psy")
+EXPECTED_TG_CHANNELS = ("nmorozova_emdr",)
 
 
 def _read_json(path: Path) -> dict | None:

@@ -215,7 +215,7 @@ Gate: форма заполнена, `b17-publish-prep.json`. Опциональ
 - НЕ LinkedIn — аккаунт заблокирован
 - НЕ эзотерика вместо EMDR-науки
 - НЕ публиковать Telegram с `--delivery photo_then_text` — только `link_preview` (одно сообщение)
-- НЕ публиковать в Telegram-канал @morozova_emdr — снят с пайплайна (2026-08-03); только @nmorozova_emdr и @natalia_morozova_psy
+- НЕ публиковать в Telegram-каналы @morozova_emdr и @natalia_morozova_psy — сняты с пайплайна; только @nmorozova_emdr
 - НЕ TenChat в основном прогоне — только в ручном repair-b17-tenchat
 - НЕ ждать b17/TenChat для закрытия темы
 - НЕ удалять и не перепубликовывать уже вышедшие посты в соцсетях без явной просьбы пользователя

@@ -13,10 +13,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import load_env
-
-ALLOWED = ("nmorozova_emdr", "natalia_morozova_psy")
-BANNED = ("morozova_emdr",)
+from posts_emdr_env import load_env, validate_telegram_channels
 
 
 def main() -> None:
@@ -26,32 +23,14 @@ def main() -> None:
         print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False, indent=2))
         sys.exit(2)
 
-    raw = env.get("TELEGRAM_CHANNEL_CHAT_IDS", "").strip()
-    if not raw:
-        single = env.get("TELEGRAM_CHANNEL_CHAT_ID") or env.get("TELEGRAM_CHAT_ID", "")
-        channels = [single.strip()] if single.strip() else []
-    else:
-        channels = [c.strip() for c in raw.split(",") if c.strip()]
-
-    names = [c.lstrip("@") for c in channels]
-    banned = [c for c in names if c in BANNED]
-    wrong = [c for c in names if c not in ALLOWED]
-    ok = len(channels) == 2 and not banned and not wrong
-
+    result = validate_telegram_channels(env, require_two=False)
     report = {
-        "ok": ok,
-        "channels": channels,
-        "expected": [f"@{n}" for n in ALLOWED],
-        "utm_sources": env.get("TELEGRAM_CHANNEL_UTM_SOURCES", "tg1,tg2"),
+        **result,
+        "utm_sources": env.get("TELEGRAM_CHANNEL_UTM_SOURCES", "tg1"),
         "has_bot_token": bool(env.get("TELEGRAM_BOT_TOKEN")),
     }
-    if banned:
-        report["error"] = f"BANNED channel @morozova_emdr in list: {channels}"
-    elif wrong or len(channels) != 2:
-        report["error"] = f"Expected @nmorozova_emdr,@natalia_morozova_psy got {channels}"
-
     print(json.dumps(report, ensure_ascii=False, indent=2))
-    sys.exit(0 if ok else 2)
+    sys.exit(0 if result.get("ok") else 2)
 
 
 if __name__ == "__main__":

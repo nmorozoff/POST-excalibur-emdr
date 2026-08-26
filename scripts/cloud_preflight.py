@@ -48,7 +48,7 @@ def run_preflight(*, strict: bool = True) -> dict:
     )
     checks["telegram"]["channels_configured"] = has_channels
     if has_channels:
-        channel_guard = validate_telegram_channels(tg, require_two=True)
+        channel_guard = validate_telegram_channels(tg, require_two=False)
         checks["telegram"]["channels_valid"] = channel_guard["ok"]
         checks["telegram"]["channels"] = channel_guard.get("channels")
         if not channel_guard["ok"]:
