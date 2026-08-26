@@ -1253,3 +1253,49 @@ checks_run:
 - python3 -m py_compile scripts/send-telegram-post.py
 - python3 scripts/incident_queue.py --project-root . (OPEN_INCIDENTS=0)
 
+---
+
+## INC-20260826-0948-sb23-telegram-proxy-no-rotate
+status: fixed
+fixed_at: 2026-08-26
+run_date: 2026-08-26
+role: otchetik
+topic: sb-23-grounding-exercise
+severity: high
+category: telegram
+
+### What went wrong
+- Cloud phase 1+2 OK (Max, VK×2, Facebook, OK). Catbox fix e5f52b1 — cover resolved from max URL.
+- VPS phase 3: Telegram 3 proxy attempts all timed out on **same** ASocks port 231489552 (ResKazakhstan — Turkestan); `direct_fallback` → `Network is unreachable`.
+- `telegram_proxy_retry`: `preflight_ok: false` — retry sync не ротировал порт (subprocess fallback без preflight/exclude).
+- b17: `draft_saved` (rate limit) — OK for `pass_b17_pending`.
+- VPS lock held >45 min after second webhook (hung worker after TG fail).
+
+### Durable fix needed before next run
+- При Bot API timeout на KZ proxy: exclude failed port + refresh IP (`/v2/proxy/refresh/{portId}`) если других KZ ports нет.
+- Убрать Exception-fallback `asocks_sync_proxy --target telegram` без `--preflight` в `sync_telegram_proxy`.
+- VPS recovery: kill hung worker → `git pull` → один webhook для sb-23.
+
+### Suggested files to inspect/change
+- scripts/publish-browser-deferred.py
+- scripts/asocks_sync_proxy.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/output/sb-23-grounding-exercise/vps-worker-last-run.json
+
+### Fixic resolution
+fix_summary:
+- Root cause: single KZ ASocks port + `exclude_port_ids` → empty candidate loop → AssertionError → subprocess resync same port without preflight.
+- `asocks_sync_proxy.py`: `_refresh_port_ips()` via ASocks API; `sync_telegram_with_preflight` refresh+retry when all candidates excluded; CLI `--exclude-port-ids`.
+- `publish-browser-deferred.py`: removed broken subprocess fallback; `telegram_proxy_retries` list; sync metadata includes `refreshed_port_ids`.
+- Pitfall «Telegram ASocks: retry не ротирует порт (один KZ port)».
+needed_decision_or_secret:
+- Владелец VPS: `git pull origin main` → runbook § Phase 3 зависла (kill lock) → `trigger-vps-webhook.py --topic sb-23-grounding-exercise` (202) → verify.
+files_changed:
+- scripts/asocks_sync_proxy.py
+- scripts/publish-browser-deferred.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/pipeline-fix-queue.md
+- posts-emdr-memory/fragments/fixic-sb-23-telegram-proxy.md
+checks_run:
+- python3 -m py_compile scripts/asocks_sync_proxy.py scripts/publish-browser-deferred.py
+

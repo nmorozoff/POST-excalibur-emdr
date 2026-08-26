@@ -150,13 +150,18 @@ def sync_telegram_proxy(*, exclude_port_ids: set[str] | None = None) -> dict:
             "ok": bool(data.get("preflight_ok")),
             "preflight_ok": bool(data.get("preflight_ok")),
             "asocks_port_name": data.get("asocks_port_name"),
+            "asocks_port_id": data.get("asocks_port_id"),
             "attempts": data.get("attempts"),
+            "refreshed_port_ids": data.get("refreshed_port_ids"),
+            "exclude_port_ids": sorted(exclude_port_ids or []),
         }
     except SystemExit as exc:
         out = {
             "exit_code": 1,
             "stderr_tail": str(exc),
             "ok": False,
+            "preflight_ok": False,
+            "exclude_port_ids": sorted(exclude_port_ids or []),
         }
         try:
             env = load_env("browser.env.local")
@@ -167,34 +172,6 @@ def sync_telegram_proxy(*, exclude_port_ids: set[str] | None = None) -> dict:
                 out["warning"] = "sync_failed_continue_with_existing_proxy_or_direct"
         except SystemExit:
             pass
-        return out
-    except Exception as exc:  # noqa: BLE001 — surface sync errors without killing worker
-        proc = subprocess.run(
-            [sys.executable, str(SCRIPTS / "asocks_sync_proxy.py"), "--target", "telegram"],
-            cwd=PROJECT_ROOT,
-            capture_output=True,
-            text=True,
-        )
-        out: dict = {
-            "exit_code": proc.returncode,
-            "stdout_tail": (proc.stdout or "")[-800:],
-            "stderr_tail": (proc.stderr or "")[-400:],
-            "sync_error": str(exc),
-        }
-        if proc.returncode != 0:
-            try:
-                env = load_env("browser.env.local")
-                if env.get("TELEGRAM_PROXY_SERVER"):
-                    out["fallback"] = "existing_TELEGRAM_PROXY_SERVER"
-                    out["ok"] = True
-                    out["preflight_ok"] = False
-                    return out
-            except SystemExit:
-                pass
-            out["ok"] = False
-            return out
-        out["ok"] = True
-        out["preflight_ok"] = False
         return out
 
 
@@ -231,12 +208,16 @@ def publish_telegram_with_retries(topic: str, *, max_attempts: int = 3) -> dict:
     step: dict = {"attempts": []}
     last_proc: subprocess.CompletedProcess[str] | None = None
     failed_port_ids: set[str] = set()
+    proxy_retries: list[dict] = []
 
     for attempt in range(1, max_attempts + 1):
         if attempt > 1:
             step["attempts"][-1]["retry_after_sec"] = 20
             time.sleep(20)
-            step["telegram_proxy_retry"] = sync_telegram_proxy(exclude_port_ids=failed_port_ids)
+            retry_sync = sync_telegram_proxy(exclude_port_ids=failed_port_ids)
+            proxy_retries.append(retry_sync)
+            step["telegram_proxy_retries"] = proxy_retries
+            step["telegram_proxy_retry"] = retry_sync
         proc = run_send_telegram(topic)
         last_proc = proc
         port_id = _current_telegram_port_id()

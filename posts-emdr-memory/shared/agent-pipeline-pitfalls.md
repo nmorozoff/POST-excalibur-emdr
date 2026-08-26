@@ -171,12 +171,29 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 **Правильно (2026-08-21):**
 - `send-telegram-post.py`: `_urlopen` — 3 retry с backoff 5/15/30 с; timeout **180s** через proxy.
 - `asocks_sync_proxy.py --target telegram --preflight` / `asocks_check.py --target telegram --rotate`: curl preflight к `api.telegram.org`, ротация других KZ портов ASocks.
-- `publish-browser-deferred.py`: preflight sync + до 2 попыток send с resync proxy между ними.
+- `publish-browser-deferred.py`: preflight sync + до 3 попыток send с resync proxy между ними.
 - Recovery: один `trigger-vps-webhook.py --topic {id}` на VPS (не из Cloud напрямую `send-telegram-post.py`).
 
 **Gate:** `telegram-publish-log.json` + `delivery: link_preview_single_message`; `vps-worker-last-run.json` → `telegram.exit_code: 0`.
 
 **Не делать:** публиковать Telegram из Cloud; force-push; повторный webhook пока 409 lock.
+
+## Telegram ASocks: retry не ротирует порт (один KZ port)
+
+**Симптом (2026-08-26, sb-23; recurrence sb-22):** `publish_telegram_with_retries` — 3 proxy-попытки с **одним** `asocks_port_id` (231489552, ResKazakhstan — Turkestan); `telegram_proxy_retry` → `preflight_ok: false` (не true). `vps-worker-last-run.json` → `direct_fallback` → `Network is unreachable` (VPS без прямого egress к Telegram).
+
+**Причина:** на аккаунте ASocks часто **один** KZ порт для Telegram. После fail Bot API `exclude_port_ids` исключал этот порт → `sync_telegram_with_preflight` не пробовал ни одного candidate → `AssertionError` → fallback subprocess `asocks_sync_proxy.py --target telegram` **без** `--preflight` и **без** exclude → тот же sticky port/IP. Curl preflight может проходить, а полный Bot API timeout — другой путь.
+
+**Правильно (2026-08-26):**
+- `asocks_sync_proxy.py`: если все candidates в `exclude_port_ids` — `GET /v2/proxy/refresh/{portId}` (новый IP на том же port), затем preflight снова.
+- `publish-browser-deferred.py`: убран subprocess-fallback без preflight/exclude; retry sync только через `sync_telegram_with_preflight(exclude_port_ids=…)`.
+- CLI: `asocks_sync_proxy.py --target telegram --preflight --exclude-port-ids 231489552`.
+
+**Recovery (VPS):** `git pull origin main` → runbook § «Phase 3 зависла» (kill lock >45 мин) → `asocks_check.py --target telegram --rotate` → один `trigger-vps-webhook.py --topic {id}` (202).
+
+**Gate:** `vps-worker-last-run.json` → `telegram_proxy_retry.preflight_ok: true` или `refreshed_port_ids`; попытки 2–3 не должны повторять fail port без refresh.
+
+**Не делать:** `direct_fallback` (skip proxy) на VPS — Telegram API недоступен напрямую; публиковать из Cloud.
 
 ## VPS webhook hangs (sync Playwright)
 
