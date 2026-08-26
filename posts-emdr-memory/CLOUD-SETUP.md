@@ -16,9 +16,10 @@
 |------------|------------|
 | `MAX_BOT_TOKEN` | API Макс |
 | `MAX_CHAT_ID` | ID канала Макс |
-| `TELEGRAM_BOT_TOKEN` | Бот Telegram (нужен на VPS; в Cloud можно тоже для materialize) |
-| `TELEGRAM_CHANNEL_CHAT_IDS` | `@nmorozova_emdr,@natalia_morozova_psy` |
-| `TELEGRAM_CHANNEL_UTM_SOURCES` | `tg1,tg2` |
+| `TELEGRAM_BOT_TOKEN` | Бот Telegram (Cloud: шаг 2b; VPS: materialize) |
+| `TELEGRAM_CHANNEL_CHAT_IDS` | `@nmorozova_emdr` (один канал) |
+| `TELEGRAM_CHANNEL_UTM_SOURCES` | `tg1` |
+| `ASOCKS_API_KEY` | Telegram из Cloud (прокси к api.telegram.org) |
 | `ZERNIO_API_KEY` | Facebook |
 | `ZERNIO_FACEBOOK_ACCOUNT_ID` | ID страницы FB |
 | `RUNWARE_API_KEY` | Обложки (legacy, опционально) |
@@ -33,11 +34,12 @@
 
 После `publish-topic.py` агент читает `output/{topic}/vk-mcp-handoff.json` и вызывает `vk_create_post_with_photo` ×2.
 
-### Telegram + b17 (фаза 3 — Linux VPS)
+### Telegram (фаза 1b — Cloud, синхронно)
 
-**TenChat снят с пайплайна** (2026-08-03).
+После `publish-topic.py` агент запускает `publish-telegram-from-handoff.py` (нужен `ASOCKS_API_KEY` + `TELEGRAM_BOT_TOKEN` в Secrets).  
+Канал: только `@nmorozova_emdr`. VPS для Telegram **не ждать**.
 
-**Не из cloud pod.** Telegram с Cloud/датацентра **не работает** (таймаут `api.telegram.org`).
+### b17 (фаза 3 — Linux VPS)
 
 На Ubuntu VPS: webhook `POST /publish` или cron `run-linux-browser-worker.sh`.
 
