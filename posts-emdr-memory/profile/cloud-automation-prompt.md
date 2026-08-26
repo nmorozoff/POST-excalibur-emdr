@@ -33,7 +33,7 @@ Fallback при сбое API: Task-писатели (telegram/vk/facebook/ok) + 
 python3 scripts/materialize_cloud_env.py --check
 python3 scripts/publish-topic.py --topic {id}
 Если publish-topic вернул status skipped already_published — перейти к отчетику и следующей теме.
-Telegram из cloud не публиковать — только VPS.
+Telegram — в ШАГ 2b (синхронно из cloud), не ждать VPS.
 
 ШАГ 2b TELEGRAM (сразу после publish-topic, без VPS)
 Если в output/{id}/ уже есть telegram-publish-log.json — пропустить.
@@ -67,7 +67,7 @@ git push
 Проверка Telegram env (cloud): python3 scripts/materialize_cloud_env.py && python3 scripts/verify-telegram-env.py — exit 0 обязателен.
 Проверка Telegram-каналов: TELEGRAM_CHANNEL_CHAT_IDS = @nmorozova_emdr (только один канал). @morozova_emdr и @natalia_morozova_psy сняты.
 Запуск: python3 scripts/trigger-vps-webhook.py --topic {id} --wait-for-lock
-Ожидать HTTP 202 (при 409 publish_lock_held скрипт ждёт до 40 мин, не считать успехом). VPS: materialize_vps_env → publish-browser-deferred --submit --finish --git-push (Telegram + b17 черновик).
+Ожидать HTTP 202 (при 409 publish_lock_held скрипт ждёт до 40 мин, не считать успехом). VPS: materialize_vps_env → publish-browser-deferred --submit --finish --git-push (только b17; Telegram уже в cloud).
 Gate: telegram-publish-log.json + browser-worker-finish.json в output/{id}/ после git pull. b17 draft_saved НЕ блокирует finish.
 Если send-telegram-post.py упал с BLOCKER по каналам — остановиться, исправить env на VPS (systemctl restart posts-emdr-webhook).
 
@@ -79,7 +79,7 @@ Polling не нужен — b17/TenChat догоняют через ручной
 ШАГ 7 FIXIC
 При fail verify-publish-run или incident_queue exit 2: Task(posts-emdr-fixic).
 
-ЗАПРЕТЫ: не LinkedIn, не Ядрышко/Core. Не Telegram из cloud. Не помечать published вручную в short-blog-published.md — только VPS --finish (mark-short-blog-published.py). Не вставлять in_progress в таблицу published. Не kie-cover/grsai-cover/runware-cover на шаге 1 — только publish-topic. Не photo_then_text в Telegram. Не публиковать повторно то, что уже в short-blog-published.md. Не ждать b17/TenChat для закрытия темы.
+ЗАПРЕТЫ: не LinkedIn, не Ядрышко/Core. Не дублировать Telegram (если есть telegram-publish-log.json — пропустить 2b). Не помечать published вручную в short-blog-published.md — только VPS --finish (mark-short-blog-published.py). Не вставлять in_progress в таблицу published. Не kie-cover/grsai-cover/runware-cover на шаге 1 — только publish-topic. Не photo_then_text в Telegram. Не публиковать повторно то, что уже в short-blog-published.md. Не ждать b17/TenChat для закрытия темы. Не публиковать в @natalia_morozova_psy.
 
 HANDOFF: .cursor/posts-emdr-handoff.md со статусом === POSTS EMDR DONE === только после Отчётика pass или partial с INC vps-pending.
 
