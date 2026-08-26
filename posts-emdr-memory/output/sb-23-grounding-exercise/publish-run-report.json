@@ -53,10 +53,10 @@
     },
     "b17": {
       "ok": false,
-      "log": false,
+      "log": true,
       "registry": false,
-      "status": null,
-      "draft_saved": false
+      "status": "draft_saved",
+      "draft_saved": true
     }
   },
   "covers": {
@@ -82,7 +82,7 @@
   },
   "issues": [
     "Telegram: не отправлен (или VPS ещё не отработал)",
-    "b17: не published (VPS мог ещё не отработать)",
+    "b17: сохранено в черновик (rate limit), требуется повторный запуск",
     "Тема всё ещё in_progress в очереди",
     "VPS phase 3: Telegram ещё не отработал"
   ],
@@ -91,6 +91,7 @@
     "vk_profile": "https://vk.com/wall218367867_698",
     "vk_group": "https://vk.com/wall-224685309_174",
     "facebook": "https://www.facebook.com/632301483303094_122183148686837712",
-    "ok": "https://ok.ru/group/70000034253679/topic/161387583271023"
+    "ok": "https://ok.ru/group/70000034253679/topic/161387583271023",
+    "b17": "https://www.b17.ru/my_blog.php?mod=edit"
   }
 }
