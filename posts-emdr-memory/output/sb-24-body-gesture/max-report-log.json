@@ -1,0 +1,98 @@
+{
+  "status": "sent",
+  "topic": "sb-24-body-gesture",
+  "chat_id": 381063723,
+  "overall": "fail",
+  "result": {
+    "message": {
+      "recipient": {
+        "chat_id": 381063723,
+        "chat_type": "dialog",
+        "user_id": 12014678
+      },
+      "timestamp": 1787760555556,
+      "body": {
+        "mid": "mid.0000000016b6922b01a03ed536247052",
+        "seq": 117162675768946770,
+        "text": "❌ Posts EMDR — sb-24-body-gesture\nСтатус: fail\n\nСсылки:\n• max: https://max.ru/se13417616_biz/AaA-xCAde0U\n• telegram: https://t.me/nmorozova_emdr/141\n• vk_profile: https://vk.com/wall218367867_699\n• vk_group: https://vk.com/wall-224685309_175\n• ok: https://ok.ru/group/70000034253679/topic/161390909091951\n\nПроблемы:\n• Telegram: cover_source пуст — возможно без превью\n• Facebook: нет publish-log или реестра\n• b17: не published (VPS мог ещё не отработать)\n• Тема всё ещё in_progress в очереди\n\nНужна помощь: откройте Cursor / проверьте VPS логи.",
+        "attachments": [
+          {
+            "payload": {
+              "url": "https://max.ru/se13417616_biz/AaA-xCAde0U",
+              "token": "f9LHodD0cOIqWRmqVSeckByiY8tkqHK4nmtV3x_pQZhc6W-ZtTLSfz9LtfqCp05bn0S97hAO_uRFNvwqGBYb"
+            },
+            "title": "Психолог | EMDR терапевт | Морозова Наталья",
+            "description": "За 2-4 сессии избавляю от фобий, страхов, ОКР, панических атак, ПТСР.\nЗапись на сайте www.morozovanatalia.ru?utm_source=max",
+            "image_url": "https://i.oneme.ru/i?r=BTGBPUwtwgYUeoFhO7rESmr8F-FUAo2Gmb8WAZBxonjEAbJ_HqH97r8QHtUvv1mBLU4",
+            "type": "share"
+          }
+        ],
+        "markup": [
+          {
+            "from": 2,
+            "length": 31,
+            "type": "strong"
+          },
+          {
+            "from": 42,
+            "length": 4,
+            "type": "strong"
+          },
+          {
+            "from": 48,
+            "length": 7,
+            "type": "strong"
+          },
+          {
+            "url": "https://max.ru/se13417616_biz/AaA-xCAde0U",
+            "from": 63,
+            "length": 41,
+            "type": "link"
+          },
+          {
+            "url": "https://t.me/nmorozova_emdr/141",
+            "from": 117,
+            "length": 31,
+            "type": "link"
+          },
+          {
+            "url": "https://vk.com/wall218367867_699",
+            "from": 163,
+            "length": 32,
+            "type": "link"
+          },
+          {
+            "url": "https://vk.com/wall-224685309_175",
+            "from": 208,
+            "length": 33,
+            "type": "link"
+          },
+          {
+            "url": "https://ok.ru/group/70000034253679/topic/161390909091951",
+            "from": 248,
+            "length": 56,
+            "type": "link"
+          },
+          {
+            "from": 306,
+            "length": 9,
+            "type": "strong"
+          },
+          {
+            "from": 494,
+            "length": 51,
+            "type": "emphasized"
+          }
+        ]
+      },
+      "sender": {
+        "user_id": 369215101,
+        "first_name": "КАРУСЕЛЬКА",
+        "username": "id771605638595_bot",
+        "is_bot": true,
+        "last_activity_time": 1787760555582,
+        "name": "КАРУСЕЛЬКА"
+      }
+    }
+  }
+}

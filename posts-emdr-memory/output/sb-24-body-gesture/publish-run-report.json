@@ -1,0 +1,99 @@
+{
+  "topic": "sb-24-body-gesture",
+  "overall": "fail",
+  "platforms": {
+    "max": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "url": null,
+      "ls_gate": {
+        "ok": true,
+        "issues": []
+      }
+    },
+    "telegram": {
+      "ok": true,
+      "delivery": "link_preview_single_message",
+      "channels": [
+        "nmorozova_emdr"
+      ],
+      "missing_channels": [],
+      "cover_source": null,
+      "urls": [
+        "https://t.me/nmorozova_emdr/141"
+      ]
+    },
+    "vk_profile": {
+      "ok": true,
+      "registry": true
+    },
+    "vk_group": {
+      "ok": true,
+      "registry": true
+    },
+    "vk_story": {
+      "ok": false,
+      "log": false,
+      "required": false
+    },
+    "facebook": {
+      "ok": false,
+      "log": false,
+      "registry": false,
+      "status": null,
+      "pending_scheduled": null
+    },
+    "ok": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "required": true,
+      "format_ok": true
+    },
+    "b17": {
+      "ok": false,
+      "log": false,
+      "registry": false,
+      "status": null,
+      "draft_saved": false
+    }
+  },
+  "covers": {
+    "local_cover": {
+      "ok": true,
+      "path": "/workspace/posts-emdr/posts-emdr-memory/output/sb-24-body-gesture/cover.png"
+    },
+    "site_cover": {
+      "url": "https://morozovanatalia.ru/social-covers/sb-24-body-gesture.jpg",
+      "ok": false,
+      "status": 200,
+      "content_type": "text/html; charset=utf-8"
+    }
+  },
+  "queue": {
+    "published": false,
+    "still_in_queue": true
+  },
+  "vps": {
+    "finish_json": false,
+    "handoff_done": false,
+    "status": null
+  },
+  "issues": [
+    "Telegram: cover_source пуст — возможно без превью",
+    "Facebook: нет publish-log или реестра",
+    "b17: не published (VPS мог ещё не отработать)",
+    "Тема всё ещё in_progress в очереди"
+  ],
+  "links": {
+    "max": "https://max.ru/se13417616_biz/AaA-xCAde0U",
+    "telegram": [
+      "https://t.me/nmorozova_emdr/141"
+    ],
+    "vk_profile": "https://vk.com/wall218367867_699",
+    "vk_group": "https://vk.com/wall-224685309_175",
+    "ok": "https://ok.ru/group/70000034253679/topic/161390909091951"
+  }
+}

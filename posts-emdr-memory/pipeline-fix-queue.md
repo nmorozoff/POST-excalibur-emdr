@@ -1299,3 +1299,53 @@ files_changed:
 checks_run:
 - python3 -m py_compile scripts/asocks_sync_proxy.py scripts/publish-browser-deferred.py
 
+---
+
+## INC-20260826-1610-sb24-vps-phase3-pending
+status: open
+run_date: 2026-08-26
+role: otchetik
+topic: sb-24-body-gesture
+severity: high
+category: vps
+
+### What went wrong
+- Cloud phase 1+2 OK: Max, Telegram (MCP link_preview), VK profile+group (MCP), OK (MCP).
+- VPS webhook HTTP 202 принят (pid 1801053 после re-trigger Отчётика); через 3× verify (~10 мин) нет `browser-worker-finish.json`, `b17-publish-log.json`.
+- b17 не published; тема `sb-24-body-gesture` остаётся `in_progress` в `short-blog-queue.md`.
+- `site_cover` URL `https://morozovanatalia.ru/social-covers/sb-24-body-gesture.jpg` отдаёт `text/html` (200) вместо image/jpeg — VPS `ensure_site_cover` мог не завершиться.
+
+### Durable fix needed before next run
+- VPS: проверить `vps-webhook-run.log`, `vps-worker-last-run.json` для sb-24; дождаться worker или recovery (kill hung lock → `git pull` → один webhook).
+- Cron `run-linux-browser-worker.sh`, `systemctl is-active posts-emdr-webhook`, `python3 scripts/asocks_check.py`.
+- После b17 publish — `--finish` должен перенести тему в `short-blog-published.md`.
+
+### Suggested files to inspect/change
+- posts-emdr-memory/output/sb-24-body-gesture/vps-webhook-run.log
+- posts-emdr-memory/output/sb-24-body-gesture/vps-worker-last-run.json
+- scripts/publish-browser-deferred.py
+- scripts/publish-b17-blog.py
+
+---
+
+## INC-20260826-1610-sb24-facebook-zernio-missing
+status: open
+run_date: 2026-08-26
+role: otchetik
+topic: sb-24-body-gesture
+severity: low
+category: facebook
+
+### What went wrong
+- Facebook не опубликован: нет `ZERNIO_API_KEY` / `ZERNIO_FACEBOOK_ACCOUNT_ID` в Cloud Secrets (automation на STATYA-excalibur-emdr).
+- `verify-publish-run.py` помечает overall `fail` из‑за hard_fail на Facebook, хотя cloud-платформы OK.
+
+### Durable fix needed before next run
+- Добавить Zernio secrets в Cloud Agent settings или явно помечать Facebook `optional`/`skipped_no_secret` в verify, чтобы не блокировать pass при отсутствии ключей.
+- После добавления secrets — ручной retry Facebook для sb-24 или следующий прогон.
+
+### Suggested files to inspect/change
+- scripts/verify-publish-run.py
+- scripts/publish-facebook-zernio.py (если есть)
+- Cloud Secrets: ZERNIO_API_KEY, ZERNIO_FACEBOOK_ACCOUNT_ID
+
