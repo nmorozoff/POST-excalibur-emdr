@@ -10,8 +10,8 @@ Steps:
   1. materialize_cloud_env (from Cursor Secrets)
   2. cloud_preflight
   3. grsai cover (if missing) — gpt-image-2 via Grsai 5:4 1280×1024
-  4. Max → VK (FTP + MCP handoff) → Facebook → OK handoff
-  5. Telegram + b17 → VPS (ASocks / Playwright), не Cloud
+  4. Max → VK (FTP + MCP handoff) → Facebook → OK handoff → Telegram MCP handoff
+  5. b17 → VPS (Playwright), Telegram — MCP mcp-kv в Cloud (не VPS)
 """
 
 from __future__ import annotations
@@ -181,18 +181,17 @@ def write_ok_mcp_handoff(topic: str, image_url: str) -> Path | None:
 
 def write_browser_local_handoff(topic: str) -> Path:
     topic_dir = MEMORY / "output" / topic
-    body = f"""# VPS publish — Telegram + b17
+    body = f"""# VPS publish — b17 only
 
 Тема: `{topic}`
 
-Cloud опубликовал Макс / VK(MCP) / Facebook / OK(MCP). Осталось на **VPS**:
+Cloud: Макс, VK, Facebook, OK, **Telegram (MCP mcp-kv)**. На **VPS** остался только:
 
-1. Telegram ×2 (@nmorozova_emdr, @natalia_morozova_psy) — ASocks KZ
-2. b17 (Playwright + residential RU)
+1. b17 (Playwright + residential RU) — черновик, не блокирует закрытие темы
 
-## Триггер
+Telegram **не** на VPS — см. `telegram-mcp-handoff.json` и MCP в Cloud.
 
-Webhook (сразу после `git push`):
+## Триггер b17 (опционально)
 
 ```bash
 curl -fsS -X POST "http://195.209.210.45:8787/publish" \\
@@ -201,17 +200,7 @@ curl -fsS -X POST "http://195.209.210.45:8787/publish" \\
   -d '{{"topic":"{topic}"}}'
 ```
 
-Или cron ≤10 мин: `scripts/run-linux-browser-worker.sh`
-
-## Вручную на VPS
-
-```bash
-cd ~/POST-excalibur-emdr
-source .venv-browser/bin/activate
-python3 scripts/asocks_sync_proxy.py --target telegram
-python3 scripts/fetch-topic-cover.py --topic {topic}
-python3 scripts/publish-browser-deferred.py --topic {topic} --submit --finish --git-push
-```
+Worker пропустит Telegram, если уже есть `telegram-publish-log.json`.
 
 См. `posts-emdr-memory/profile/cloud-publish-phases.md`
 """
@@ -266,12 +255,8 @@ def publish_topic(
         )
     )
 
-    # Telegram всегда на VPS (api.telegram.org блокируется с Cloud/датацентра).
-    log["steps"]["telegram"] = {
-        "deferred": True,
-        "reason": "vps_asocks_kz",
-        "note": "publish-browser-deferred.py на VPS",
-    }
+    # Telegram — MCP mcp-kv в Cloud (не VPS). Handoff пишется после cover_public_url.
+    log["steps"]["telegram"] = {"pending": True, "note": "handoff after vk_upload"}
 
     vk_flags = ["--dry-run"] if dry_run else []
     vk_upload = run(
@@ -288,6 +273,50 @@ def publish_topic(
     log["steps"]["vk_upload"] = step_json(vk_upload)
     vk_prep = json.loads((MEMORY / "output" / topic / "vk-publish-prep.json").read_text(encoding="utf-8"))
     photo_url = vk_prep.get("cover_public_url", "")
+
+    topic_dir = MEMORY / "output" / topic
+    if (topic_dir / "telegram-post.md").is_file() and photo_url and not dry_run:
+        from telegram_mcp_handoff import write_telegram_mcp_handoff
+
+        tg_path = write_telegram_mcp_handoff(topic, photo_url)
+        tg_step: dict = {
+            "mode": "mcp_handoff",
+            "handoff": str(tg_path),
+            "channels": len(json.loads(tg_path.read_text(encoding="utf-8")).get("calls") or []),
+        }
+        tg_pub = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPTS / "publish-telegram-from-handoff.py"),
+                "--topic",
+                topic,
+            ],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        if tg_pub.returncode == 0:
+            try:
+                tg_step["publish"] = json.loads(tg_pub.stdout or "{}")
+                tg_step["status"] = "published"
+            except json.JSONDecodeError:
+                tg_step["publish_stdout"] = (tg_pub.stdout or "")[-500:]
+                tg_step["status"] = "published_unknown"
+        else:
+            tg_step["status"] = "deferred_mcp_or_vps"
+            tg_step["publish_error"] = (tg_pub.stderr or tg_pub.stdout or "")[-800:]
+            tg_step["note"] = (
+                "Cloud: MCP telegram_send_message по telegram-mcp-handoff.json "
+                "или publish-telegram-from-handoff.py после ASocks sync"
+            )
+        log["steps"]["telegram"] = tg_step
+    elif (topic_dir / "telegram-post.md").is_file():
+        log["steps"]["telegram"] = {
+            "deferred": True,
+            "reason": "dry_run_or_no_cover_url",
+        }
+    else:
+        log["steps"]["telegram"] = {"skipped": True, "reason": "no telegram-post.md"}
 
     use_vk_api = has_vk_access_token() and not dry_run
     if use_vk_api:
@@ -363,7 +392,13 @@ def publish_topic(
             run([sys.executable, str(SCRIPTS / "publish-b17-blog.py"), "--topic", topic, *submit])
         )
 
-    deferred: list[str] = ["telegram"]
+    deferred: list[str] = []
+    tg_status = log.get("steps", {}).get("telegram", {}).get("status")
+    if tg_status not in {"published", "published_unknown"}:
+        if log.get("steps", {}).get("telegram", {}).get("mode") == "mcp_handoff":
+            deferred.append("telegram_mcp")
+        elif not (topic_dir / "telegram-publish-log.json").is_file():
+            deferred.append("telegram")
     if not browser_ok:
         deferred.append("b17")
     if not dry_run:

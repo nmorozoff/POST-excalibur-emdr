@@ -35,6 +35,14 @@ python3 scripts/publish-topic.py --topic {id}
 Если publish-topic вернул status skipped already_published — перейти к отчетику и следующей теме.
 Telegram из cloud не публиковать — только VPS.
 
+ШАГ 2b TELEGRAM (сразу после publish-topic, без VPS)
+Если в output/{id}/ уже есть telegram-publish-log.json — пропустить.
+Иначе (один из путей, по порядку):
+1) python3 scripts/publish-telegram-from-handoff.py --topic {id}  (ASocks из Secrets → ~10 сек, синхронно)
+2) MCP telegram_send_message ×2 по telegram-mcp-handoff.json (если шаг 1 не прошёл; нужен Bot Token в mcp-kv.ru)
+Gate: telegram-publish-log.json, delivery link_preview_single_message, 2 канала.
+VPS webhook — только b17, Telegram НЕ ждать.
+
 ШАГ 3 VK MCP фаза 2
 Читать output/{id}/vk-mcp-handoff.json.
 VK ПРОФИЛЬ: MCP vk_create_post_with_photo, publish_location personal, from_group false.

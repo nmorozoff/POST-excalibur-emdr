@@ -478,9 +478,7 @@ def parse_channel_utm_sources(env: dict[str, str], channel_count: int) -> list[s
 
 
 def apply_utm_source(html: str, utm_source: str) -> str:
-    for old in ("tg1", "tg2", "tg3", "tg"):
-        html = re.sub(rf"utm_source={re.escape(old)}", f"utm_source={utm_source}", html)
-    return html
+    return re.sub(r"utm_source=(?:tg\d*|tg)\b", f"utm_source={utm_source}", html)
 
 
 def main() -> None:

@@ -6,12 +6,14 @@
 
 **Платформы:** Макс, Facebook, обложка Runware, FTP для VK-превью, handoff OK.
 
-**НЕ публикует:** Telegram (блокировка `api.telegram.org` с cloud/VPS DC → только ASocks KZ на VPS).
+**НЕ публикует напрямую:** Telegram (если ASocks в Secrets — `publish-topic.py` вызывает `publish-telegram-from-handoff.py` синхронно; иначе MCP handoff).
 
 ```bash
 python3 scripts/materialize_cloud_env.py
 python3 scripts/publish-topic.py --topic {topic_id}
 ```
+
+Если `telegram.status != published` → Cloud Agent: `publish-telegram-from-handoff.py` или MCP по `telegram-mcp-handoff.json`.
 
 `VK_ACCESS_TOKEN` **не нужен**. Скрипт заливает обложку на сайт и пишет `output/{topic}/vk-mcp-handoff.json`, `ok-mcp-handoff.json` (если есть `ok-post.md`) + `browser-local-handoff.md`.
 
@@ -80,7 +82,9 @@ python3 scripts/record-ok-publish.py --topic {id} \
 
 **Если MCP вернул `Refresh token expired`:** re-auth OK в Dashboard (mcp-kv), затем повторить шаги 1–2 по существующему `ok-mcp-handoff.json` (не перегенерировать контент). См. pitfalls «OK MCP: Refresh token expired».
 
-## Фаза 3 — Telegram + b17 (VPS)
+## Фаза 3 — b17 only (VPS)
+
+**Telegram снят с VPS** (2026-08-26): публикуется синхронно в фазе 1 через `publish-telegram-from-handoff.py` + ASocks, или MCP mcp-kv.
 
 **TenChat снят с пайплайна** (2026-08-03).
 

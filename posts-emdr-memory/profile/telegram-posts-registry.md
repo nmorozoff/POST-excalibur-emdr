@@ -11,6 +11,8 @@
 
 ## Опубликованные
 
+| sb-23-grounding-exercise | 2026-08-26 | sb-23-grounding-exercise | @natalia_morozova_psy | ? | https://t.me/natalia_morozova_psy/2050 | https://morozovanatalia.ru/anxiety |  |
+| sb-23-grounding-exercise | 2026-08-26 | sb-23-grounding-exercise | @nmorozova_emdr | ? | https://t.me/nmorozova_emdr/140 | https://morozovanatalia.ru/anxiety |  |
 | sb-22-name-emotion | 2026-08-23 | Шаг первый: | @natalia_morozova_psy | 2049 | https://t.me/natalia_morozova_psy/2049 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-22-name-emotion | 2026-08-23 | Шаг первый: | @nmorozova_emdr | 139 | https://t.me/nmorozova_emdr/139 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
 | sb-21-minute-silence | 2026-08-22 | электронная соска для взрослой нервной системы | @natalia_morozova_psy | 2048 | https://t.me/natalia_morozova_psy/2048 | https://morozovanatalia.ru/anxiety | тревога,EMDR,стресс,психология |
