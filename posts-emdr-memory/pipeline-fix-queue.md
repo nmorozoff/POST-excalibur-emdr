@@ -1302,7 +1302,8 @@ checks_run:
 ---
 
 ## INC-20260826-1610-sb24-vps-phase3-pending
-status: open
+status: fixed
+fixed_at: 2026-08-27
 run_date: 2026-08-26
 role: otchetik
 topic: sb-24-body-gesture
@@ -1326,10 +1327,33 @@ category: vps
 - scripts/publish-browser-deferred.py
 - scripts/publish-b17-blog.py
 
+### Fixic resolution
+fixed_at: 2026-08-27
+fix_summary:
+- Facebook опубликован через Zernio (Cloud, secrets OK): zernio-publish-log.json + facebook-posts-registry.
+- VPS webhook ×2 → worker не запушил finish; Cloud finish с `--force-b17-optional` после 5 основных платформ OK.
+- browser_worker_finish.py: optional read b17-publish-log / extract_title без log-файла.
+- Тема закрыта в short-blog-published.md; b17 → b17-tenchat-pending-queue.md (repair).
+needed_decision_or_secret:
+- VPS: при необходимости `git pull` + один webhook/deferred для b17 черновика sb-24.
+files_changed:
+- scripts/browser_worker_finish.py
+- posts-emdr-memory/profile/facebook-posts-registry.md
+- posts-emdr-memory/output/sb-24-body-gesture/zernio-publish-log.json
+- posts-emdr-memory/output/sb-24-body-gesture/browser-worker-finish.json
+- posts-emdr-memory/topics/short-blog-published.md
+- posts-emdr-memory/topics/short-blog-queue.md
+- posts-emdr-memory/b17-tenchat-pending-queue.md
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 scripts/verify-publish-run.py --topic sb-24-body-gesture (pass, exit 0)
+- python3 scripts/send-max-publish-report.py --topic sb-24-body-gesture
+
 ---
 
 ## INC-20260826-1610-sb24-facebook-zernio-missing
-status: needs-human
+status: fixed
+fixed_at: 2026-08-27
 run_date: 2026-08-26
 role: otchetik
 topic: sb-24-body-gesture

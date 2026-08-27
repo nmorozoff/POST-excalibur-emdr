@@ -1,0 +1,13 @@
+{
+  "topic": "sb-24-body-gesture",
+  "status": "browser_worker_finished",
+  "date": "2026-08-27",
+  "b17_url": "https://www.b17.ru/my_blog.php",
+  "tenchat_url": null,
+  "site_url": "https://morozovanatalia.ru/anxiety",
+  "queue": {
+    "exit_code": 0,
+    "stdout": "OK marked published: sb-24-body-gesture → short-blog-published.md",
+    "stderr": ""
+  }
+}
