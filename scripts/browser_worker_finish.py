@@ -36,9 +36,11 @@ def _log_status(topic_dir: Path, name: str) -> str | None:
 
 
 def _extract_title(topic_dir: Path, platform: str) -> str:
-    log = _read_json(topic_dir / f"{platform}-publish-log.json")
-    if log.get("title"):
-        return str(log["title"])
+    log_path = topic_dir / f"{platform}-publish-log.json"
+    if log_path.is_file():
+        log = _read_json(log_path)
+        if log.get("title"):
+            return str(log["title"])
     md = topic_dir / f"{platform}-blog-post.md" if platform == "b17" else topic_dir / "tenchat-post.md"
     if md.is_file():
         m = re.search(r"^## Заголовок\s*\n\n(.+?)\n", md.read_text(encoding="utf-8"), re.M)
@@ -103,7 +105,8 @@ def finish_topic(topic_id: str, *, skip_queue: bool = False, force_b17_optional:
             f"use --force-b17-optional to finish without b17 published)"
         )
 
-    b17_log = _read_json(topic_dir / "b17-publish-log.json")
+    b17_log_path = topic_dir / "b17-publish-log.json"
+    b17_log = _read_json(b17_log_path) if b17_log_path.is_file() else {}
     d = date.today().isoformat()
     site_url = _site_url_for_topic(topic_id)
     title_b17 = _extract_title(topic_dir, "b17")
