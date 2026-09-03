@@ -15,6 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from browser_backend import default_b17_compose_url, publish_b17
+from cover_upload import load_upload_env, prepare_jpeg, upload_cover, verify_cover_url
 from posts_emdr_env import (
     browser_backend_name,
     extract_b17_title_and_body,
@@ -80,6 +81,24 @@ def main() -> None:
     if args.dry_run:
         print(json.dumps({**prep, "status": "prep_only", "prep_path": str(prep_path)}, ensure_ascii=False, indent=2))
         return
+
+    cover_public_url = None
+    if cover.exists():
+        remote_name = f"{args.topic}.jpg"
+        candidate = f"https://morozovanatalia.ru/social-covers/{remote_name}"
+        probe = verify_cover_url(candidate)
+        if not probe.get("ok"):
+            try:
+                env_upload = load_upload_env()
+                uploaded = upload_cover(prepare_jpeg(cover), remote_name, env_upload)
+                cover_public_url = uploaded["url"]
+                prep["cover_public_url"] = cover_public_url
+                prep_path.write_text(json.dumps(prep, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            except SystemExit as exc:
+                print(f"Cover upload warning: {exc}", file=sys.stderr)
+        else:
+            cover_public_url = candidate
+            prep["cover_public_url"] = cover_public_url
 
     env = load_env_file(ENV_FILE)
     apply_undetectable_env(env)

@@ -351,14 +351,22 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Не делать:** брать первый HTTP 200 без проверки Content-Type.
 
-## Zernio удаляет обложку до VK MCP
+## VK delete-cover ломает b17 обложку
+
+**Симптом (2026-09-03, sb-25):** после MCP VK cloud вызывал `send-vk-post.py --delete-cover` → `morozovanatalia.ru/social-covers/{topic}.jpg` отдавал HTML 404 → b17 TinyMCE сохранял текст без картинки.
+
+**Правильно:**
+- **Не** вызывать `--delete-cover` в основном cloud-прогоне — URL нужен для b17 до repair/publish.
+- `publish-b17-blog.py` перед браузером: `verify_cover_url` + `upload_cover` если jpg не отдаёт image/jpeg.
+- Legacy API VK path в `publish-topic.py` тоже без delete-cover.
+
+## Zernio удалял обложку до VK MCP (исторически)
 
 **Симптом (2026-08-05, sb-08):** `publish-zernio-post.py` после Facebook вызывал `--delete-cover` → FTP social-covers удалён до фазы 2 MCP VK.
 
 **Правильно:**
-- Порядок cloud: VK upload → **MCP VK** → Facebook → `send-vk-post --delete-cover` после обоих VK-постов.
-- `publish-zernio-post.py`: **не** удалять cover по умолчанию; только явный `--delete-cover` (legacy VK API path).
-- `publish-topic.py`: Facebook после MCP handoff; cleanup — `send-vk-post.py --delete-cover`.
+- Порядок cloud: VK upload → **MCP VK** → Facebook (без delete-cover).
+- `publish-zernio-post.py`: **не** удалять cover по умолчанию.
 
 ## extract_post / normalize_typography
 

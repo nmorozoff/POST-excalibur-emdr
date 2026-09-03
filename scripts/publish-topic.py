@@ -344,15 +344,15 @@ def publish_topic(
                 ]
             )
         )
-        run([sys.executable, str(SCRIPTS / "send-vk-post.py"), "--topic", topic, "--delete-cover"])
+        # social-covers/{topic}.jpg оставляем на сайте для b17 TinyMCE (не --delete-cover)
         log["steps"]["vk_mode"] = "api"
     elif not dry_run and photo_url:
         handoff_path = write_vk_mcp_handoff(topic, photo_url)
         log["steps"]["vk_mode"] = "mcp_handoff"
         log["steps"]["vk_mcp_handoff"] = str(handoff_path)
         log["mcp_next"] = (
-            "Cloud Agent: MCP vk_create_post_with_photo ×2 по vk-mcp-handoff.json, "
-            "затем send-vk-post.py --delete-cover"
+            "Cloud Agent: MCP vk_create_post_with_photo ×2 по vk-mcp-handoff.json. "
+            "НЕ удалять social-covers/{topic}.jpg — нужен для b17 TinyMCE."
         )
     else:
         log["steps"]["vk_mode"] = "dry_run_or_no_cover"

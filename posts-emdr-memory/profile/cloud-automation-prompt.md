@@ -48,7 +48,7 @@ VPS webhook — только b17, Telegram НЕ ждать.
 VK ПРОФИЛЬ: MCP vk_create_post_with_photo, publish_location personal, from_group false.
 VK ГРУППА: MCP vk_create_post_with_photo, publish_location group, from_group true, group_id 224685309.
 Gate оба раза: в ответе Загружено фото.
-python3 scripts/send-vk-post.py --topic {id} --delete-cover
+НЕ запускать send-vk-post.py --delete-cover — обложка на morozovanatalia.ru/social-covers нужна для b17 (TinyMCE HTTPS).
 Обновить реестры max, vk-profile, vk-group, facebook, ok.
 
 ШАГ 3b OK MCP (если есть output/{id}/ok-mcp-handoff.json)
