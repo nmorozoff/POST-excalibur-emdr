@@ -1,0 +1,108 @@
+{
+  "topic": "sb-25-before-saying-yes",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-09-03T12:58:29.876633+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12141,
+        "completion_tokens": 8457,
+        "total_tokens": 20598
+      },
+      "chars": 3870,
+      "contract_fixes": [
+        "truncated max body to hard max 4000"
+      ]
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11118,
+        "completion_tokens": 5384,
+        "total_tokens": 16502
+      },
+      "chars": 4075,
+      "contract_fixes": [
+        "truncated telegram HTML to hard max 4096"
+      ]
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11762,
+        "completion_tokens": 4755,
+        "total_tokens": 16517
+      },
+      "chars": 4667,
+      "contract_fixes": [
+        "auto-wrapped vk-profile sections"
+      ]
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11761,
+        "completion_tokens": 5656,
+        "total_tokens": 17417
+      },
+      "chars": 4791,
+      "contract_fixes": [
+        "auto-wrapped vk-group sections"
+      ]
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11601,
+        "completion_tokens": 6403,
+        "total_tokens": 18004
+      },
+      "chars": 5613,
+      "contract_fixes": []
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12100,
+        "completion_tokens": 6065,
+        "total_tokens": 18165
+      },
+      "chars": 5297,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11351,
+        "completion_tokens": 6503,
+        "total_tokens": 17854
+      },
+      "chars": 2188,
+      "contract_fixes": [
+        "fixed b17 blank lines after headers"
+      ]
+    }
+  },
+  "cover_prompt": {
+    "chars": 1890,
+    "cover_meta": {
+      "line1": "Как перестать",
+      "line2": "говорить «да»",
+      "line3": "на автомате",
+      "yellow": "автомате"
+    }
+  }
+}

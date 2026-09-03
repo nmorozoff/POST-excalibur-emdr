@@ -12,6 +12,7 @@
 
 ## Опубликованные
 
+| sb-25-before-saying-yes | 2026-09-03 | Вопрос перед тем, как согласиться на «надо» | 176 | https://vk.com/wall-224685309_176 | https://morozovanatalia.ru/anxiety?utm_source=vk_group | тревога,микро-практика,EMDR,границы,психология |
 | sb-24-body-gesture | 2026-08-26 | Один жест телу вместо «соберись» | 175 | https://vk.com/wall-224685309_175 | https://morozovanatalia.ru/anxiety?utm_source=vk_group | тревога,микро-практика,EMDR |
 | sb-23-grounding-exercise | 2026-08-24 | Простое заземление, когда «уносит» в тревожные мысли | 174 | https://vk.com/wall-224685309_174 | https://morozovanatalia.ru/anxiety?utm_source=vk_group | тревога,микро-практика,EMDR,заземление,психология |
 | sb-22-name-emotion | 2026-08-23 | Как назвать эмоцию одним словом | 173 | https://vk.com/wall-224685309_173 | https://morozovanatalia.ru/anxiety | тревога,эмоции,EMDR |
