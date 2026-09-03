@@ -1,0 +1,97 @@
+{
+  "topic": "sb-25-before-saying-yes",
+  "overall": "pass",
+  "platforms": {
+    "max": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "url": null,
+      "ls_gate": {
+        "ok": true,
+        "issues": []
+      }
+    },
+    "telegram": {
+      "ok": true,
+      "delivery": "link_preview_single_message",
+      "channels": [
+        "nmorozova_emdr"
+      ],
+      "missing_channels": [],
+      "cover_source": "mcp-kv",
+      "urls": [
+        "https://t.me/nmorozova_emdr/142"
+      ]
+    },
+    "vk_profile": {
+      "ok": true,
+      "registry": true
+    },
+    "vk_group": {
+      "ok": true,
+      "registry": true
+    },
+    "vk_story": {
+      "ok": false,
+      "log": false,
+      "required": false
+    },
+    "facebook": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "pending_scheduled": false
+    },
+    "ok": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "required": true,
+      "format_ok": true
+    },
+    "b17": {
+      "ok": false,
+      "log": false,
+      "registry": false,
+      "status": null,
+      "draft_saved": false
+    }
+  },
+  "covers": {
+    "local_cover": {
+      "ok": true,
+      "path": "/workspace/posts-emdr-memory/output/sb-25-before-saying-yes/cover.png"
+    },
+    "site_cover": {
+      "url": "https://morozovanatalia.ru/social-covers/sb-25-before-saying-yes.jpg",
+      "ok": false,
+      "error": "HTTP Error 301: The HTTP server returned a redirect error that would lead to an infinite loop.\nThe last 30x error message was:\nMoved Permanently"
+    }
+  },
+  "queue": {
+    "published": false,
+    "still_in_queue": true
+  },
+  "vps": {
+    "finish_json": false,
+    "handoff_done": false,
+    "status": null
+  },
+  "issues": [
+    "b17: не published (VPS мог ещё не отработать)",
+    "Тема всё ещё in_progress в очереди"
+  ],
+  "links": {
+    "max": "https://max.ru/se13417616_biz/AaBnW2qtX0M",
+    "telegram": [
+      "https://t.me/nmorozova_emdr/142"
+    ],
+    "vk_profile": "https://vk.com/wall218367867_702",
+    "vk_group": "https://vk.com/wall-224685309_176",
+    "facebook": "https://www.facebook.com/632301483303094_122184110564837712",
+    "ok": "https://ok.ru/group/70000034253679/topic/161403076112495"
+  }
+}

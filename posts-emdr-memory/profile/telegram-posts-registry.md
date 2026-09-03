@@ -12,6 +12,7 @@
 
 ## Опубликованные
 
+| sb-25-before-saying-yes | 2026-09-03 | Вопрос перед тем, как согласиться на «надо» | nmorozova_emdr | 142 | https://t.me/nmorozova_emdr/142 | https://morozovanatalia.ru/anxiety?utm_source=tg1 | тревога,микро-практика,EMDR,границы,психология |
 | sb-25-before-saying-yes | 2026-09-03 | Вопрос перед тем, как согласиться на «надо» | CHANNEL_HANDLE | 142 | https://t.me/nmorozova_emdr/142 | https://morozovanatalia.ru/anxiety?utm_source=tg1 | тревога,микро-практика,EMDR,границы,психология |
 | sb-24-body-gesture | 2026-08-26 | sb-24-body-gesture | CHANNEL_HANDLE | ? | https://t.me/nmorozova_emdr/141 | https://morozovanatalia.ru/anxiety |  |
 | sb-23-grounding-exercise | 2026-08-26 | sb-23-grounding-exercise | CHANNEL_HANDLE | 140 | https://t.me/nmorozova_emdr/140 | https://morozovanatalia.ru/anxiety |  |

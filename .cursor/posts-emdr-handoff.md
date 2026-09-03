@@ -1,8 +1,11 @@
 # Posts EMDR Handoff
 
-status: in_progress
+status: done
 topic_id: sb-25-before-saying-yes
 title: Вопрос перед тем, как согласиться на «надо»
-post_type: микро-практика
-site_url: https://morozovanatalia.ru/anxiety
-started_at: 2026-09-03
+closed_at: 2026-09-03
+verify: pass (b17 VPS pending)
+
+=== POSTS EMDR DONE ===
+
+sb-25-before-saying-yes: 5 основных платформ OK (Max, TG, VK×2, Facebook, OK). b17 — VPS timeout, repair-пул.
