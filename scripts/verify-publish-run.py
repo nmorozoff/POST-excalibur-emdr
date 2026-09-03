@@ -17,7 +17,7 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env, publish_text_format_issues, validate_max_ls_cta, fix_max_markdown_links, extract_post_body_from_md
+from posts_emdr_env import MEMORY, PROJECT_ROOT, load_env, publish_text_format_issues, validate_max_ls_cta, fix_max_markdown_links, extract_post_body_from_md, telegram_channel_slug
 
 PROFILE = MEMORY / "profile"
 EXPECTED_TG_CHANNELS = ("nmorozova_emdr",)
@@ -126,15 +126,19 @@ def verify_topic(topic: str) -> dict:
     tg_ok = tg_log and tg_log.get("status") == "sent"
     delivery = (tg_log or {}).get("delivery")
     channels = (tg_log or {}).get("channels") or []
-    ch_names = {str(c.get("chat_id", "")).lstrip("@") for c in channels}
+    ch_names = {
+        telegram_channel_slug(str(c.get("chat_id", "")), post_url=str(c.get("post_url") or ""))
+        for c in channels
+    }
+    ch_names.discard("")
     missing_ch = [c for c in EXPECTED_TG_CHANNELS if c not in ch_names]
     cover_src = (tg_log or {}).get("cover_source")
     tg_links = []
     for ch in channels:
-        chat = str(ch.get("chat_id", "")).lstrip("@")
+        slug = telegram_channel_slug(str(ch.get("chat_id", "")), post_url=str(ch.get("post_url") or ""))
         mid = ch.get("message_id")
-        if chat and mid:
-            tg_links.append(f"https://t.me/{chat}/{mid}")
+        if slug and mid:
+            tg_links.append(f"https://t.me/{slug}/{mid}")
     report["platforms"]["telegram"] = {
         "ok": bool(tg_ok and not missing_ch and delivery == "link_preview_single_message"),
         "delivery": delivery,
@@ -146,7 +150,7 @@ def verify_topic(topic: str) -> dict:
     if tg_links:
         report["links"]["telegram"] = tg_links
     if not tg_ok:
-        report["issues"].append("Telegram: не отправлен (или VPS ещё не отработал)")
+        report["issues"].append("Telegram: не отправлен")
     elif missing_ch:
         report["issues"].append(f"Telegram: нет каналов {missing_ch}")
     elif delivery != "link_preview_single_message":
@@ -280,7 +284,7 @@ def verify_topic(topic: str) -> dict:
         if b17_draft:
             report["issues"].append("b17: сохранено в черновик (rate limit), требуется повторный запуск")
         else:
-            report["issues"].append("b17: не published (VPS мог ещё не отработать)")
+            report["issues"].append("b17: не published (repair-пул / ручной repair-b17-tenchat.py)")
 
     # Queue / VPS
     published_path = MEMORY / "topics" / "short-blog-published.md"
@@ -297,11 +301,15 @@ def verify_topic(topic: str) -> dict:
         report["issues"].append("Тема всё ещё in_progress в очереди")
 
     finish = _read_json(topic_dir / "browser-worker-finish.json")
+    cloud_finish = _read_json(topic_dir / "cloud-publish-finish.json")
     handoff_done = (topic_dir / "browser-local-handoff.done.md").is_file()
     report["vps"] = {
+        "deprecated": True,
+        "note": "VPS не требуется; закрытие через close-cloud-publish.py",
         "finish_json": bool(finish),
+        "cloud_finish_json": bool(cloud_finish),
         "handoff_done": handoff_done,
-        "status": (finish or {}).get("status"),
+        "status": (finish or cloud_finish or {}).get("status"),
     }
     # b17 and TenChat are NOT required for the main short-blog pass.
     # They are handled by the manual repair queue: b17-tenchat-pending-queue.md
@@ -309,7 +317,7 @@ def verify_topic(topic: str) -> dict:
     b17_draft = b17_status == "draft_saved"
 
     if not report["platforms"]["telegram"]["ok"]:
-        report["issues"].append("VPS phase 3: Telegram ещё не отработал")
+        pass  # already in issues
 
     fb_pending = report["platforms"]["facebook"].get("pending_scheduled")
     hard_fail = (
@@ -380,7 +388,7 @@ def format_report_md(report: dict) -> str:
             "Подождите 5–15 мин и повторите проверку._"
         )
     elif overall == "fail":
-        lines.append("_Нужна помощь: откройте Cursor / проверьте VPS логи._")
+        lines.append("_Проверьте логи Cloud Agent: verify-publish-run.py --topic ... --json_")
     return "\n".join(lines)
 
 

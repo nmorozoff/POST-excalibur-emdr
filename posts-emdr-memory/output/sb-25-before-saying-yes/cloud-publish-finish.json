@@ -1,0 +1,12 @@
+{
+  "topic": "sb-25-before-saying-yes",
+  "status": "cloud_publish_closed",
+  "date": "2026-09-03",
+  "mode": "cloud_no_vps",
+  "verify": "pass",
+  "b17_repair": {
+    "added": true,
+    "status": "pending",
+    "path": "/Users/natala/Documents/Проекты СURSOR/Посты EMDR/posts-emdr-memory/b17-tenchat-pending-queue.md"
+  }
+}

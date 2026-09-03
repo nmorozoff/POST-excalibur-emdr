@@ -82,62 +82,36 @@ python3 scripts/record-ok-publish.py --topic {id} \
 
 **Если MCP вернул `Refresh token expired`:** re-auth OK в Dashboard (mcp-kv), затем повторить шаги 1–2 по существующему `ok-mcp-handoff.json` (не перегенерировать контент). См. pitfalls «OK MCP: Refresh token expired».
 
-## Фаза 3 — b17 only (VPS)
+## Фаза 3 — Cloud close (без VPS)
 
-**Telegram снят с VPS** (2026-08-26): публикуется синхронно в фазе 1 через `publish-telegram-from-handoff.py` + ASocks, или MCP mcp-kv.
-
-**TenChat снят с пайплайна** (2026-08-03).
-
-**Полная инструкция:** `profile/browser-autonomous-vps.md`
-
-Cloud после фаз 1–2:
-
-1. `git add` + `commit` + `push` артефактов (`output/{topic}/`, handoff, реестры)
-2. Webhook на VPS:
+**VPS отключён** (2026-09). Закрытие темы только в Cloud:
 
 ```bash
-curl -fsS -X POST "http://195.209.210.45:8787/publish" \
-  -H "Authorization: Bearer $VPS_WEBHOOK_SECRET" \
-  -H "Content-Type: application/json" \
-  -d '{"topic":"{topic_id}"}'
+python3 scripts/close-cloud-publish.py --topic {topic_id}
 ```
 
-Или cron на VPS подхватит в **10:00** или **17:00** MSK (fallback).
+Делает: `mark-short-blog-published`, `browser-worker-finish.json`, `cloud-publish-finish.json`, b17 → `b17-tenchat-pending-queue.md` если не published.
 
-VPS worker делает:
-1. `git pull`
-2. `ensure_site_cover` → FTP обложка на `social-covers/{topic}.jpg`
-3. `asocks_sync_proxy.py --target telegram` → Telegram `@nmorozova_emdr` (`link_preview`)
-4. b17 (Playwright + RU proxy, HTTPS cover, verify list)
-5. `--finish` (реестры + очередь) + `--git-push`
+**b17.ru:** `python3 scripts/repair-b17-tenchat.py --topic {id}` с Mac + Undetectable (не Cloud, не VPS).
 
-**На VPS обязательно:**
-- `B17_PROXY_*` (ASocks RU)
-- `TELEGRAM_PROXY_*` (ASocks KZ `ResKazakhstan - Turkestan`)
-- `linux-storage-state.json`
-- `github.env.local` (`GITHUB_TOKEN`)
-- webhook systemd **или** cron
-
-Mac — **не используем**.
+Legacy VPS: `profile/browser-autonomous-vps.md` (архив).
 
 ## Secrets для Cloud
 
 См. `cloud-secrets-checklist.txt`.  
 `VK_ACCESS_TOKEN` **не нужен** (VK через MCP).  
-`VPS_WEBHOOK_SECRET` — в Cloud Secrets, чтобы вызвать webhook.
+`VPS_WEBHOOK_SECRET` — **не нужен** (VPS отключён).  
+`TELEGRAM_CHANNEL_CHAT_IDS` — **только** `@nmorozova_emdr` (не `CHANNEL_HANDLE`).
 
 ## Промпт automation (полный)
 
 ```
-1. pending тема из short-blog-queue.md → контент всех платформ
-   (в telegram-post.md обязателен <!-- END_POST --> до ## Мета)
-2. python3 scripts/materialize_cloud_env.py --check
-3. python3 scripts/publish-topic.py --topic {id}
-   (Telegram НЕ публикуется здесь — deferred на VPS)
-4. MCP vk_create_post_with_photo ×2 по vk-mcp-handoff.json
-5. MCP ok_create_post_with_photo по ok-mcp-handoff.json (если есть); record-ok-publish.py
-6. send-vk-post.py --delete-cover; обновить реестры max/vk/fb/ok
-7. git add + commit + push output/{id}/ и реестры
-8. curl VPS webhook: POST /publish {"topic":"{id}"} с VPS_WEBHOOK_SECRET
-9. НЕ помечать published в очереди — это сделает VPS worker (--finish)
+1. pending тема → grsai-generate-topic.py
+2. materialize_cloud_env.py --check
+3. publish-topic.py --topic {id}
+4. publish-telegram-from-handoff.py --topic {id} (если нет telegram-publish-log.json)
+5. MCP vk ×2, ok, реестры, send-vk-post --delete-cover
+6. git commit + push main
+7. close-cloud-publish.py --topic {id}
+8. Task posts-emdr-otchetik
 ```

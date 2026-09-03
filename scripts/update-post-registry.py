@@ -51,7 +51,7 @@ def _build_row(args: argparse.Namespace) -> str:
     if args.platform == "max":
         return f"| {args.topic_id} | {d} | {args.title} | {args.url} | {args.site_url} | {tags} |"
     if args.platform == "telegram":
-        channel = args.channel or "@morozova_emdr"
+        channel = args.channel or "@nmorozova_emdr"
         msg_id = args.message_id or "?"
         return (
             f"| {args.topic_id} | {d} | {args.title} | {channel} | {msg_id} | {args.url} | "

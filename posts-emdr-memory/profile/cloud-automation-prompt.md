@@ -10,7 +10,7 @@
 
 Задача: опубликовать одну тему MSP short-blog за один прогон.
 
-Главное правило: b17 и TenChat НЕ блокируют закрытие темы и НЕ блокируют старт следующей. Основной прогон публикует: Макс, Telegram, VK, Facebook, OK и создаёт черновик b17/TenChat. Тема считается опубликованной после 5 основных платформ + VPS finish. b17/TenChat догоняют через ручной repair-запуск.
+Главное правило: b17 и TenChat НЕ блокируют закрытие темы и НЕ блокируют старт следующей. Основной прогон публикует: Макс, Telegram, VK, Facebook, OK. Тема закрывается после 5 платформ + close-cloud-publish.py. b17/TenChat — repair с Mac (Undetectable), VPS не нужен.
 
 ШАГ 0 INTAKE
 INCIDENTS: python3 scripts/incident_queue.py --project-root . Если exit 2 — сначала Task(posts-emdr-fixic), новую тему не начинать.
@@ -62,14 +62,10 @@ git push
 Если git push ушёл на ветку cursor/* (не main), а не напрямую в main — создать/слить PR в main через `gh pr create` + `gh pr merge --squash --subject "publish: {id}"`. VPS тянет только main; webhook не запускать, пока контент не в main.
 Проверка: `git log origin/main --oneline -3` должен содержать commit "publish: {id}".
 
-ШАГ 5 VPS WEBHOOK фаза 3
-Проверка секрета: python3 scripts/verify-vps-webhook-secret.py
-Проверка Telegram env (cloud): python3 scripts/materialize_cloud_env.py && python3 scripts/verify-telegram-env.py — exit 0 обязателен.
-Проверка Telegram-каналов: TELEGRAM_CHANNEL_CHAT_IDS = @nmorozova_emdr (только один канал). @morozova_emdr и @natalia_morozova_psy сняты.
-Запуск: python3 scripts/trigger-vps-webhook.py --topic {id} --wait-for-lock
-Ожидать HTTP 202 (при 409 publish_lock_held скрипт ждёт до 40 мин, не считать успехом). VPS: materialize_vps_env → publish-browser-deferred --submit --finish --git-push (только b17; Telegram уже в cloud).
-Gate: telegram-publish-log.json + browser-worker-finish.json в output/{id}/ после git pull. b17 draft_saved НЕ блокирует finish.
-Если send-telegram-post.py упал с BLOCKER по каналам — остановиться, исправить env на VPS (systemctl restart posts-emdr-webhook).
+ШАГ 5 CLOUD CLOSE (без VPS)
+python3 scripts/close-cloud-publish.py --topic {id}
+Gate: short-blog-published.md (тема убрана из очереди), cloud-publish-finish.json или browser-worker-finish.json.
+b17: python3 scripts/publish-b17-blog.py --topic {id} (только prep) + repair-b17-tenchat.py с Mac при необходимости. VPS webhook НЕ вызывать.
 
 ШАГ 6 ОТЧЁТИК
 Task(posts-emdr-otchetik) с topic_id.
@@ -79,7 +75,7 @@ Polling не нужен — b17/TenChat догоняют через ручной
 ШАГ 7 FIXIC
 При fail verify-publish-run или incident_queue exit 2: Task(posts-emdr-fixic).
 
-ЗАПРЕТЫ: не LinkedIn, не Ядрышко/Core. Не дублировать Telegram (если есть telegram-publish-log.json — пропустить 2b). Не помечать published вручную в short-blog-published.md — только VPS --finish (mark-short-blog-published.py). Не вставлять in_progress в таблицу published. Не kie-cover/grsai-cover/runware-cover на шаге 1 — только publish-topic. Не photo_then_text в Telegram. Не публиковать повторно то, что уже в short-blog-published.md. Не ждать b17/TenChat для закрытия темы. Не публиковать в @natalia_morozova_psy.
+ЗАПРЕТЫ: не LinkedIn, не Ядрышко/Core. Не trigger-vps-webhook (VPS отключён). Не TELEGRAM_CHANNEL_CHAT_IDS=CHANNEL_HANDLE — только @nmorozova_emdr. Не дублировать Telegram (если есть telegram-publish-log.json — пропустить 2b). Не помечать published вручную без close-cloud-publish.py. Не kie-cover/grsai-cover/runware-cover на шаге 1. Не photo_then_text в Telegram. Не публиковать повторно то, что уже в short-blog-published.md. Не ждать b17/TenChat для закрытия темы. Не публиковать в @natalia_morozova_psy.
 
 HANDOFF: .cursor/posts-emdr-handoff.md со статусом === POSTS EMDR DONE === только после Отчётика pass или partial с INC vps-pending.
 

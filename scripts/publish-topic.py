@@ -181,26 +181,25 @@ def write_ok_mcp_handoff(topic: str, image_url: str) -> Path | None:
 
 def write_browser_local_handoff(topic: str) -> Path:
     topic_dir = MEMORY / "output" / topic
-    body = f"""# VPS publish — b17 only
+    body = f"""# Cloud close — b17 repair (VPS не требуется)
 
 Тема: `{topic}`
 
-Cloud: Макс, VK, Facebook, OK, **Telegram (MCP mcp-kv)**. На **VPS** остался только:
+Cloud: Макс, Telegram, VK, Facebook, OK опубликованы в этом прогоне.
 
-1. b17 (Playwright + residential RU) — черновик, не блокирует закрытие темы
-
-Telegram **не** на VPS — см. `telegram-mcp-handoff.json` и MCP в Cloud.
-
-## Триггер b17 (опционально)
+## Закрытие темы (обязательно в Cloud)
 
 ```bash
-curl -fsS -X POST "http://195.209.210.45:8787/publish" \\
-  -H "Authorization: Bearer $VPS_WEBHOOK_SECRET" \\
-  -H "Content-Type: application/json" \\
-  -d '{{"topic":"{topic}"}}'
+python3 scripts/close-cloud-publish.py --topic {topic}
 ```
 
-Worker пропустит Telegram, если уже есть `telegram-publish-log.json`.
+## b17 (repair, не блокирует очередь)
+
+```bash
+python3 scripts/repair-b17-tenchat.py --topic {topic}
+```
+
+Локально с Mac + Undetectable, если нужен черновик/публикация на b17.ru.
 
 См. `posts-emdr-memory/profile/cloud-publish-phases.md`
 """

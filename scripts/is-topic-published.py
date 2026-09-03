@@ -6,21 +6,21 @@ Usage:
   python3 scripts/is-topic-published.py --topic sb-05 --json
 
 Exit codes:
-  0 — тема уже end-to-end опубликована (cloud + VPS)
+  0 — тема опубликована (5 платформ + Telegram + закрыта в очереди)
   1 — тема не найдена или не полностью опубликована
-  2 — cloud опубликован, но VPS не завершил (partial)
+  2 — cloud готов, но тема ещё не закрыта (нужен close-cloud-publish.py)
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import MEMORY
+from posts_emdr_env import MEMORY, telegram_channel_slug
+
 
 PROFILE = MEMORY / "profile"
 
@@ -46,6 +46,21 @@ def _queue_published(topic: str) -> bool:
     return published.is_file() and f"`{topic}`" in published.read_text(encoding="utf-8")
 
 
+def _telegram_sent(topic_dir: Path) -> bool:
+    tg_log = _read_json(topic_dir / "telegram-publish-log.json")
+    if not tg_log or tg_log.get("status") != "sent":
+        return False
+    channels = tg_log.get("channels") or []
+    if not channels:
+        return bool(tg_log.get("message_id"))
+    slugs = {
+        telegram_channel_slug(str(c.get("chat_id", "")), post_url=str(c.get("post_url") or ""))
+        for c in channels
+    }
+    slugs.discard("")
+    return "nmorozova_emdr" in slugs
+
+
 def check_topic(topic: str) -> dict:
     topic_dir = MEMORY / "output" / topic
     result = {
@@ -54,7 +69,7 @@ def check_topic(topic: str) -> dict:
         "partial": False,
         "reasons": [],
         "cloud_ok": False,
-        "vps_ok": False,
+        "closed": False,
     }
 
     if not topic_dir.is_dir():
@@ -89,30 +104,22 @@ def check_topic(topic: str) -> dict:
         if ok_required and not (ok_ok or ok_reg):
             result["reasons"].append("OK не опубликован")
 
-    tg_log = _read_json(topic_dir / "telegram-publish-log.json")
-    tg_ok = tg_log and tg_log.get("status") == "sent"
-    b17_log = _read_json(topic_dir / "b17-publish-log.json")
-    b17_ok = bool(b17_log and b17_log.get("status") == "published")
-    b17_reg = _registry_has_topic(topic, PROFILE / "b17-posts-registry.md")
-    finish_json = (topic_dir / "browser-worker-finish.json").is_file()
-    handoff_done = (topic_dir / "browser-local-handoff.done.md").is_file()
+    tg_ok = _telegram_sent(topic_dir)
+    if not tg_ok:
+        result["reasons"].append("Telegram не опубликован")
+
     queue_published = _queue_published(topic)
+    finish_json = (topic_dir / "browser-worker-finish.json").is_file() or (
+        topic_dir / "cloud-publish-finish.json"
+    ).is_file()
+    closed = queue_published or finish_json
+    result["closed"] = closed
 
-    vps_ok = (tg_ok and (b17_ok or b17_reg)) or (finish_json and handoff_done) or queue_published
-    result["vps_ok"] = vps_ok
-    if not vps_ok:
-        if not tg_ok:
-            result["reasons"].append("Telegram не опубликован")
-        if not (b17_ok or b17_reg):
-            result["reasons"].append("b17 не опубликован")
-        if not (finish_json or handoff_done):
-            result["reasons"].append("VPS finish не выполнен")
-
-    if cloud_ok and vps_ok:
+    if cloud_ok and tg_ok and closed:
         result["published"] = True
-    elif cloud_ok and not vps_ok:
+    elif cloud_ok and tg_ok and not closed:
         result["partial"] = True
-        result["reasons"].append("Cloud готов, VPS не завершил")
+        result["reasons"].append("Cloud готов — запустите close-cloud-publish.py")
 
     return result
 
@@ -130,7 +137,7 @@ def main() -> None:
         if result["published"]:
             print(f"✅ {args.topic} — уже опубликована end-to-end")
         elif result["partial"]:
-            print(f"⏳ {args.topic} — cloud ok, VPS pending")
+            print(f"⏳ {args.topic} — cloud ok, нужен close-cloud-publish")
             for r in result["reasons"]:
                 print(f"  {r}")
         else:

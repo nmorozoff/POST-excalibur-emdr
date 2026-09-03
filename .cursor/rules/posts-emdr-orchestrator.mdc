@@ -47,7 +47,7 @@ Handoff runtime: `.cursor/posts-emdr-handoff.md`
 
 См. `posts-emdr-memory/profile/cloud-publish-phases.md` и `CLOUD-SETUP.md`.
 
-**3 фазы:** (1) скрипты cloud: Макс/FB + handoff, (2) **MCP mcp-kv** → VK + OK, (3) **VPS** → Telegram + b17.
+**3 фазы:** (1) скрипты cloud: Макс/TG/FB + handoff, (2) **MCP mcp-kv** → VK + OK, (3) **close-cloud-publish.py** (очередь; VPS не нужен). b17 — repair с Mac.
 
 `VK_ACCESS_TOKEN` не нужен. MCP mcp-kv — в Dashboard automation.
 
@@ -151,16 +151,18 @@ python scripts/repair-b17-tenchat.py --topic {id}      # ручной repair
 
 Gate: форма заполнена, `b17-publish-prep.json`. Опционально `--submit` для автоклика «Сохранить».
 
-### Шаг 7 — Закрытие
+### Шаг 7 — Закрытие (Cloud, без VPS)
 
-- Пометить тему `published` + дата в `short-blog-queue.md` / `short-blog-published.md` после 5 основных платформ (Макс, Telegram, VK, Facebook, OK). b17/TenChat не блокируют закрытие.
-- `publish-log.md` в output
-- Обновить реестры платформ (`max`, `telegram`, `vk-profile`, `vk-group`, `facebook`, `ok`)
-- Добавить тему в `b17-tenchat-pending-queue.md` если b17/TenChat не published
-- Fragment шага: `incident_report:` (`shared/subagent-end-of-task-contract.md`)
+```bash
+python3 scripts/close-cloud-publish.py --topic {id}
+```
+
+- Пометить тему `published` в `short-blog-published.md` (скрипт делает сам)
+- `cloud-publish-finish.json` + `browser-worker-finish.json`
+- b17 → `b17-tenchat-pending-queue.md` если не published
 - Handoff: `=== POSTS EMDR DONE ===`
 
-**Cloud one-liner (после контента):** `python3 scripts/publish-topic.py --topic {id}`
+**VPS webhook не вызывать.**
 
 ### Шаг 8 — Отчётик (QA + отчёт в Макс)
 

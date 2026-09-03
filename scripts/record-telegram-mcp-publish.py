@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import MEMORY
+from posts_emdr_env import MEMORY, normalize_telegram_chat_id, load_env
 from vps_publish_guard import mark_telegram_sent
 
 SCRIPTS = Path(__file__).resolve().parent
@@ -49,14 +49,17 @@ def main() -> None:
         except json.JSONDecodeError:
             channels = []
 
+    env = load_env("telegram.env.local")
+    chat_id = normalize_telegram_chat_id(args.chat_id, env)
+
     entry = {
-        "chat_id": args.chat_id,
+        "chat_id": chat_id,
         "message_id": args.message_id,
-        "post_url": _post_url(args.chat_id, args.message_id),
+        "post_url": _post_url(chat_id, args.message_id),
         "utm_source": args.utm_source or None,
         "via": "mcp-kv",
     }
-    channels = [c for c in channels if str(c.get("chat_id")) != str(args.chat_id)]
+    channels = [c for c in channels if str(c.get("chat_id")) != str(args.chat_id) and str(c.get("chat_id")) != chat_id]
     channels.append(entry)
 
     log = {
@@ -98,7 +101,7 @@ def main() -> None:
             "--site-url",
             site_url or "https://morozovanatalia.ru/anxiety",
             "--channel",
-            args.chat_id,
+            chat_id,
         ],
         cwd=SCRIPTS.parent,
         capture_output=True,

@@ -36,7 +36,7 @@ Cursor automation для **Posts EMDR** MUST использовать репоз
 | `KIE_API_KEY` | Обложки (legacy fallback) |
 | `GRSAI_API_KEY` | **Тексты** (`gemini-3.1-pro`, Chat API) + **обложки** (`gpt-image-2`) — один ключ |
 | `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_SERVER_DIR` | Обложка для VK/TG preview (или алиас `REACT_FTP_*`) |
-| `VPS_WEBHOOK_SECRET` | Триггер фазы 3 на VPS |
+| `VPS_WEBHOOK_SECRET` | _(не нужен — VPS отключён)_ |
 
 Список имён и alias mapping: `cloud-secrets-checklist.txt`
 
@@ -66,11 +66,15 @@ Cursor automation для **Posts EMDR** MUST использовать репоз
 После `publish-topic.py` агент запускает `publish-telegram-from-handoff.py` (нужен `ASOCKS_API_KEY` + `TELEGRAM_BOT_TOKEN` в Secrets).  
 Канал: только `@nmorozova_emdr`. VPS для Telegram **не ждать**.
 
-### b17 (фаза 3 — Linux VPS)
+### b17 (repair — Mac + Undetectable, не Cloud)
 
-На Ubuntu VPS: webhook `POST /publish` или cron `run-linux-browser-worker.sh`.
+**VPS отключён** (2026-09). b17 не в автоматическом прогоне.
 
-Подробно: **`profile/browser-autonomous-vps.md`**, **`profile/cloud-publish-phases.md`**.
+```bash
+python3 scripts/repair-b17-tenchat.py --topic {topic_id}
+```
+
+Legacy VPS: `profile/browser-autonomous-vps.md` (архив).
 
 ## 2. Environment install
 

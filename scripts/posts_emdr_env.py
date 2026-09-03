@@ -669,8 +669,11 @@ ENV_SPECS: dict[str, list[str]] = {
 
 ALLOWED_TELEGRAM_CHANNELS = frozenset({"nmorozova_emdr"})
 BANNED_TELEGRAM_CHANNELS = frozenset({"morozova_emdr", "natalia_morozova_psy"})
+INVALID_TELEGRAM_CHANNEL_PLACEHOLDERS = frozenset(
+    {"channel_handle", "your_channel", "telegram_channel", "chat_id"}
+)
 TELEGRAM_CHANNELS_CHECKLIST = "posts-emdr-memory/cloud-secrets-checklist.txt"
-DEFAULT_TELEGRAM_CHANNEL = "@n[REDACTED]"  # @nmorozova_emdr — единственный канал MSP (с 2026-08-26)
+DEFAULT_TELEGRAM_CHANNEL = "@nmorozova_emdr"
 
 # Shared Cursor secrets (Excalibur / React) → Posts EMDR names. See cloud-secrets-checklist.txt.
 CLOUD_SECRET_ALIASES: list[tuple[str, str]] = [
@@ -705,6 +708,30 @@ def parse_telegram_channel_ids(env: dict[str, str]) -> list[str]:
     return [single] if single else []
 
 
+def telegram_channel_slug(chat_id: str, *, post_url: str = "") -> str:
+    """Normalize @handle from chat_id or t.me post URL."""
+    slug = str(chat_id or "").strip().lstrip("@")
+    if slug.lower() in INVALID_TELEGRAM_CHANNEL_PLACEHOLDERS:
+        slug = ""
+    if not slug and post_url:
+        m = re.match(r"https?://t\.me/([^/]+)/\d+", post_url.strip())
+        if m:
+            slug = m.group(1)
+    return slug.lower()
+
+
+def normalize_telegram_chat_id(chat_id: str, env: dict[str, str] | None = None) -> str:
+    slug = telegram_channel_slug(chat_id)
+    if slug in ALLOWED_TELEGRAM_CHANNELS:
+        return f"@{slug}"
+    env = env or {}
+    for raw in parse_telegram_channel_ids(env):
+        slug = telegram_channel_slug(raw)
+        if slug in ALLOWED_TELEGRAM_CHANNELS:
+            return f"@{slug}"
+    return DEFAULT_TELEGRAM_CHANNEL
+
+
 def validate_telegram_channels(
     env: dict[str, str],
     *,
@@ -715,6 +742,16 @@ def validate_telegram_channels(
     if not channels:
         return {"ok": False, "channels": [], "error": "TELEGRAM_CHANNEL_CHAT_IDS not set"}
     banned = [ch for ch in normalized if ch in BANNED_TELEGRAM_CHANNELS]
+    invalid = [ch for ch in normalized if ch.lower() in INVALID_TELEGRAM_CHANNEL_PLACEHOLDERS]
+    if invalid:
+        return {
+            "ok": False,
+            "channels": channels,
+            "error": (
+                f"TELEGRAM_CHANNEL_CHAT_IDS содержит placeholder {invalid} — "
+                f"укажите {DEFAULT_TELEGRAM_CHANNEL} в Cloud Secrets"
+            ),
+        }
     if banned:
         return {
             "ok": False,

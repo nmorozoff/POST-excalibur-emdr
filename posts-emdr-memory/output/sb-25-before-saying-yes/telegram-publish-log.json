@@ -5,13 +5,13 @@
   "via": "mcp-kv",
   "channels": [
     {
-      "chat_id": "CHANNEL_HANDLE",
+      "chat_id": "@nmorozova_emdr",
       "message_id": 142,
       "post_url": "https://t.me/nmorozova_emdr/142",
       "utm_source": "tg1",
       "via": "mcp-kv"
     }
   ],
-  "chat_id": "CHANNEL_HANDLE",
+  "chat_id": "@nmorozova_emdr",
   "message_id": 142
 }
