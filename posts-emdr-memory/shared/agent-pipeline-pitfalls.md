@@ -351,6 +351,12 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Не делать:** брать первый HTTP 200 без проверки Content-Type.
 
+## Dashboard Instructions устарели
+
+**Симптом:** в Automations длинный промпт с VPS webhook, delete-cover, ручной HANDOFF.
+
+**Правильно:** Instructions — 6 строк из `cloud-automation-prompt.md` (один раз). Всё остальное — `cloud-automation-runbook.md` в repo после `git pull`. Handoff пишет `close-cloud-publish.py`.
+
 ## Telegram без обложки (Max CDN / MCP)
 
 **Симптом (2026-09-03, sb-25):** в канале текст есть, превью нет. `cover_public_url` = `i.oneme.ru` (CDN Макс); публикация через MCP `telegram_send_message` без `link_preview_options`.

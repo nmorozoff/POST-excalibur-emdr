@@ -118,6 +118,9 @@ def close_topic(topic_id: str, *, dry_run: bool = False) -> dict:
         json.dumps(cloud_finish, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+    from posts_emdr_handoff import write_handoff_done
+
+    write_handoff_done(topic_id, verify=overall)
     out["finish"] = finish
     return out
 

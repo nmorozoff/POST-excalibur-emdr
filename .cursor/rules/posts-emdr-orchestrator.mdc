@@ -157,12 +157,9 @@ Gate: форма заполнена, `b17-publish-prep.json`. Опциональ
 python3 scripts/close-cloud-publish.py --topic {id}
 ```
 
-- Пометить тему `published` в `short-blog-published.md` (скрипт делает сам)
-- `cloud-publish-finish.json` + `browser-worker-finish.json`
-- b17 → `b17-tenchat-pending-queue.md` если не published
-- Handoff: `=== POSTS EMDR DONE ===`
-
-**VPS webhook не вызывать.**
+- Помечает тему `published`, пишет `cloud-publish-finish.json`, **`=== POSTS EMDR DONE ===`** в `.cursor/posts-emdr-handoff.md` (скрипт, не агент)
+- b17 → repair-пул если не published
+- **VPS webhook не вызывать.**
 
 ### Шаг 8 — Отчётик (QA + отчёт в Макс)
 

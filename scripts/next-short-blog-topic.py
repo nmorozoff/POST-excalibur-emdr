@@ -133,6 +133,16 @@ def main() -> None:
         sys.exit(1)
     if result.get("reason") == "already_published_still_in_queue":
         sys.exit(2)
+    if result.get("topic_id") and result.get("reason") == "next_pending":
+        try:
+            from posts_emdr_handoff import write_handoff_in_progress
+
+            write_handoff_in_progress(
+                result["topic_id"],
+                title=(result.get("title") or "").strip(),
+            )
+        except OSError:
+            pass
     sys.exit(0)
 
 

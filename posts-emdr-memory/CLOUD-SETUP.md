@@ -53,7 +53,7 @@ Cursor automation для **Posts EMDR** MUST использовать репоз
 | `WORDPRESS_URL` | `WP_HOME`, `WP_SITE_URL`, `PUBLIC_SITE_URL` |
 | `WORDPRESS_USER` | `WP_USER`, `WP_ADMIN_USER` |
 | `WORDPRESS_APP_PASSWORD` | `WP_APP_PASSWORD` |
-| `VPS_WEBHOOK_SECRET` | `EXCALIBUR_VPS_WEBHOOK_SECRET` |
+| `VPS_WEBHOOK_SECRET` | _(deprecated, не добавлять)_ |
 
 `ZERNIO_*` не алиасится — добавить в Secrets automation `POST-excalibur-emdr`. Preflight: явный `BLOCKER` если Zernio missing.
 
@@ -89,9 +89,8 @@ python3 scripts/materialize_cloud_env.py --check
 ## 3. Публикация
 
 ```bash
-python3 scripts/publish-topic.py --topic sb-05-tolerate-uncertainty
-# → Макс + FB + VK handoff; Telegram/b17 deferred
-# затем MCP VK ×2, git push, curl webhook
+python3 scripts/publish-topic.py --topic {topic_id}
+# → MCP VK/OK, close-cloud-publish.py — см. cloud-automation-runbook.md
 ```
 
 ## 4. Референс обложки
@@ -99,9 +98,11 @@ python3 scripts/publish-topic.py --topic sb-05-tolerate-uncertainty
 Ротация: `posts-emdr-memory/assets/reference/portrait-01.jpg` … `portrait-08.jpg`  
 См. `profile/cover-reference-rotation.md`
 
-## 5. Промпт для Cloud Agent
+## 5. Instructions для Automations (один раз)
 
-См. `.cursor/posts-emdr-handoff.md` (блок «Запуск Cloud Agent»).
+Файл: **`profile/cloud-automation-prompt.md`** — блок `=== DASHBOARD INSTRUCTIONS ===` (6 строк).
+
+Runbook на каждый прогон: **`profile/cloud-automation-runbook.md`** (подтягивается `git pull`, в Dashboard не копировать).
 
 ## 6. Проверка
 
