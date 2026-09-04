@@ -1,0 +1,104 @@
+{
+  "topic": "sb-26-yes-but-no",
+  "overall": "fail",
+  "platforms": {
+    "max": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "url": null,
+      "ls_gate": {
+        "ok": true,
+        "issues": []
+      }
+    },
+    "telegram": {
+      "ok": false,
+      "delivery": "link_preview_single_message",
+      "channels": [
+        "[redacted]"
+      ],
+      "missing_channels": [
+        "nmorozova_emdr"
+      ],
+      "cover_source": null,
+      "urls": [
+        "https://t.me/[redacted]/144"
+      ]
+    },
+    "vk_profile": {
+      "ok": true,
+      "registry": true
+    },
+    "vk_group": {
+      "ok": true,
+      "registry": true
+    },
+    "vk_story": {
+      "ok": false,
+      "log": false,
+      "required": false
+    },
+    "facebook": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "pending_scheduled": false
+    },
+    "ok": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "required": true,
+      "format_ok": true
+    },
+    "b17": {
+      "ok": false,
+      "log": false,
+      "registry": false,
+      "status": null,
+      "draft_saved": false
+    }
+  },
+  "covers": {
+    "local_cover": {
+      "ok": true,
+      "path": "/workspace/posts-emdr-memory/output/sb-26-yes-but-no/cover.png"
+    },
+    "site_cover": {
+      "url": "https://morozovanatalia.ru/social-covers/sb-26-yes-but-no.jpg",
+      "ok": true,
+      "status": 200,
+      "content_type": "image/jpeg"
+    }
+  },
+  "queue": {
+    "published": false,
+    "still_in_queue": true
+  },
+  "cloud_close": {
+    "finish_json": false,
+    "cloud_finish_json": false,
+    "handoff_done": false,
+    "status": null,
+    "mode": "cloud_no_vps"
+  },
+  "issues": [
+    "Telegram: нет каналов ['nmorozova_emdr']",
+    "Telegram: cover_source пуст — возможно без превью",
+    "b17: не published (repair-пул / ручной repair-b17-tenchat.py)",
+    "Тема всё ещё in_progress в очереди"
+  ],
+  "links": {
+    "max": "https://max.ru/se13417616_biz/AaBr_i2pH20",
+    "telegram": [
+      "https://t.me/[redacted]/144"
+    ],
+    "vk_profile": "https://vk.com/wall218367867_703",
+    "vk_group": "https://vk.com/wall-224685309_177",
+    "facebook": "https://www.facebook.com/632301483303094_122184184904837712",
+    "ok": "https://ok.ru/group/70000034253679/topic/161404439392367"
+  }
+}

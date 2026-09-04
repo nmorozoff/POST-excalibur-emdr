@@ -5,13 +5,14 @@
   "via": "mcp-kv",
   "channels": [
     {
-      "chat_id": "[REDACTED]",
+      "chat_id": "",
       "message_id": 144,
       "post_url": "https://t.me/nmorozova_emdr/144",
       "utm_source": "tg1",
       "via": "mcp-kv"
     }
   ],
-  "chat_id": "[REDACTED]",
-  "message_id": 144
+  "chat_id": "",
+  "message_id": 144,
+  "cover_source": "morozovanatalia"
 }

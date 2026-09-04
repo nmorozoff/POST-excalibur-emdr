@@ -1,9 +1,9 @@
 # Posts EMDR — handoff (machine)
 
-updated: 2026-09-04 10:25
-status: in_progress
+updated: 2026-09-04 11:03
+status: done
 topic_id: sb-26-yes-but-no
-title: Как заметить момент, когда говорите «да», а хотите «нет»
+note: verify=pass; written by close-cloud-publish.py
 
-=== POSTS EMDR IN PROGRESS ===
+=== POSTS EMDR DONE ===
 
