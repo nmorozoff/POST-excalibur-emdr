@@ -1,6 +1,6 @@
 {
   "topic": "sb-26-yes-but-no",
-  "overall": "fail",
+  "overall": "pass",
   "platforms": {
     "max": {
       "ok": true,
@@ -13,17 +13,15 @@
       }
     },
     "telegram": {
-      "ok": false,
+      "ok": true,
       "delivery": "link_preview_single_message",
       "channels": [
-        "[redacted]"
-      ],
-      "missing_channels": [
         "nmorozova_emdr"
       ],
-      "cover_source": null,
+      "missing_channels": [],
+      "cover_source": "morozovanatalia",
       "urls": [
-        "https://t.me/[redacted]/144"
+        "https://t.me/nmorozova_emdr/144"
       ]
     },
     "vk_profile": {
@@ -75,26 +73,23 @@
     }
   },
   "queue": {
-    "published": false,
-    "still_in_queue": true
+    "published": true,
+    "still_in_queue": false
   },
   "cloud_close": {
-    "finish_json": false,
-    "cloud_finish_json": false,
-    "handoff_done": false,
-    "status": null,
+    "finish_json": true,
+    "cloud_finish_json": true,
+    "handoff_done": true,
+    "status": "browser_worker_finished",
     "mode": "cloud_no_vps"
   },
   "issues": [
-    "Telegram: нет каналов ['nmorozova_emdr']",
-    "Telegram: cover_source пуст — возможно без превью",
-    "b17: не published (repair-пул / ручной repair-b17-tenchat.py)",
-    "Тема всё ещё in_progress в очереди"
+    "b17: не published (repair-пул / ручной repair-b17-tenchat.py)"
   ],
   "links": {
     "max": "https://max.ru/se13417616_biz/AaBr_i2pH20",
     "telegram": [
-      "https://t.me/[redacted]/144"
+      "https://t.me/nmorozova_emdr/144"
     ],
     "vk_profile": "https://vk.com/wall218367867_703",
     "vk_group": "https://vk.com/wall-224685309_177",
