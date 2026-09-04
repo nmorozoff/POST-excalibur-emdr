@@ -272,6 +272,14 @@ def publish_topic(
     log["steps"]["vk_upload"] = step_json(vk_upload)
     vk_prep = json.loads((MEMORY / "output" / topic / "vk-publish-prep.json").read_text(encoding="utf-8"))
     photo_url = vk_prep.get("cover_public_url", "")
+    handoff_cover_url = photo_url
+    if not dry_run:
+        from telegram_mcp_handoff import resolve_cover_url
+
+        try:
+            handoff_cover_url = resolve_cover_url(topic)
+        except SystemExit:
+            handoff_cover_url = photo_url
 
     topic_dir = MEMORY / "output" / topic
     if (topic_dir / "telegram-post.md").is_file() and photo_url and not dry_run:
@@ -350,8 +358,8 @@ def publish_topic(
         )
         # social-covers/{topic}.jpg оставляем на сайте для b17 TinyMCE (не --delete-cover)
         log["steps"]["vk_mode"] = "api"
-    elif not dry_run and photo_url:
-        handoff_path = write_vk_mcp_handoff(topic, photo_url)
+    elif not dry_run and handoff_cover_url:
+        handoff_path = write_vk_mcp_handoff(topic, handoff_cover_url)
         log["steps"]["vk_mode"] = "mcp_handoff"
         log["steps"]["vk_mcp_handoff"] = str(handoff_path)
         log["mcp_next"] = (
@@ -374,11 +382,11 @@ def publish_topic(
         )
     )
 
-    if photo_url and (topic_dir := MEMORY / "output" / topic).joinpath("ok-post.md").is_file():
+    if handoff_cover_url and (topic_dir := MEMORY / "output" / topic).joinpath("ok-post.md").is_file():
         if dry_run:
             log["steps"]["ok"] = {"dry_run": True, "note": "ok-post.md present"}
         else:
-            ok_handoff = write_ok_mcp_handoff(topic, photo_url)
+            ok_handoff = write_ok_mcp_handoff(topic, handoff_cover_url)
             if ok_handoff:
                 log["steps"]["ok_mode"] = "mcp_handoff"
                 log["steps"]["ok_mcp_handoff"] = str(ok_handoff)

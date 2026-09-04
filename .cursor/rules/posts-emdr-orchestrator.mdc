@@ -47,13 +47,14 @@ Handoff runtime: `.cursor/posts-emdr-handoff.md`
 
 См. `posts-emdr-memory/profile/cloud-publish-phases.md` и `CLOUD-SETUP.md`.
 
-**3 фазы:** (1) скрипты cloud: Макс/TG/FB + handoff, (2) **MCP mcp-kv** → VK + OK, (3) **close-cloud-publish.py** (очередь; VPS не нужен). b17 — repair с Mac.
+**3 фазы:** (1) `run-cloud-publish.py --sync` (скрипты + TG с ретраями), (2) **MCP mcp-kv** → VK + OK по `cloud-mcp-bundle.json`, (3) `run-cloud-publish.py --topic {id} --finish` (close + verify + отчёт + git). b17 — repair с Mac.
 
-`VK_ACCESS_TOKEN` не нужен. MCP mcp-kv — в Dashboard automation.
+`VK_ACCESS_TOKEN` не нужен. MCP mcp-kv — в Dashboard automation. Runbook: `profile/cloud-automation-runbook.md`.
 
 ```bash
-python3 scripts/publish-topic.py --topic {id}
-# затем MCP VK по vk-mcp-handoff.json; MCP OK по ok-mcp-handoff.json
+python3 scripts/run-cloud-publish.py --sync
+# MCP VK/OK + record-vk-mcp-publish.py / record-ok-publish.py
+python3 scripts/run-cloud-publish.py --topic {id} --finish
 ```
 
 ## Пайплайн (одна тема)

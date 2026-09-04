@@ -2,138 +2,91 @@
 
 Обновляется через `git pull` — **не** копировать в Dashboard.
 
-Агент читает этот файл на каждом прогоне. См. `cloud-automation-prompt.md` (стабильные Instructions).
+---
+
+## Главное
+
+Один пост за прогон. **VPS не вызывать.** Handoff пишут скрипты.
+
+**Оркестратор:** `scripts/run-cloud-publish.py` — скрипты и ретраи; агент только MCP VK/OK.
+
+b17/TenChat не блокируют закрытие темы.
 
 ---
 
-## Задача
-
-Опубликовать **одну** тему MSP short-blog за прогон.
-
-**Главное:** b17 и TenChat не блокируют закрытие и следующую тему. Основной прогон: Макс, Telegram, VK, Facebook, OK → `close-cloud-publish.py`. b17/TenChat — repair с Mac.
-
-**Handoff:** пишут скрипты (`next-short-blog-topic.py`, `close-cloud-publish.py`). Агент **не** редактирует `.cursor/posts-emdr-handoff.md` вручную.
-
----
-
-## ШАГ 0 — INTAKE
+## Фаза A — скрипты (автоматически)
 
 ```bash
 git pull origin main
-python3 scripts/incident_queue.py --project-root .
+python3 scripts/run-cloud-publish.py --sync
 ```
 
-Exit `2` → Task(`posts-emdr-fixic`), новую тему не начинать.
+Скрипт сам: intake, grsai (если нет md), `publish-topic.py`, Telegram до 3 попыток, `cloud-mcp-bundle.json`.
+
+Ответ JSON: `"status": "awaiting_mcp"`, `"topic"`, `"mcp_bundle"`.
+
+Если `queue_empty` или `already_published` — стоп, новую тему не начинать.
+
+---
+
+## Фаза B — только MCP (агент)
+
+Открыть `posts-emdr-memory/output/{topic}/cloud-mcp-bundle.json`.
+
+### VK — `vk_create_post_with_photo` ×2
+
+По `calls` из bundle (профиль + группа `224685309`, `from_group: true` для группы).
+
+`photo_url` / `cover_public_url` — **только** из bundle (morozovanatalia.ru/social-covers, не oneme.ru).
+
+После каждого поста:
 
 ```bash
-python3 scripts/next-short-blog-topic.py --sync --json
+python3 scripts/record-vk-mcp-publish.py --topic {id} --location personal \
+  --wall-url "https://vk.com/wall..." --title "..." --site-url "..." --tags "..."
+
+python3 scripts/record-vk-mcp-publish.py --topic {id} --location group --from-group \
+  --wall-url "https://vk.com/wall-224685309_..." --title "..." --site-url "..." --tags "..."
 ```
 
-- `topic_id` **только** из этого JSON (не из handoff, если расходится).
-- `queue_empty` → стоп.
-- `already_published_still_in_queue` → повторить `--sync`.
+### OK — `ok_create_post_with_photo`
 
-Читать: `shared/agent-pipeline-pitfalls.md`, `profile/tone-of-voice.md`, `profile/author-profile.md`, `profile/site-url-map.md`.
+По `ok` в bundle → затем `record-ok-publish.py` из `record_after`.
+
+**Не** `send-vk-post.py --delete-cover`.
 
 ---
 
-## ШАГ 1 — КОНТЕНТ (Grsai)
+## Фаза C — закрытие (автоматически)
 
 ```bash
-python3 scripts/is-topic-published.py --topic {id}
+python3 scripts/run-cloud-publish.py --topic {id} --finish
 ```
 
-Exit `0` → тема уже закрыта, к следующей.
+Скрипт: `close-cloud-publish.py`, `verify-publish-run.py`, отчёт в Макс, `git commit` + `push`.
 
-```bash
-python3 scripts/grsai-generate-topic.py --topic {id}
-```
-
-Gate: `max-post.md`, `cover-prompt.txt`, все platform md, `grsai-content-log.json`.  
-Обложка PNG — только в шаге 2 (`publish-topic.py`), не отдельными cover-скриптами.
+`pass_b17_pending` = успех.
 
 ---
 
-## ШАГ 2 — CLOUD PUBLISH (фаза 1)
+## Если Run «упал»
 
-```bash
-python3 scripts/materialize_cloud_env.py --check
-python3 scripts/publish-topic.py --topic {id}
-```
+| Симптом | Действие |
+|--------|----------|
+| Telegram без обложки | `python3 scripts/send-telegram-post.py --topic {id} --publish --refresh-cover-url` |
+| VK/OK не в реестре | повторить MCP + `record-vk-mcp-publish.py` / `record-ok-publish.py` |
+| verify fail | смотреть `verify-publish-run.json`, дозаполнить логи, снова `--finish` |
+| open incidents | `python3 scripts/incident_queue.py --project-root .` → Fixic |
 
----
-
-## ШАГ 2b — TELEGRAM
-
-Если `telegram-publish-log.json` с `cover_source` morozovanatalia/vk — пропустить.
-
-Иначе:
-
-```bash
-python3 scripts/publish-telegram-from-handoff.py --topic {id}
-```
-
-MCP `telegram_send_message` — только если скрипт упал дважды (обложка может пропасть).
-
-Gate: `delivery: link_preview_single_message`, канал `@nmorozova_emdr`.
+Не выдумывать шаги. Не редактировать `.cursor/posts-emdr-handoff.md` вручную.
 
 ---
 
-## ШАГ 3 — VK MCP
+## Запреты
 
-По `vk-mcp-handoff.json`: `vk_create_post_with_photo` ×2 (профиль + группа `224685309`).
-
-**Не** `send-vk-post.py --delete-cover` — URL нужен для b17.
-
-Обновить реестры max, vk-profile, vk-group, facebook, ok.
-
----
-
-## ШАГ 3b — OK MCP
-
-По `ok-mcp-handoff.json` → `ok_create_post_with_photo` → `record-ok-publish.py`.
-
----
-
-## ШАГ 4 — GIT PUSH
-
-```bash
-git add posts-emdr-memory/output/{id}/ posts-emdr-memory/profile/*-posts-registry.md
-git commit -m "publish: {id}"
-git push
-```
-
-Если push на `cursor/*` — слить PR в `main`.
-
----
-
-## ШАГ 5 — CLOUD CLOSE
-
-```bash
-python3 scripts/close-cloud-publish.py --topic {id}
-```
-
-Пишет `cloud-publish-finish.json`, очередь published, **`=== POSTS EMDR DONE ===`** в handoff.
-
----
-
-## ШАГ 6 — ОТЧЁТИК
-
-Task(`posts-emdr-otchetik`) с `topic_id`. Один отчёт в Макс. `pass_b17_pending` = OK.
-
----
-
-## ШАГ 7 — FIXIC
-
-При fail verify или open incidents → Task(`posts-emdr-fixic`).
-
----
-
-## ЗАПРЕТЫ
-
-- VPS: не `trigger-vps-webhook`, не `publish-browser-deferred`
-- Не `TELEGRAM_CHANNEL_CHAT_IDS=CHANNEL_HANDLE`
-- Не `photo_then_text` в Telegram
-- Не `@natalia_morozova_psy` / `@morozova_emdr`
-- Не LinkedIn, не Ядрышко/Core
-- Не помечать published вручную — только `close-cloud-publish.py`
+- VPS webhook, `publish-browser-deferred`
+- `TELEGRAM_CHANNEL_CHAT_IDS=CHANNEL_HANDLE`
+- `photo_then_text` в Telegram
+- Каналы `@natalia_morozova_psy`, `@morozova_emdr`
+- LinkedIn, Ядрышко/Core
+- Помечать published вручную — только `close-cloud-publish.py` / `--finish`

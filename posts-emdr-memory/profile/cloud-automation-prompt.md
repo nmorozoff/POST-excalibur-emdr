@@ -4,8 +4,7 @@
 
 Cursor → Automations → Posts EMDR → **Instructions** → вставить блок ниже.
 
-Все шаги, запреты и правки пайплайна живут в репозитории (`cloud-automation-runbook.md`).  
-На каждом прогоне агент делает `git pull` и читает runbook — **перекопировать промпт не нужно**.
+Шаги и правки — в репозитории (`cloud-automation-runbook.md`). Перекопировать промпт не нужно.
 
 ---
 
@@ -15,11 +14,13 @@ Cursor → Automations → Posts EMDR → **Instructions** → вставить 
 
 Каждый прогон:
 1. `git pull origin main`
-2. Прочитай и выполни **целиком**: `posts-emdr-memory/profile/cloud-automation-runbook.md`
-3. Следуй `.cursor/rules/posts-emdr-orchestrator.mdc`
+2. `python3 scripts/run-cloud-publish.py --sync` — дождись `awaiting_mcp`
+3. Только MCP по `output/{topic}/cloud-mcp-bundle.json` + `record-vk-mcp-publish.py` / `record-ok-publish.py`
+4. `python3 scripts/run-cloud-publish.py --topic {topic} --finish`
 
-Не выдумывай шаги. Не редактируй `.cursor/posts-emdr-handoff.md` — его пишут скрипты.
-Не вызывай VPS webhook. Один пост за прогон.
+Подробности: `posts-emdr-memory/profile/cloud-automation-runbook.md`
+
+Не выдумывай шаги. Не VPS. Не трогай handoff вручную. Один пост за прогон.
 
 === END ===
 
@@ -35,5 +36,5 @@ Cursor → Automations → Posts EMDR → **Instructions** → вставить 
 
 ## Если что-то сломалось в пайплайне
 
-Правьте **файлы в репозитории** (runbook, orchestrator, scripts) → `git push main` → следующий Run подхватит сам.  
+Правьте файлы в репозитории → `git push main` → следующий Run подхватит сам.  
 Dashboard Instructions менять не надо.
