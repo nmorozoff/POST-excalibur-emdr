@@ -1,8 +1,9 @@
-# Posts EMDR Handoff
+# Posts EMDR — handoff (machine)
 
-status: in_progress
-topic_id: sb-25-before-saying-yes
-title: Вопрос перед тем, как согласиться на «надо»
-post_type: микро-практика
-site_url: https://morozovanatalia.ru/anxiety
-started_at: 2026-09-03
+updated: 2026-09-04 11:03
+status: done
+topic_id: sb-26-yes-but-no
+note: verify=pass; written by close-cloud-publish.py
+
+=== POSTS EMDR DONE ===
+

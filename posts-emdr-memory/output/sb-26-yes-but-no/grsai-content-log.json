@@ -1,0 +1,102 @@
+{
+  "topic": "sb-26-yes-but-no",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-09-04T10:34:57.797884+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12152,
+        "completion_tokens": 11488,
+        "total_tokens": 23640
+      },
+      "chars": 3919,
+      "contract_fixes": []
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11108,
+        "completion_tokens": 7522,
+        "total_tokens": 18630
+      },
+      "chars": 4061,
+      "contract_fixes": []
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11760,
+        "completion_tokens": 7622,
+        "total_tokens": 19382
+      },
+      "chars": 5495,
+      "contract_fixes": [
+        "auto-wrapped vk-profile sections"
+      ]
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11762,
+        "completion_tokens": 5122,
+        "total_tokens": 16884
+      },
+      "chars": 4940,
+      "contract_fixes": []
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11593,
+        "completion_tokens": 6800,
+        "total_tokens": 18393
+      },
+      "chars": 5053,
+      "contract_fixes": []
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12089,
+        "completion_tokens": 7320,
+        "total_tokens": 19409
+      },
+      "chars": 5569,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11331,
+        "completion_tokens": 5064,
+        "total_tokens": 16395
+      },
+      "chars": 2396,
+      "contract_fixes": [
+        "fixed b17 blank lines after headers"
+      ]
+    }
+  },
+  "cover_prompt": {
+    "chars": 1876,
+    "cover_meta": {
+      "line1": "КАК ЗАМЕТИТЬ МОМЕНТ",
+      "line2": "КОГДА ГОВОРИТЕ «ДА»",
+      "line3": "А ХОТИТЕ СКАЗАТЬ (жёлтый: «НЕТ»)",
+      "yellow": "«НЕТ»"
+    }
+  }
+}

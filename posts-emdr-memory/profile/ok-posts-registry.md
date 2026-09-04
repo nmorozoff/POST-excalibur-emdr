@@ -10,6 +10,7 @@
 
 ## Опубликованные
 
+| sb-26-yes-but-no | 2026-09-04 | Как заметить момент, когда говорите «да», а хотите «нет» | 161404439392367 | https://ok.ru/group/70000034253679/topic/161404439392367 | https://morozovanatalia.ru/anxiety?utm_source=ok | тревога,микро-практика,EMDR,границы,психология |
 | sb-25-before-saying-yes | 2026-09-03 | Вопрос перед тем, как согласиться на «надо» | 161403076112495 | https://ok.ru/group/70000034253679/topic/161403076112495 | https://morozovanatalia.ru/anxiety?utm_source=ok | тревога,микро-практика,EMDR,границы,психология |
 | sb-24-body-gesture | 2026-08-26 | Один жест телу вместо «соберись» | 161390909091951 | https://ok.ru/group/70000034253679/topic/161390909091951 | https://morozovanatalia.ru/anxiety?utm_source=ok | тревога,EMDR,микро-практика |
 | sb-23-grounding-exercise | 2026-08-24 | Простое заземление, когда «уносит» в тревожные мысли | 161387583271023 | https://ok.ru/group/70000034253679/topic/161387583271023 | https://morozovanatalia.ru/anxiety?utm_source=ok | тревога,микро-практика,EMDR,заземление,психология |
