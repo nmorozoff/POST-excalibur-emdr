@@ -275,9 +275,13 @@ def publish_topic(
 
     topic_dir = MEMORY / "output" / topic
     if (topic_dir / "telegram-post.md").is_file() and photo_url and not dry_run:
-        from telegram_mcp_handoff import write_telegram_mcp_handoff
+        from telegram_mcp_handoff import resolve_cover_url, write_telegram_mcp_handoff
 
-        tg_path = write_telegram_mcp_handoff(topic, photo_url)
+        try:
+            tg_cover_url = resolve_cover_url(topic)
+        except SystemExit:
+            tg_cover_url = photo_url
+        tg_path = write_telegram_mcp_handoff(topic, tg_cover_url)
         tg_step: dict = {
             "mode": "mcp_handoff",
             "handoff": str(tg_path),
@@ -302,11 +306,11 @@ def publish_topic(
                 tg_step["publish_stdout"] = (tg_pub.stdout or "")[-500:]
                 tg_step["status"] = "published_unknown"
         else:
-            tg_step["status"] = "deferred_mcp_or_vps"
+            tg_step["status"] = "deferred_mcp"
             tg_step["publish_error"] = (tg_pub.stderr or tg_pub.stdout or "")[-800:]
             tg_step["note"] = (
-                "Cloud: MCP telegram_send_message по telegram-mcp-handoff.json "
-                "или publish-telegram-from-handoff.py после ASocks sync"
+                "Повторить publish-telegram-from-handoff.py (link_preview_options). "
+                "MCP telegram_send_message — только fallback без гарантии обложки."
             )
         log["steps"]["telegram"] = tg_step
     elif (topic_dir / "telegram-post.md").is_file():

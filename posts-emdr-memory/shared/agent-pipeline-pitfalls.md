@@ -351,6 +351,16 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Не делать:** брать первый HTTP 200 без проверки Content-Type.
 
+## Telegram без обложки (Max CDN / MCP)
+
+**Симптом (2026-09-03, sb-25):** в канале текст есть, превью нет. `cover_public_url` = `i.oneme.ru` (CDN Макс); публикация через MCP `telegram_send_message` без `link_preview_options`.
+
+**Правильно:**
+- `send-telegram-post.py` / `publish-telegram-from-handoff.py` — **первый** путь (Bot API + `link_preview_options.show_above_text`).
+- Обложка: `morozovanatalia.ru/social-covers/{topic}.jpg` (не удалять после VK).
+- `_cover_url_candidates`: social-covers **до** Max CDN; `oneme.ru` отклонять для TG preview.
+- MCP `telegram_send_message` — fallback без гарантии обложки; в текст — bare URL в начале, не пустой `<a href>`.
+
 ## VK delete-cover ломает b17 обложку
 
 **Симптом (2026-09-03, sb-25):** после MCP VK cloud вызывал `send-vk-post.py --delete-cover` → `morozovanatalia.ru/social-covers/{topic}.jpg` отдавал HTML 404 → b17 TinyMCE сохранял текст без картинки.

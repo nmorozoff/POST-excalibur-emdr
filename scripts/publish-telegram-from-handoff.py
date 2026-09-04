@@ -19,7 +19,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from posts_emdr_env import MEMORY, load_env
+from posts_emdr_env import MEMORY, load_env, normalize_telegram_chat_id
+from telegram_mcp_handoff import strip_cover_preview_prefix
 
 SCRIPTS = Path(__file__).resolve().parent
 
@@ -62,13 +63,16 @@ def main() -> None:
 
     results: list[dict] = []
     for call in calls:
-        chat_id = call["chat_id"]
-        text = call["text"]
+        chat_id = normalize_telegram_chat_id(call.get("chat_id", ""), env)
+        text = strip_cover_preview_prefix(call["text"], handoff.get("cover_public_url") or "")
         cover_url = handoff.get("cover_public_url") or ""
+        if cover_url and "oneme.ru" in cover_url.lower():
+            from telegram_mcp_handoff import resolve_cover_url
+
+            cover_url = resolve_cover_url(args.topic)
         if args.dry_run:
-            results.append({"chat_id": chat_id, "chars": len(text), "dry_run": True})
+            results.append({"chat_id": chat_id, "chars": len(text), "cover_url": cover_url, "dry_run": True})
             continue
-        # Прямой API: link_preview как в send-telegram-post (если сеть позволяет).
         res = send_post_with_cover_preview(token, chat_id, text, cover_url)
         mid = res.get("result", {}).get("message_id")
         if not mid:

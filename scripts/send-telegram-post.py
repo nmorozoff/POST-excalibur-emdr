@@ -230,10 +230,7 @@ def _cover_url_candidates(topic_dir: Path, cover: Path) -> list[tuple[str, str]]
     candidates: list[tuple[str, str]] = []
     cover_url_file = topic_dir / "cover.url"
 
-    max_url = extract_max_cover_url(topic_dir)
-    if max_url:
-        candidates.append(("max", max_url))
-
+    # social-covers first — стабильный HTTPS для TG link_preview и b17
     site_cover = f"https://morozovanatalia.ru/social-covers/{topic_dir.name}.jpg"
     candidates.append(("morozovanatalia", site_cover))
 
@@ -245,6 +242,15 @@ def _cover_url_candidates(topic_dir: Path, cover: Path) -> list[tuple[str, str]]
         if vk_url:
             candidates.append((vk_source, vk_url))
 
+    prep = topic_dir / "vk-publish-prep.json"
+    if prep.is_file():
+        try:
+            prep_url = (json.loads(prep.read_text(encoding="utf-8")).get("cover_public_url") or "").strip()
+            if prep_url and not any(prep_url == u for _, u in candidates):
+                candidates.append(("vk_prep", prep_url))
+        except json.JSONDecodeError:
+            pass
+
     if cover_url_file.exists():
         candidates.append(("runware", cover_url_file.read_text(encoding="utf-8").strip()))
 
@@ -252,7 +258,21 @@ def _cover_url_candidates(topic_dir: Path, cover: Path) -> list[tuple[str, str]]
     if legacy_runware.exists() and cover.name == "cover-runware.png":
         candidates.append(("runware", legacy_runware.read_text(encoding="utf-8").strip()))
 
+    max_url = extract_max_cover_url(topic_dir)
+    if max_url:
+        candidates.append(("max", max_url))
+
     return candidates
+
+
+def _telegram_preview_url_ok(image_url: str) -> bool:
+    """Max CDN (oneme) часто отдаёт image/jpeg, но Telegram не строит link preview."""
+    url = (image_url or "").strip()
+    if not url:
+        return False
+    if "oneme.ru" in url.lower():
+        return False
+    return url_is_reachable(url)
 
 
 def _resolve_cover_from_candidates(
@@ -261,7 +281,7 @@ def _resolve_cover_from_candidates(
     meta_path: Path,
 ) -> str | None:
     for source, candidate in _cover_url_candidates(topic_dir, cover):
-        if candidate and url_is_reachable(candidate):
+        if candidate and _telegram_preview_url_ok(candidate):
             meta_path.write_text(
                 json.dumps({"url": candidate, "source": source}, ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",

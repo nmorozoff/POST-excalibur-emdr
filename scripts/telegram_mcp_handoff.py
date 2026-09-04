@@ -36,13 +36,13 @@ def extract_telegram_html(md_text: str) -> str:
 
 
 def format_mcp_message(html: str, cover_url: str) -> str:
-    """Одно сообщение: обложка как link preview (URL в начале, Telegram сам строит превью)."""
+    """MCP telegram_send_message: bare URL в начале (нет link_preview_options в MCP)."""
     html = sanitize_post_text(html)
     html = re.sub(r"<i>\s*<i>", "<i>", html)
     html = re.sub(r"</i>\s*</i>", "</i>", html)
     cover = cover_url.strip()
     if cover and cover not in html:
-        text = f'<a href="{cover}"></a>\n{html}'
+        text = f"{cover}\n\n{html}"
     else:
         text = html
     if len(text) > 4096:
@@ -50,6 +50,20 @@ def format_mcp_message(html: str, cover_url: str) -> str:
             f"Telegram MCP: текст {len(text)} > 4096. Укоротите telegram-post.md на {len(text) - 4096} символов."
         )
     return text
+
+
+def strip_cover_preview_prefix(text: str, cover_url: str) -> str:
+    """Убрать hack-обложку из handoff перед sendMessage + link_preview_options."""
+    body = text.strip()
+    cover = (cover_url or "").strip()
+    if not cover:
+        return body
+    anchor = f'<a href="{cover}"></a>'
+    if body.startswith(anchor):
+        return body[len(anchor) :].lstrip("\n")
+    if body.startswith(cover):
+        return body[len(cover) :].lstrip("\n")
+    return body
 
 
 def parse_channel_ids(env: dict[str, str]) -> list[str]:
@@ -129,21 +143,32 @@ def write_telegram_mcp_handoff(topic: str, cover_url: str) -> Path:
 
 
 def resolve_cover_url(topic: str) -> str:
+    from cover_upload import load_upload_env, prepare_jpeg, public_cover_url, upload_cover, verify_cover_url
+
     topic_dir = MEMORY / "output" / topic
-    prep = topic_dir / "vk-publish-prep.json"
-    if prep.is_file():
+    remote_name = f"{topic}.jpg"
+    site_url = public_cover_url(remote_name)
+    probe = verify_cover_url(site_url)
+    if probe.get("ok") and "oneme.ru" not in site_url.lower():
+        return site_url
+
+    cover = topic_dir / "cover.png"
+    if cover.is_file():
         try:
-            url = json.loads(prep.read_text(encoding="utf-8")).get("cover_public_url")
-            if url:
-                return str(url).strip()
-        except json.JSONDecodeError:
+            uploaded = upload_cover(prepare_jpeg(cover), remote_name, load_upload_env())
+            candidate = uploaded["url"]
+            if verify_cover_url(candidate).get("ok"):
+                return candidate
+        except SystemExit:
             pass
-    vk = topic_dir / "vk-mcp-handoff.json"
-    if vk.is_file():
+
+    for path in (topic_dir / "vk-publish-prep.json", topic_dir / "vk-mcp-handoff.json"):
+        if not path.is_file():
+            continue
         try:
-            url = json.loads(vk.read_text(encoding="utf-8")).get("cover_public_url")
-            if url:
-                return str(url).strip()
+            url = (json.loads(path.read_text(encoding="utf-8")).get("cover_public_url") or "").strip()
+            if url and "oneme.ru" not in url.lower() and verify_cover_url(url).get("ok"):
+                return url
         except json.JSONDecodeError:
-            pass
-    raise SystemExit(f"No cover_public_url for {topic} (run publish-topic / upload-cover first)")
+            continue
+    raise SystemExit(f"No image/jpeg cover_public_url for {topic} (run send-vk-post --upload-cover first)")

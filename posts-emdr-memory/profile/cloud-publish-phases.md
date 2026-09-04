@@ -36,7 +36,7 @@ python3 scripts/publish-topic.py --topic {topic_id}
 `group_id` = `224685309`.
 
 Gate: в ответе MCP — `📸 Загружено фото`.  
-После обоих постов: `python3 scripts/send-vk-post.py --topic {id} --delete-cover`
+**Не** удалять `social-covers/{topic}.jpg` с сайта — URL нужен для b17 TinyMCE.
 
 ### VK Stories (опционально, после wall-постов)
 
@@ -110,7 +110,7 @@ Legacy VPS: `profile/browser-autonomous-vps.md` (архив).
 2. materialize_cloud_env.py --check
 3. publish-topic.py --topic {id}
 4. publish-telegram-from-handoff.py --topic {id} (если нет telegram-publish-log.json)
-5. MCP vk ×2, ok, реестры, send-vk-post --delete-cover
+5. MCP vk ×2, ok, реестры (без delete-cover)
 6. git commit + push main
 7. close-cloud-publish.py --topic {id}
 8. Task posts-emdr-otchetik

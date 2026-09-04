@@ -2,16 +2,14 @@
   "status": "sent",
   "mode": "publish",
   "delivery": "link_preview_single_message",
-  "via": "mcp-kv",
+  "html_chars": 3493,
   "channels": [
     {
       "chat_id": "@nmorozova_emdr",
-      "message_id": 142,
-      "post_url": "https://t.me/nmorozova_emdr/142",
-      "utm_source": "tg1",
-      "via": "mcp-kv"
+      "message_id": 143
     }
   ],
+  "cover_source": "morozovanatalia",
   "chat_id": "@nmorozova_emdr",
-  "message_id": 142
+  "message_id": 143
 }

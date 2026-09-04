@@ -61,7 +61,7 @@ def verify_topic(topic: str) -> dict:
         "platforms": {},
         "covers": {},
         "queue": {},
-        "vps": {},
+        "cloud_close": {},
         "issues": [],
         "links": {},
     }
@@ -286,7 +286,7 @@ def verify_topic(topic: str) -> dict:
         else:
             report["issues"].append("b17: не published (repair-пул / ручной repair-b17-tenchat.py)")
 
-    # Queue / VPS
+    # Queue / cloud close
     published_path = MEMORY / "topics" / "short-blog-published.md"
     queue_path = MEMORY / "topics" / "short-blog-queue.md"
     in_published = published_path.is_file() and f"`{topic}`" in published_path.read_text(
@@ -303,13 +303,12 @@ def verify_topic(topic: str) -> dict:
     finish = _read_json(topic_dir / "browser-worker-finish.json")
     cloud_finish = _read_json(topic_dir / "cloud-publish-finish.json")
     handoff_done = (topic_dir / "browser-local-handoff.done.md").is_file()
-    report["vps"] = {
-        "deprecated": True,
-        "note": "VPS не требуется; закрытие через close-cloud-publish.py",
+    report["cloud_close"] = {
         "finish_json": bool(finish),
         "cloud_finish_json": bool(cloud_finish),
         "handoff_done": handoff_done,
         "status": (finish or cloud_finish or {}).get("status"),
+        "mode": (cloud_finish or {}).get("mode", "cloud_no_vps"),
     }
     # b17 and TenChat are NOT required for the main short-blog pass.
     # They are handled by the manual repair queue: b17-tenchat-pending-queue.md
@@ -384,8 +383,8 @@ def format_report_md(report: dict) -> str:
         lines.append("")
     if overall == "partial":
         lines.append(
-            "_VPS мог ещё публиковать TG/b17; Zernio scheduled — ждём Meta retry. "
-            "Подождите 5–15 мин и повторите проверку._"
+            "_Facebook мог быть в очереди Zernio (scheduled) — подождите 5–15 мин и повторите verify. "
+            "b17/TenChat — только repair-b17-tenchat.py с Mac, не webhook._"
         )
     elif overall == "fail":
         lines.append("_Проверьте логи Cloud Agent: verify-publish-run.py --topic ... --json_")
