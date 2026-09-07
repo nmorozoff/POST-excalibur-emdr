@@ -1,0 +1,63 @@
+{
+  "status": "sent",
+  "topic": "sb-26-yes-but-no",
+  "chat_id": "[REDACTED]",
+  "overall": "pass",
+  "result": {
+    "message": {
+      "recipient": {
+        "chat_type": "dialog",
+        "chat_id": "[REDACTED]",
+        "user_id": "[REDACTED]"
+      },
+      "timestamp": 1788802467987,
+      "body": {
+        "mid": "mid.0000000016b6922b01a07cef889340f7",
+        "seq": 117230958542012663,
+        "text": "✅ Posts EMDR — sb-26-yes-but-no\nСтатус: pass\n\nСсылки:\n• telegram: https://t.me/nmorozova_emdr/146\n• vk_profile: https://vk.com/wall218367867_704\n• vk_group: https://vk.com/wall-224685309_178\n• facebook: https://www.facebook.com/632301483303094_122184508334837712\n• ok: https://ok.ru/group/70000034253679/topic/161409621520495\n\nПроблемы:\n• Telegram: cover_source пуст — возможно без превью\n• b17: не published (repair-пул / ручной repair-b17-tenchat.py)",
+        "attachments": [
+          {
+            "payload": {
+              "url": "https://t.me/nmorozova_emdr/146",
+              "token": "f9LHodD0cOIA-GYXzN8nmDa4iu67da_xYjHSm7cbSKSMlApVkWXTX2LoscRBEFD4mBVPk9zV699mXXRUoRJD"
+            },
+            "title": "Психолог | EMDR терапевт Наталья Морозова",
+            "description": "Автоматическое согласие: как заметить момент, когда говорите «да», а хотите «нет» Вы сидите на встрече, смотрите в экран или слушаете собеседника. Звучит обычная просьба. И прежде чем вы успеваете оценить свои ...",
+            "image_url": "https://i.oneme.ru/i?r=BTGBPUwtwgYUeoFhO7rESmr8R9BTAKpri6NXs3xrkYoV6rJ_HqH97r8QHtUvv1mBLU4",
+            "type": "share"
+          }
+        ],
+        "markup": [
+          {
+            "from": 2,
+            "length": 29,
+            "type": "strong"
+          },
+          {
+            "from": 40,
+            "length": 4,
+            "type": "strong"
+          },
+          {
+            "from": 46,
+            "length": 7,
+            "type": "strong"
+          },
+          {
+            "from": 327,
+            "length": 9,
+            "type": "strong"
+          }
+        ]
+      },
+      "sender": {
+        "user_id": "[REDACTED]",
+        "first_name": "КАРУСЕЛЬКА",
+        "is_bot": true,
+        "username": "id771605638595_bot",
+        "last_activity_time": 1788802468007,
+        "name": "КАРУСЕЛЬКА"
+      }
+    }
+  }
+}

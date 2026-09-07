@@ -1,0 +1,38 @@
+{
+  "taskId": "14-4ac7d71e-b184-467a-bf3c-27cc3e5b9e7d",
+  "imageURL": "https://file6.aitohumanize.com/file/0177cfbf1f63482da8accfd45afe8fb3.png",
+  "reference_rotation": {
+    "topic": "sb-26-yes-but-no",
+    "slot": 2,
+    "reference_path": "/workspace/posts-emdr-memory/assets/reference/portrait-02.jpg",
+    "backend": "grsai",
+    "aspect_ratio": "1280x1024",
+    "quality": "low",
+    "model": "gpt-image-2",
+    "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-02.jpg"
+  },
+  "reference_upload_url": "https://morozovanatalia.ru/social-covers/refs/portrait-02.jpg",
+  "model": "gpt-image-2",
+  "backend": "grsai",
+  "raw": {
+    "callback_url": "-1",
+    "end_time": 1788800738,
+    "error": "",
+    "failure_reason": "",
+    "height": 0,
+    "id": "14-4ac7d71e-b184-467a-bf3c-27cc3e5b9e7d",
+    "progress": 100,
+    "results": [
+      {
+        "height": 0,
+        "url": "https://file6.aitohumanize.com/file/0177cfbf1f63482da8accfd45afe8fb3.png",
+        "width": 0
+      }
+    ],
+    "start_time": 1788800638,
+    "status": "succeeded",
+    "task_id": "",
+    "url": "",
+    "width": 0
+  }
+}

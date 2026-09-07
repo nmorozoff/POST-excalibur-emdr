@@ -12,6 +12,7 @@
 
 ## Опубликованные
 
+| sb-26-yes-but-no | 2026-09-07 | Как заметить момент, когда говорите «да», а хотите «нет» | [REDACTED] | 146 | https://t.me/nmorozova_emdr/146 | https://morozovanatalia.ru/anxiety?utm_source=tg1 | тревога,микро-практика,EMDR,границы,психология |
 | sb-25-before-saying-yes | 2026-09-04 | Вопрос перед тем, как согласиться на «надо» | @nmorozova_emdr | 143 | https://t.me/nmorozova_emdr/143 | https://morozovanatalia.ru/anxiety?utm_source=tg1 | тревога,микро-практика,EMDR,границы,психология |
 | sb-24-body-gesture | 2026-08-26 | sb-24-body-gesture | @nmorozova_emdr | ? | https://t.me/nmorozova_emdr/141 | https://morozovanatalia.ru/anxiety |  |
 | sb-23-grounding-exercise | 2026-08-26 | sb-23-grounding-exercise | @nmorozova_emdr | 140 | https://t.me/nmorozova_emdr/140 | https://morozovanatalia.ru/anxiety |  |

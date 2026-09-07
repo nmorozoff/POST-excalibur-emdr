@@ -1,0 +1,105 @@
+{
+  "topic": "sb-26-yes-but-no",
+  "backend": "grsai",
+  "model": "gemini-3.1-pro",
+  "base_url": "https://grsaiapi.com",
+  "timeout_sec": 900,
+  "generated_at": "2026-09-07T17:05:52.084538+00:00",
+  "platforms": {
+    "max": {
+      "file": "max-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12152,
+        "completion_tokens": 7609,
+        "total_tokens": 19761
+      },
+      "chars": 4109,
+      "contract_fixes": [
+        "truncated max body to hard max 4000",
+        "validation: max body outside target 3500-3800: 3940"
+      ]
+    },
+    "telegram": {
+      "file": "telegram-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11151,
+        "completion_tokens": 5257,
+        "total_tokens": 16408
+      },
+      "chars": 3964,
+      "contract_fixes": []
+    },
+    "vk-profile": {
+      "file": "vk-profile-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11801,
+        "completion_tokens": 5735,
+        "total_tokens": 17536
+      },
+      "chars": 5049,
+      "contract_fixes": [
+        "auto-wrapped vk-profile sections"
+      ]
+    },
+    "vk-group": {
+      "file": "vk-group-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11803,
+        "completion_tokens": 5420,
+        "total_tokens": 17223
+      },
+      "chars": 4522,
+      "contract_fixes": [
+        "auto-wrapped vk-group sections"
+      ]
+    },
+    "facebook": {
+      "file": "facebook-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11635,
+        "completion_tokens": 5137,
+        "total_tokens": 16772
+      },
+      "chars": 5203,
+      "contract_fixes": []
+    },
+    "ok": {
+      "file": "ok-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 12130,
+        "completion_tokens": 5888,
+        "total_tokens": 18018
+      },
+      "chars": 5415,
+      "contract_fixes": [
+        "auto-wrapped ok sections"
+      ]
+    },
+    "b17": {
+      "file": "b17-blog-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 11369,
+        "completion_tokens": 3530,
+        "total_tokens": 14899
+      },
+      "chars": 2478,
+      "contract_fixes": []
+    }
+  },
+  "cover_prompt": {
+    "chars": 1867,
+    "cover_meta": {
+      "line1": "Автоматическое согласие",
+      "line2": "как тело реагирует",
+      "line3": "на чужие просьбы",
+      "yellow": "реагирует"
+    }
+  }
+}

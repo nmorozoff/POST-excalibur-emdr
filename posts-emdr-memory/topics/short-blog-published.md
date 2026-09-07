@@ -2,6 +2,7 @@
 
 | topic_id | # MSP | дата | заголовок | site_url |
 |----------|-------|------|-----------|----------|
+| `sb-26-yes-but-no` | 26 | 2026-09-07 | Как заметить момент, когда говорите «да», а хотите «нет» | https://morozovanatalia.ru/anxiety |
 | `sb-25-before-saying-yes` | 25 | 2026-09-03 | Вопрос перед тем, как согласиться на «надо» | https://morozovanatalia.ru/anxiety |
 | `sb-24-body-gesture` | 24 | 2026-08-27 | Один жест телу вместо «соберись» | https://morozovanatalia.ru/anxiety |
 | `sb-23-grounding-exercise` | 23 | 2026-08-26 | Простое заземление, когда «уносит» в тревожные мысли | https://morozovanatalia.ru/anxiety |

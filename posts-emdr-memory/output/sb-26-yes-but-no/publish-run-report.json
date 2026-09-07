@@ -1,0 +1,99 @@
+{
+  "topic": "sb-26-yes-but-no",
+  "overall": "pass",
+  "platforms": {
+    "max": {
+      "ok": true,
+      "log": true,
+      "registry": false,
+      "url": null,
+      "ls_gate": {
+        "ok": true,
+        "issues": []
+      }
+    },
+    "telegram": {
+      "ok": true,
+      "delivery": "link_preview_single_message",
+      "channels": [
+        "nmorozova_emdr"
+      ],
+      "missing_channels": [],
+      "cover_source": null,
+      "urls": [
+        "https://t.me/nmorozova_emdr/146"
+      ]
+    },
+    "vk_profile": {
+      "ok": true,
+      "registry": true
+    },
+    "vk_group": {
+      "ok": true,
+      "registry": true
+    },
+    "vk_story": {
+      "ok": false,
+      "log": false,
+      "required": false
+    },
+    "facebook": {
+      "ok": true,
+      "log": true,
+      "registry": false,
+      "status": "published",
+      "pending_scheduled": false
+    },
+    "ok": {
+      "ok": true,
+      "log": true,
+      "registry": true,
+      "status": "published",
+      "required": true,
+      "format_ok": true
+    },
+    "b17": {
+      "ok": false,
+      "log": false,
+      "registry": false,
+      "status": null,
+      "draft_saved": false
+    }
+  },
+  "covers": {
+    "local_cover": {
+      "ok": true,
+      "path": "/workspace/posts-emdr-memory/output/sb-26-yes-but-no/cover.png"
+    },
+    "site_cover": {
+      "url": "https://morozovanatalia.ru/social-covers/sb-26-yes-but-no.jpg",
+      "ok": true,
+      "status": 200,
+      "content_type": "image/jpeg"
+    }
+  },
+  "queue": {
+    "published": true,
+    "still_in_queue": false
+  },
+  "cloud_close": {
+    "finish_json": true,
+    "cloud_finish_json": true,
+    "handoff_done": true,
+    "status": "browser_worker_finished",
+    "mode": "cloud_no_vps"
+  },
+  "issues": [
+    "Telegram: cover_source пуст — возможно без превью",
+    "b17: не published (repair-пул / ручной repair-b17-tenchat.py)"
+  ],
+  "links": {
+    "telegram": [
+      "https://t.me/nmorozova_emdr/146"
+    ],
+    "vk_profile": "https://vk.com/wall218367867_704",
+    "vk_group": "https://vk.com/wall-224685309_178",
+    "facebook": "https://www.facebook.com/632301483303094_122184508334837712",
+    "ok": "https://ok.ru/group/70000034253679/topic/161409621520495"
+  }
+}

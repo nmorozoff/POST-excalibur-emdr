@@ -1,0 +1,24 @@
+[
+  {
+    "topic": "sb-26-yes-but-no",
+    "location": "personal",
+    "from_group": false,
+    "status": "published",
+    "post_id": 704,
+    "wall_url": "https://vk.com/wall218367867_704",
+    "photo_url": "https://morozovanatalia.ru/social-covers/sb-26-yes-but-no.jpg",
+    "date": "2026-09-07",
+    "via": "mcp-kv"
+  },
+  {
+    "topic": "sb-26-yes-but-no",
+    "location": "group",
+    "from_group": true,
+    "status": "published",
+    "post_id": 178,
+    "wall_url": "https://vk.com/wall-224685309_178",
+    "photo_url": "https://morozovanatalia.ru/social-covers/sb-26-yes-but-no.jpg",
+    "date": "2026-09-07",
+    "via": "mcp-kv"
+  }
+]
