@@ -595,6 +595,17 @@ def ensure_platform_contract(platform: str, text: str, brief: dict[str, str]) ->
         if needs_wrap:
             text = wrap_max_post(text, brief)
             fixes.append("auto-wrapped max-post sections")
+        else:
+            try:
+                from posts_emdr_env import extract_post_body_from_md
+
+                body_for_meta = extract_post_body_from_md(text)
+            except ValueError:
+                body_for_meta = _plain_body_from_raw(text)
+            text_before_meta = text
+            text = _ensure_meta_footer(text, body_for_meta)
+            if text != text_before_meta:
+                fixes.append("appended ## Мета footer to max-post")
         text, truncated = truncate_max_body(text)
         if truncated:
             fixes.append("truncated max body to hard max 4000")

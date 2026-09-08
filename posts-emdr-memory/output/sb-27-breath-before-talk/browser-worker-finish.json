@@ -1,0 +1,14 @@
+{
+  "topic": "sb-27-breath-before-talk",
+  "status": "browser_worker_finished",
+  "date": "2026-09-08",
+  "b17_url": "https://www.b17.ru/my_blog.php",
+  "tenchat_url": null,
+  "site_url": "https://morozovanatalia.ru/anxiety",
+  "queue": {
+    "exit_code": 0,
+    "stdout": "OK marked published: sb-27-breath-before-talk → short-blog-published.md",
+    "stderr": ""
+  },
+  "mode": "cloud_no_vps"
+}

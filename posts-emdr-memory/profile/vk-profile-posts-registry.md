@@ -10,6 +10,7 @@
 
 ## Опубликованные
 
+| sb-27-breath-before-talk | 2026-09-08 | Один глубокий выдох перед сложным разговором | 705 | https://vk.com/wall218367867_705 | https://morozovanatalia.ru/anxiety?utm_source=vk | тревога,микро-практика,EMDR,дыхание,психология |
 | sb-26-yes-but-no | 2026-09-07 | Как заметить момент, когда говорите «да», а хотите «нет» | 704 | https://vk.com/wall218367867_704 | https://morozovanatalia.ru/anxiety?utm_source=vk | тревога,микро-практика,EMDR,границы,психология |
 | sb-25-before-saying-yes | 2026-09-03 | Вопрос перед тем, как согласиться на «надо» | 702 | https://vk.com/wall218367867_702 | https://morozovanatalia.ru/anxiety?utm_source=vk | тревога,микро-практика,EMDR,границы,психология |
 | sb-24-body-gesture | 2026-08-26 | Один жест телу вместо «соберись» | 699 | https://vk.com/wall218367867_699 | https://morozovanatalia.ru/anxiety?utm_source=vk | тревога,микро-практика,EMDR |

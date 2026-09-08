@@ -1,0 +1,12 @@
+{
+  "topic": "sb-27-breath-before-talk",
+  "status": "cloud_publish_closed",
+  "date": "2026-09-08",
+  "mode": "cloud_no_vps",
+  "verify": "pass",
+  "b17_repair": {
+    "added": true,
+    "status": "pending",
+    "path": "/workspace/posts-emdr-memory/b17-tenchat-pending-queue.md"
+  }
+}

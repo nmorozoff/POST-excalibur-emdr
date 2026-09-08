@@ -1,0 +1,63 @@
+{
+  "status": "sent",
+  "topic": "sb-27-breath-before-talk",
+  "chat_id": [REDACTED],
+  "overall": "pass",
+  "result": {
+    "message": {
+      "recipient": {
+        "chat_type": "dialog",
+        "chat_id": [REDACTED],
+        "user_id": "[REDACTED]"
+      },
+      "timestamp": 1788856587507,
+      "body": {
+        "mid": "mid.0000000016b6922b01a0802954f369ee",
+        "seq": 117234505318885870,
+        "text": "✅ Posts EMDR — sb-27-breath-before-talk\nСтатус: pass\n\nСсылки:\n• telegram: https://t.me/nmorozova_emdr/148\n• vk_profile: https://vk.com/wall218367867_705\n• vk_group: https://vk.com/wall-224685309_179\n• facebook: https://www.facebook.com/632301483303094_122184570620837712\n• ok: https://ok.ru/group/70000034253679/topic/161410513334383\n\nПроблемы:\n• Telegram: cover_source пуст — возможно без превью\n• b17: не published (repair-пул / ручной repair-b17-tenchat.py)",
+        "attachments": [
+          {
+            "payload": {
+              "url": "https://t.me/nmorozova_emdr/148",
+              "token": "f9LHodD0cOLNU5MPEehDQnVB2WBi90vW_O6b1uy7Am9CyOX3DN3s2inWtUVb4nn3q-zBgAHQ0HdF5Mn4j8r4"
+            },
+            "title": "Психолог | EMDR терапевт Наталья Морозова",
+            "description": "EMDR терапевт, психолог, бизнес психолог По всем вопросам @natalyamorozovaa",
+            "image_url": "https://i.oneme.ru/i?r=BTGBPUwtwgYUeoFhO7rESmr8R9BTAKpri6NXs3xrkYoV6rJ_HqH97r8QHtUvv1mBLU4",
+            "type": "share"
+          }
+        ],
+        "markup": [
+          {
+            "from": 2,
+            "length": 37,
+            "type": "strong"
+          },
+          {
+            "from": 48,
+            "length": 4,
+            "type": "strong"
+          },
+          {
+            "from": 54,
+            "length": 7,
+            "type": "strong"
+          },
+          {
+            "from": 335,
+            "length": 9,
+            "type": "strong"
+          }
+        ]
+      },
+      "sender": {
+        "user_id": "[REDACTED]",
+        "first_name": "КАРУСЕЛЬКА",
+        "is_bot": true,
+        "username": "id771605638595_bot",
+        "last_activity_time": 1788856587540,
+        "name": "КАРУСЕЛЬКА"
+      }
+    }
+  }
+}

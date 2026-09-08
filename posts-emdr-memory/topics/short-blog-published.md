@@ -2,6 +2,7 @@
 
 | topic_id | # MSP | дата | заголовок | site_url |
 |----------|-------|------|-----------|----------|
+| `sb-27-breath-before-talk` | 27 | 2026-09-08 | Один глубокий выдох перед сложным разговором | https://morozovanatalia.ru/anxiety |
 | `sb-26-yes-but-no` | 26 | 2026-09-07 | Как заметить момент, когда говорите «да», а хотите «нет» | https://morozovanatalia.ru/anxiety |
 | `sb-25-before-saying-yes` | 25 | 2026-09-03 | Вопрос перед тем, как согласиться на «надо» | https://morozovanatalia.ru/anxiety |
 | `sb-24-body-gesture` | 24 | 2026-08-27 | Один жест телу вместо «соберись» | https://morozovanatalia.ru/anxiety |
