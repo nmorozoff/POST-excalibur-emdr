@@ -12,6 +12,7 @@
 
 ## Опубликованные
 
+| sb-28-end-workday-ritual | 2026-09-09 | Маленький ритуал завершения рабочего дня | [REDACTED] | 150 | https://t.me/nmorozova_emdr/150 | https://morozovanatalia.ru/burnout?utm_source=tg1 | выгорание,микро-практика,EMDR,ритуал,психология |
 | sb-27-breath-before-talk | 2026-09-08 | sb-27-breath-before-talk | [REDACTED] | ? | https://t.me/nmorozova_emdr/148 | https://morozovanatalia.ru/anxiety |  |
 | sb-27-breath-before-talk | 2026-09-08 | sb-27-breath-before-talk | [REDACTED] | ? | https://t.me/nmorozova_emdr/147 | https://morozovanatalia.ru/anxiety |  |
 | sb-26-yes-but-no | 2026-09-07 | Как заметить момент, когда говорите «да», а хотите «нет» | [REDACTED] | 146 | https://t.me/nmorozova_emdr/146 | https://morozovanatalia.ru/anxiety?utm_source=tg1 | тревога,микро-практика,EMDR,границы,психология |

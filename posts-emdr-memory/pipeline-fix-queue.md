@@ -1390,3 +1390,44 @@ files_changed:
 checks_run:
 - python3 -m py_compile scripts/posts_emdr_env.py scripts/cloud_preflight.py
 
+---
+
+## INC-20260909-0915-vk-flood-control
+status: open
+run_date: 2026-09-09
+role: director
+topic: sb-28-end-workday-ritual
+severity: blocker
+category: vk
+
+### What went wrong
+- Фаза A (`run-cloud-publish.py --sync`) завершилась `awaiting_mcp`: Max, Telegram (msg 150), Facebook (Zernio), обложка OK.
+- MCP `vk_create_post_with_photo` ×5+ (personal): `VK API ошибка 9: Flood control` на загрузке фото; паузы 30s–10min не помогли.
+- `vk_search_news` тоже flood control — лимит на токене VK целиком.
+- OK опубликован вручную агентом: mediatopic `161412003557487`, `record-ok-publish.py` OK.
+- `verify-publish-run.py`: overall `fail` — VK профиль/группа не в реестре; тема `in_progress`.
+- `is-topic-published.py` exit `1` (не `2`) → следующий `--sync` перезапустит `publish-topic.py` (риск дублей TG/FB).
+
+### How the agent recovered this run
+- Grsai: догенерирован vk-profile…b17 после 400 model load; `telegram-post.md` укорочен на 178 символов (лимит 4096).
+- OK: MCP + `record-ok-publish.py` + реестр.
+- b17: `publish-b17-blog.py` → `b17-publish-prep.json` (WP cover upload fail — repair-пул).
+- `--finish` не вызывался (verify fail).
+
+### Durable fix needed before next run
+- Runbook: при `Flood control` на VK — **не** спамить MCP; одна попытка / 15+ мин; эскалация в incident.
+- `is-topic-published` / `run-cloud-publish.py --sync`: если есть `cloud-mcp-bundle.json` + `awaiting_mcp` и TG/FB/Max/OK OK — **не** перезапускать `publish-topic.py`, только MCP VK + `--finish`.
+- Опционально: кэш/повторное использование `photo_id` VK между профилем и группой после одной загрузки.
+
+### Suggested files to inspect/change
+- posts-emdr-memory/profile/cloud-automation-runbook.md
+- scripts/is-topic-published.py
+- scripts/run-cloud-publish.py
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+
+### Secrets
+- none recorded
+
+### Fixic resolution
+- pending
+

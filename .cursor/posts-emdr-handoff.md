@@ -1,9 +1,9 @@
 # Posts EMDR — handoff (machine)
 
-updated: 2026-09-08 08:36
-status: done
-topic_id: sb-27-breath-before-talk
-note: verify=pass; written by close-cloud-publish.py
+updated: 2026-09-09 08:26
+status: in_progress
+topic_id: sb-28-end-workday-ritual
+title: Маленький ритуал завершения рабочего дня
 
-=== POSTS EMDR DONE ===
+=== POSTS EMDR IN PROGRESS ===
 
