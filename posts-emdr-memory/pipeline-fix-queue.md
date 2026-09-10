@@ -1393,7 +1393,8 @@ checks_run:
 ---
 
 ## INC-20260909-0915-vk-flood-control
-status: open
+status: monitoring
+fixed_at: 2026-09-10
 run_date: 2026-09-09
 role: director
 topic: sb-28-end-workday-ritual
@@ -1429,5 +1430,21 @@ category: vk
 - none recorded
 
 ### Fixic resolution
-- pending
+fix_summary:
+- is-topic-published.py: `awaiting_mcp` когда bundle + Max/TG/FB/OK OK, VK не в реестре → exit 2 (не перезапуск publish-topic).
+- run-cloud-publish.py: при open incidents продолжает handoff-тему в awaiting_mcp; scripts_phase различает awaiting_mcp vs awaiting_finish.
+- Runbook § VK Flood control; pitfall в agent-pipeline-pitfalls.md.
+- 2026-09-10: повтор MCP VK personal → снова Flood control (одна попытка, стоп).
+needed_decision_or_secret:
+- Дождаться снятия VK flood limit (следующий cron) → MCP VK ×2 + record + --finish для sb-28.
+files_changed:
+- scripts/is-topic-published.py
+- scripts/run-cloud-publish.py
+- posts-emdr-memory/profile/cloud-automation-runbook.md
+- posts-emdr-memory/shared/agent-pipeline-pitfalls.md
+- posts-emdr-memory/pipeline-fix-queue.md
+checks_run:
+- python3 -m py_compile scripts/is-topic-published.py scripts/run-cloud-publish.py
+- python3 scripts/is-topic-published.py --topic sb-28-end-workday-ritual --json (awaiting_mcp)
+- python3 scripts/run-cloud-publish.py --sync (awaiting_mcp, без publish-topic)
 

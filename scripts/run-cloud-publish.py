@@ -55,6 +55,30 @@ def _json_out(proc: subprocess.CompletedProcess) -> dict:
         return {"raw_stdout": (proc.stdout or "")[-500:], "stderr": (proc.stderr or "")[-500:]}
 
 
+def _handoff_topic_id() -> str | None:
+    handoff = PROJECT_ROOT / ".cursor/posts-emdr-handoff.md"
+    if not handoff.is_file():
+        return None
+    for line in handoff.read_text(encoding="utf-8").splitlines():
+        if line.startswith("topic_id:"):
+            return line.split(":", 1)[1].strip() or None
+    return None
+
+
+def _topic_awaiting_mcp(topic: str) -> bool:
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPTS / "is-topic-published.py"), "--topic", topic, "--json"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+    )
+    try:
+        data = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError:
+        return False
+    return proc.returncode == 2 and bool(data.get("awaiting_mcp"))
+
+
 def intake_topic(*, sync: bool) -> dict:
     inc = subprocess.run(
         [sys.executable, str(SCRIPTS / "incident_queue.py"), "--project-root", str(PROJECT_ROOT)],
@@ -63,6 +87,13 @@ def intake_topic(*, sync: bool) -> dict:
         text=True,
     )
     if inc.returncode == 2:
+        handoff_topic = _handoff_topic_id()
+        if handoff_topic and _topic_awaiting_mcp(handoff_topic):
+            return {
+                "topic_id": handoff_topic,
+                "continuing": "awaiting_mcp",
+                "note": "open incidents, но тема в awaiting_mcp — только MCP VK, без publish-topic",
+            }
         raise SystemExit("BLOCKER: open incidents — Fixic перед прогоном")
 
     cmd = [sys.executable, str(SCRIPTS / "next-short-blog-topic.py"), "--json"]
@@ -181,11 +212,20 @@ def scripts_phase(topic: str) -> dict:
     if chk.returncode == 0:
         return {"status": "already_published", "topic": topic, "check": _json_out(chk)}
     if chk.returncode == 2:
+        check = _json_out(chk)
         bundle = write_mcp_bundle(topic)
+        if check.get("awaiting_mcp"):
+            return {
+                "status": "awaiting_mcp",
+                "topic": topic,
+                "check": check,
+                "mcp_bundle": str(bundle),
+                "note": "Скрипты готовы — только MCP VK (одна попытка), затем --finish",
+            }
         return {
             "status": "awaiting_finish",
             "topic": topic,
-            "check": _json_out(chk),
+            "check": check,
             "mcp_bundle": str(bundle),
             "note": "Cloud+TG готовы — только MCP если не сделан, затем --finish",
         }

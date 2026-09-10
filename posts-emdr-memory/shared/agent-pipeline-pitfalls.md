@@ -548,3 +548,19 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 **Recovery sb-XX:** `git pull` на VPS → один `trigger-vps-webhook.py --topic sb-XX --wait-for-lock`. Не слать webhook повторно, пока первый worker жив (<45 мин).
 
 **Не делать:** тащить `##` / `**Обложка**` / Line 1 в OK text.
+
+## VK MCP: Flood control (ошибка 9)
+
+**Инцидент:** 2026-09-09, тема `sb-28-end-workday-ritual`.
+
+**Симптом:** `vk_create_post_with_photo` → `VK API ошибка 9: Flood control` на загрузке фото; повторные попытки и паузы не помогают.
+
+**Причина:** лимит VK API на токене (включая `vk_search_news`).
+
+**Правильно:**
+- Одна попытка MCP VK за прогон; при flood control — стоп, инцидент, следующий cron.
+- `is-topic-published.py` → `awaiting_mcp: true` (exit 2) — **не** перезапускать `publish-topic.py`.
+- `run-cloud-publish.py --sync` при open incidents продолжает только `awaiting_mcp` тему из handoff.
+- OK уже published — не дублировать.
+
+**Recovery:** дождаться снятия лимита (обычно 24ч+) → MCP VK ×2 + `record-vk-mcp-publish.py` → `--finish`.

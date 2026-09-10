@@ -46,6 +46,13 @@ def _queue_published(topic: str) -> bool:
     return published.is_file() and f"`{topic}`" in published.read_text(encoding="utf-8")
 
 
+def _awaiting_mcp_bundle(topic_dir: Path) -> dict | None:
+    bundle = _read_json(topic_dir / "cloud-mcp-bundle.json")
+    if not bundle or bundle.get("phase") != "awaiting_mcp":
+        return None
+    return bundle
+
+
 def _telegram_sent(topic_dir: Path) -> bool:
     tg_log = _read_json(topic_dir / "telegram-publish-log.json")
     if not tg_log or tg_log.get("status") != "sent":
@@ -67,6 +74,7 @@ def check_topic(topic: str) -> dict:
         "topic": topic,
         "published": False,
         "partial": False,
+        "awaiting_mcp": False,
         "reasons": [],
         "cloud_ok": False,
         "closed": False,
@@ -115,6 +123,17 @@ def check_topic(topic: str) -> dict:
     closed = queue_published or finish_json
     result["closed"] = closed
 
+    bundle = _awaiting_mcp_bundle(topic_dir)
+    scripts_ready = max_ok and tg_ok and (fb_ok or fb_reg)
+    if ok_required:
+        scripts_ready = scripts_ready and (ok_ok or ok_reg)
+    if bundle and scripts_ready and not (vk_prof and vk_group):
+        result["awaiting_mcp"] = True
+        result["partial"] = True
+        result["reasons"].append(
+            "awaiting_mcp: скрипты готовы — только MCP VK (не перезапускать publish-topic.py)"
+        )
+
     if cloud_ok and tg_ok and closed:
         result["published"] = True
     elif cloud_ok and tg_ok and not closed:
@@ -136,6 +155,8 @@ def main() -> None:
     else:
         if result["published"]:
             print(f"✅ {args.topic} — уже опубликована end-to-end")
+        elif result.get("awaiting_mcp"):
+            print(f"⏳ {args.topic} — awaiting_mcp, нужен MCP VK + --finish")
         elif result["partial"]:
             print(f"⏳ {args.topic} — cloud ok, нужен close-cloud-publish")
             for r in result["reasons"]:

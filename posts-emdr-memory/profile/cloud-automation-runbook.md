@@ -69,14 +69,26 @@ python3 scripts/run-cloud-publish.py --topic {id} --finish
 
 ---
 
+## VK Flood control (ошибка 9)
+
+Если MCP `vk_create_post_with_photo` вернул **Flood control**:
+
+1. **Одна** попытка за прогон — не спамить MCP (паузы не помогают, лимит на токене).
+2. **Не** перезапускать `publish-topic.py` — `is-topic-published` → `awaiting_mcp`, `--sync` только обновит bundle.
+3. Записать инцидент; следующий cron (через 24ч+) — одна повторная попытка MCP VK.
+4. OK уже published — не дублировать.
+
+---
+
 ## Если Run «упал»
 
 | Симптом | Действие |
 |--------|----------|
 | Telegram без обложки | `python3 scripts/send-telegram-post.py --topic {id} --publish --refresh-cover-url` |
 | VK/OK не в реестре | повторить MCP + `record-vk-mcp-publish.py` / `record-ok-publish.py` |
+| VK Flood control | стоп MCP; дождаться следующего Run; не `publish-topic.py` |
 | verify fail | смотреть `verify-publish-run.json`, дозаполнить логи, снова `--finish` |
-| open incidents | `python3 scripts/incident_queue.py --project-root .` → Fixic |
+| open incidents | `python3 scripts/incident_queue.py --project-root .` → Fixic (кроме `awaiting_mcp` той же темы) |
 
 Не выдумывать шаги. Не редактировать `.cursor/posts-emdr-handoff.md` вручную.
 
