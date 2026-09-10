@@ -297,6 +297,11 @@ def main() -> None:
         action="store_true",
         help="Без обложки (только текст) — для согласования черновика",
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Опубликовать снова, даже если max-publish-log.json уже ok/sent",
+    )
     args = parser.parse_args()
 
     env = load_env()
@@ -340,6 +345,18 @@ def main() -> None:
             raise SystemExit(f"{e}") from e
 
     topic_dir = PROJECT_ROOT / "posts-emdr-memory" / "output" / args.topic
+    if mode == "publish" and not args.force and not args.dry_run:
+        from publish_idempotency import max_already_published
+
+        if max_already_published(args.topic):
+            print(
+                json.dumps(
+                    {"status": "skipped", "reason": "max_already_published", "topic": args.topic},
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+            return
     text_file = args.text_file or topic_dir / "max-post.md"
     cover = args.cover or topic_dir / "cover.png"
     if not cover.exists():

@@ -122,21 +122,21 @@ def ensure_content(topic: str) -> dict:
 
 
 def ensure_telegram(topic: str, *, attempts: int = 3) -> dict:
-    topic_dir = MEMORY / "output" / topic
-    log_path = topic_dir / "telegram-publish-log.json"
-    if log_path.is_file():
-        try:
-            log = json.loads(log_path.read_text(encoding="utf-8"))
-            src = log.get("cover_source") or ""
-            if log.get("status") == "sent" and src and "oneme" not in src.lower():
-                return {"skipped": True, "reason": "already_ok", "cover_source": src}
-        except json.JSONDecodeError:
-            pass
+    from publish_idempotency import telegram_already_published, telegram_cover_ok
+
+    if telegram_already_published(topic) and telegram_cover_ok(topic):
+        return {"skipped": True, "reason": "already_ok"}
 
     last_err = ""
     for i in range(attempts):
         proc = subprocess.run(
-            [sys.executable, str(SCRIPTS / "publish-telegram-from-handoff.py"), "--topic", topic],
+            [
+                sys.executable,
+                str(SCRIPTS / "send-telegram-post.py"),
+                "--topic",
+                topic,
+                "--publish",
+            ],
             cwd=PROJECT_ROOT,
             capture_output=True,
             text=True,

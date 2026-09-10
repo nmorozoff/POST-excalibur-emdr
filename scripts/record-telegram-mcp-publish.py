@@ -62,11 +62,23 @@ def main() -> None:
     channels = [c for c in channels if str(c.get("chat_id")) != str(args.chat_id) and str(c.get("chat_id")) != chat_id]
     channels.append(entry)
 
+    cover_source = ""
+    handoff_path = topic_dir / "telegram-mcp-handoff.json"
+    if handoff_path.is_file():
+        try:
+            h = json.loads(handoff_path.read_text(encoding="utf-8"))
+            url = (h.get("cover_public_url") or "").strip()
+            if url and "oneme.ru" not in url.lower():
+                cover_source = "morozovanatalia" if "morozovanatalia" in url else "handoff"
+        except json.JSONDecodeError:
+            pass
+
     log = {
         "status": "sent",
         "mode": "publish",
         "delivery": "link_preview_single_message",
         "via": "mcp-kv",
+        "cover_source": cover_source or None,
         "channels": channels,
     }
     if len(channels) == 1:

@@ -86,6 +86,13 @@ PLATFORM_SPECS: dict[str, dict[str, str]] = {
         "registry": "b17-posts-registry.md",
         "kind": "rewrite",
     },
+    "tenchat": {
+        "output": "tenchat-post.md",
+        "prompt": "tenchat-post-prompt.md",
+        "registry": "tenchat-posts-registry.md",
+        "kind": "rewrite",
+        "note": "Режим TenChat: utm_source=tenchat, 1800–2200 знаков в ## Текст для вставки, списки с —.",
+    },
 }
 
 GENERATION_ORDER = [
@@ -96,6 +103,7 @@ GENERATION_ORDER = [
     "facebook",
     "ok",
     "b17",
+    "tenchat",
 ]
 
 SYSTEM_PROMPT = """Ты — профессиональный русскоязычный копирайтер для психолога Натальи Морозовой (EMDR).

@@ -43,19 +43,22 @@ Handoff runtime: `.cursor/posts-emdr-handoff.md`
 4. Режим: `max-only` | `full` | `publish: no`
 5. Перед новой темой: `python scripts/incident_queue.py --project-root .` — код `2` → сначала **Task(`posts-emdr-fixic`)**
 
-## Cloud Agent (изолированная среда)
+## Локальная автоматизация (основной режим)
 
-См. `posts-emdr-memory/profile/cloud-publish-phases.md` и `CLOUD-SETUP.md`.
-
-**3 фазы:** (1) `run-cloud-publish.py --sync` (скрипты + TG с ретраями), (2) **MCP mcp-kv** → VK + OK по `cloud-mcp-bundle.json`, (3) `run-cloud-publish.py --topic {id} --finish` (close + verify + отчёт + git). b17 — repair с Mac.
-
-`VK_ACCESS_TOKEN` не нужен. MCP mcp-kv — в Dashboard automation. Runbook: `profile/cloud-automation-runbook.md`.
+**Mac cron 12:00 MSK** — `profile/local-automation-runbook.md`.
 
 ```bash
-python3 scripts/run-cloud-publish.py --sync
-# MCP VK/OK + record-vk-mcp-publish.py / record-ok-publish.py
-python3 scripts/run-cloud-publish.py --topic {id} --finish
+./deploy/local-cron/install-macos-launchd.sh   # один раз
+# ежедневно: local-publish-wrapper.sh → run-local-publish.py
 ```
+
+Платформы: Макс, TG, FB, **VK (Undetectable Profile1)**, b17, **TenChat**. Идемпотентность: `publish_idempotency.py` + flock.
+
+**Cloud Automation в Dashboard — отключить** (дублировала публикации). Legacy: `run-cloud-publish.py` только для repair.
+
+## Cloud Agent (legacy / repair)
+
+См. `profile/cloud-automation-runbook.md`. Не запускать параллельно с локальным cron.
 
 ## Пайплайн (одна тема)
 

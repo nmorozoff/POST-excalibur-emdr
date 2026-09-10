@@ -37,6 +37,19 @@ def main() -> None:
     if not handoff_path.is_file():
         raise SystemExit(f"Missing {handoff_path} — run publish-topic first")
 
+    if not args.dry_run and not getattr(args, "force", False):
+        from publish_idempotency import telegram_already_published, telegram_cover_ok
+
+        if telegram_already_published(args.topic) and telegram_cover_ok(args.topic):
+            print(
+                json.dumps(
+                    {"status": "skipped", "reason": "telegram_already_published", "topic": args.topic},
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+            return
+
     handoff = json.loads(handoff_path.read_text(encoding="utf-8"))
     calls = handoff.get("calls") or []
     if not calls:

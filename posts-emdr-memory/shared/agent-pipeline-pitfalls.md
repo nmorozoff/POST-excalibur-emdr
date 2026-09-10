@@ -310,6 +310,19 @@ VK без MCP: `vk_publish.py`. b17/TenChat без Undetectable — skip.
 
 **Gate:** один `message_id` на канал в `telegram-publish-log.json`; повторный deferred → `already_published` / marker skip.
 
+## Дубли Max/TG (Cloud Automation 2026-09)
+
+**Симптом:** 2–3 поста в Макс/TG за один день; TG без обложки (только текст).
+
+**Причина:** `publish-topic.py` + `run-cloud-publish.ensure_telegram` — двойной send; MCP-log без `cover_source`; Cloud Run повторял `--sync` после partial.
+
+**Правильно (2026-09-10):**
+- **Отключить** Cursor Cloud Automation Posty.
+- Единственный автопрогон: **Mac launchd 12:00 MSK** → `local-publish-wrapper.sh` → `run-local-publish.py`.
+- TG только `send-telegram-post.py` с `resolve_cover_url` (morozovanatalia, не oneme).
+- `publish_idempotency.py` — skip если уже `sent`.
+- VK: `publish-vk-browser.py` (Undetectable), не MCP flood.
+
 ## Cloud → VPS webhook TimeoutError
 
 **Симптом (2026-08-05, sb-08):** `trigger-vps-webhook.py` → `TimeoutError` (20s) с Cloud pod; phase 3 не стартовал.

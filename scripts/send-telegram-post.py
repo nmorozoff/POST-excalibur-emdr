@@ -515,6 +515,11 @@ def main() -> None:
         help="link_preview: ONE message, cover above text (default, posts #01–#02). "
         "photo_then_text: two messages — do NOT use for channels.",
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Отправить снова, даже если telegram-publish-log.json уже sent",
+    )
     args = parser.parse_args()
 
     env = load_env()
@@ -550,6 +555,22 @@ def main() -> None:
         chat_ids = [preview_id]
 
     topic_dir = PROJECT_ROOT / "posts-emdr-memory" / "output" / args.topic
+    if args.publish and not args.force and not args.dry_run and not args.refresh_cover_url:
+        from publish_idempotency import telegram_already_published, telegram_cover_ok
+
+        if telegram_already_published(args.topic) and telegram_cover_ok(args.topic):
+            print(
+                json.dumps(
+                    {
+                        "status": "skipped",
+                        "reason": "telegram_already_published",
+                        "topic": args.topic,
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+            return
     post_file = topic_dir / "telegram-post.md"
     cover = resolve_cover(topic_dir)
 
@@ -598,15 +619,29 @@ def main() -> None:
     cover_url = None
     cover_source = None
     if args.delivery == "link_preview":
-        cover_url = load_cover_public_url(
-            topic_dir,
-            cover,
-            refresh=args.refresh_cover_url,
-            force_catbox=False,
-        )
-        cover_source = json.loads(
-            cover_preview_meta_path(topic_dir, cover).read_text(encoding="utf-8")
-        ).get("source")
+        refresh = args.refresh_cover_url or args.publish
+        try:
+            from telegram_mcp_handoff import resolve_cover_url
+
+            resolved = resolve_cover_url(args.topic)
+            meta_path = cover_preview_meta_path(topic_dir, cover)
+            meta_path.write_text(
+                json.dumps({"url": resolved, "source": "morozovanatalia"}, ensure_ascii=False, indent=2)
+                + "\n",
+                encoding="utf-8",
+            )
+            cover_url = resolved
+            cover_source = "morozovanatalia"
+        except SystemExit:
+            cover_url = load_cover_public_url(
+                topic_dir,
+                cover,
+                refresh=refresh,
+                force_catbox=False,
+            )
+            cover_source = json.loads(
+                cover_preview_meta_path(topic_dir, cover).read_text(encoding="utf-8")
+            ).get("source")
 
     channel_logs: list[dict] = []
     utm_sources = parse_channel_utm_sources(env, len(chat_ids))

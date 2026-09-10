@@ -290,37 +290,12 @@ def publish_topic(
         except SystemExit:
             tg_cover_url = photo_url
         tg_path = write_telegram_mcp_handoff(topic, tg_cover_url)
-        tg_step: dict = {
-            "mode": "mcp_handoff",
+        log["steps"]["telegram"] = {
+            "mode": "handoff_only",
             "handoff": str(tg_path),
             "channels": len(json.loads(tg_path.read_text(encoding="utf-8")).get("calls") or []),
+            "note": "Публикация только через send-telegram-post.py (оркестратор) — без дублей",
         }
-        tg_pub = subprocess.run(
-            [
-                sys.executable,
-                str(SCRIPTS / "publish-telegram-from-handoff.py"),
-                "--topic",
-                topic,
-            ],
-            cwd=PROJECT_ROOT,
-            capture_output=True,
-            text=True,
-        )
-        if tg_pub.returncode == 0:
-            try:
-                tg_step["publish"] = json.loads(tg_pub.stdout or "{}")
-                tg_step["status"] = "published"
-            except json.JSONDecodeError:
-                tg_step["publish_stdout"] = (tg_pub.stdout or "")[-500:]
-                tg_step["status"] = "published_unknown"
-        else:
-            tg_step["status"] = "deferred_mcp"
-            tg_step["publish_error"] = (tg_pub.stderr or tg_pub.stdout or "")[-800:]
-            tg_step["note"] = (
-                "Повторить publish-telegram-from-handoff.py (link_preview_options). "
-                "MCP telegram_send_message — только fallback без гарантии обложки."
-            )
-        log["steps"]["telegram"] = tg_step
     elif (topic_dir / "telegram-post.md").is_file():
         log["steps"]["telegram"] = {
             "deferred": True,
@@ -404,12 +379,8 @@ def publish_topic(
         )
 
     deferred: list[str] = []
-    tg_status = log.get("steps", {}).get("telegram", {}).get("status")
-    if tg_status not in {"published", "published_unknown"}:
-        if log.get("steps", {}).get("telegram", {}).get("mode") == "mcp_handoff":
-            deferred.append("telegram_mcp")
-        elif not (topic_dir / "telegram-publish-log.json").is_file():
-            deferred.append("telegram")
+    if not (topic_dir / "telegram-publish-log.json").is_file():
+        deferred.append("telegram")
     if not browser_ok:
         deferred.append("b17")
     if not dry_run:
