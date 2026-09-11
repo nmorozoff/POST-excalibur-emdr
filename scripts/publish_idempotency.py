@@ -43,6 +43,7 @@ def telegram_already_published(topic: str) -> bool:
 
 
 def telegram_cover_ok(topic: str) -> bool:
+    """Только для repair: --refresh-cover-url --force. Автопрогон не переотправляет TG."""
     log = _read_json(topic_dir(topic) / "telegram-publish-log.json")
     if not log or log.get("status") != "sent":
         return False
@@ -50,6 +51,11 @@ def telegram_cover_ok(topic: str) -> bool:
     if not src or "oneme" in src:
         return False
     return True
+
+
+def core_social_already_published(topic: str) -> bool:
+    """Макс + Telegram уже ушли — больше не трогать в cron (даже если VK не закрыт)."""
+    return max_already_published(topic) and telegram_already_published(topic)
 
 
 def vk_location_published(topic: str, location: str) -> bool:

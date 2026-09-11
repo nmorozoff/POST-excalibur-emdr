@@ -6,6 +6,8 @@
 
 **12:00 MSK** — `launchd` → `scripts/local-publish-wrapper.sh`
 
+**Сейчас cron выключен** (2026-09-11) — после фикса дублей включить снова: `./deploy/local-cron/install-macos-launchd.sh`
+
 ### Установка cron (один раз)
 
 ```bash

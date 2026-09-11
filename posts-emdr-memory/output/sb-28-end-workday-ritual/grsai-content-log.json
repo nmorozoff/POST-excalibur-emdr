@@ -4,7 +4,7 @@
   "model": "gemini-3.1-pro",
   "base_url": "https://grsaiapi.com",
   "timeout_sec": 900,
-  "generated_at": "2026-09-09T08:05:17.880497+00:00",
+  "generated_at": "2026-09-11T12:51:50.340776+00:00",
   "platforms": {
     "max": {
       "file": "max-post.md",
@@ -76,6 +76,19 @@
       },
       "chars": 2314,
       "contract_fixes": []
+    },
+    "tenchat": {
+      "file": "tenchat-post.md",
+      "model": "gemini-3.1-pro",
+      "usage": {
+        "prompt_tokens": 10249,
+        "completion_tokens": 10738,
+        "total_tokens": 20987
+      },
+      "chars": 2510,
+      "contract_fixes": [
+        "auto-wrapped tenchat sections"
+      ]
     }
   }
 }

@@ -22,16 +22,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from posts_emdr_env import MEMORY, PROJECT_ROOT, materialize_env_files
 from publish_idempotency import (
     b17_already_saved,
+    core_social_already_published,
     facebook_already_published,
     max_already_published,
     telegram_already_published,
-    telegram_cover_ok,
     tenchat_already_published,
     vk_location_published,
 )
 
 SCRIPTS = PROJECT_ROOT / "scripts"
-CONTENT_FILES = (
+REQUIRED_CONTENT = (
     "max-post.md",
     "cover-prompt.txt",
     "telegram-post.md",
@@ -40,9 +40,9 @@ CONTENT_FILES = (
     "facebook-post.md",
     "ok-post.md",
     "b17-blog-post.md",
-    "tenchat-post.md",
     "grsai-content-log.json",
 )
+OPTIONAL_CONTENT = ("tenchat-post.md",)
 
 
 def _run(cmd: list[str], *, check: bool = True) -> subprocess.CompletedProcess:
@@ -73,14 +73,35 @@ def intake_topic() -> str:
 
 def ensure_content(topic: str) -> dict:
     topic_dir = MEMORY / "output" / topic
-    missing = [f for f in CONTENT_FILES if not (topic_dir / f).is_file()]
-    if not missing:
+    missing_required = [f for f in REQUIRED_CONTENT if not (topic_dir / f).is_file()]
+    missing_optional = [f for f in OPTIONAL_CONTENT if not (topic_dir / f).is_file()]
+    if not missing_required and not missing_optional:
         return {"skipped": True}
+    if missing_optional and not missing_required:
+        proc = subprocess.run(
+            [sys.executable, str(SCRIPTS / "grsai-generate-topic.py"), "--topic", topic, "--platform", "tenchat"],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        if proc.returncode != 0:
+            return {
+                "tenchat": "grsai_failed",
+                "stderr": (proc.stderr or proc.stdout or "")[-500:],
+            }
+        return {"generated": "tenchat"}
     _run([sys.executable, str(SCRIPTS / "grsai-generate-topic.py"), "--topic", topic])
-    still = [f for f in CONTENT_FILES if not (topic_dir / f).is_file()]
+    still = [f for f in REQUIRED_CONTENT if not (topic_dir / f).is_file()]
     if still:
         raise SystemExit(f"BLOCKER: после grsai нет: {still}")
-    return {"generated": True, "missing_before": missing}
+    if not (topic_dir / "tenchat-post.md").is_file():
+        subprocess.run(
+            [sys.executable, str(SCRIPTS / "grsai-generate-topic.py"), "--topic", topic, "--platform", "tenchat"],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+        )
+    return {"generated": True, "missing_before": missing_required + missing_optional}
 
 
 def ensure_cover(topic: str) -> None:
@@ -92,6 +113,11 @@ def ensure_cover(topic: str) -> None:
 
 def publish_all(topic: str) -> dict:
     steps: dict = {}
+    if core_social_already_published(topic):
+        steps["guard"] = {
+            "core_locked": True,
+            "note": "Макс+TG уже выходили — повторная публикация запрещена",
+        }
 
     if not max_already_published(topic):
         steps["max"] = _json_out(
@@ -111,7 +137,7 @@ def publish_all(topic: str) -> dict:
     )
     steps["vk_upload"] = {"ok": True}
 
-    if not (telegram_already_published(topic) and telegram_cover_ok(topic)):
+    if not telegram_already_published(topic):
         steps["telegram"] = _json_out(
             _run(
                 [
@@ -124,7 +150,7 @@ def publish_all(topic: str) -> dict:
             )
         )
     else:
-        steps["telegram"] = {"skipped": True}
+        steps["telegram"] = {"skipped": True, "reason": "already_sent"}
 
     if not facebook_already_published(topic):
         steps["facebook"] = _json_out(
@@ -224,6 +250,25 @@ def worker() -> None:
     subprocess.run(["git", "pull", "--ff-only", "origin", "main"], cwd=PROJECT_ROOT, check=False)
 
     topic = intake_topic()
+
+    if core_social_already_published(topic):
+        _run([sys.executable, str(SCRIPTS / "mark-short-blog-published.py"), "--topic-id", topic])
+        from posts_emdr_handoff import write_handoff_done
+
+        write_handoff_done(topic, verify="core_locked_skip_republish")
+        print(
+            json.dumps(
+                {
+                    "status": "queue_closed_no_republish",
+                    "topic": topic,
+                    "reason": "Макс и Telegram уже опубликованы — тема снята с очереди без повтора",
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return
+
     already = subprocess.run(
         [sys.executable, str(SCRIPTS / "is-topic-published.py"), "--topic", topic, "--json"],
         cwd=PROJECT_ROOT,

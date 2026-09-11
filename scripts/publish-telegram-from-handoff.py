@@ -38,9 +38,9 @@ def main() -> None:
         raise SystemExit(f"Missing {handoff_path} — run publish-topic first")
 
     if not args.dry_run and not getattr(args, "force", False):
-        from publish_idempotency import telegram_already_published, telegram_cover_ok
+        from publish_idempotency import telegram_already_published
 
-        if telegram_already_published(args.topic) and telegram_cover_ok(args.topic):
+        if telegram_already_published(args.topic):
             print(
                 json.dumps(
                     {"status": "skipped", "reason": "telegram_already_published", "topic": args.topic},

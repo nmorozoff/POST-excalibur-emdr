@@ -122,10 +122,10 @@ def ensure_content(topic: str) -> dict:
 
 
 def ensure_telegram(topic: str, *, attempts: int = 3) -> dict:
-    from publish_idempotency import telegram_already_published, telegram_cover_ok
+    from publish_idempotency import telegram_already_published
 
-    if telegram_already_published(topic) and telegram_cover_ok(topic):
-        return {"skipped": True, "reason": "already_ok"}
+    if telegram_already_published(topic):
+        return {"skipped": True, "reason": "already_sent"}
 
     last_err = ""
     for i in range(attempts):

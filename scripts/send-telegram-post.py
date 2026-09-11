@@ -555,10 +555,10 @@ def main() -> None:
         chat_ids = [preview_id]
 
     topic_dir = PROJECT_ROOT / "posts-emdr-memory" / "output" / args.topic
-    if args.publish and not args.force and not args.dry_run and not args.refresh_cover_url:
-        from publish_idempotency import telegram_already_published, telegram_cover_ok
+    if args.publish and not args.force and not args.dry_run:
+        from publish_idempotency import telegram_already_published
 
-        if telegram_already_published(args.topic) and telegram_cover_ok(args.topic):
+        if telegram_already_published(args.topic) and not args.refresh_cover_url:
             print(
                 json.dumps(
                     {
